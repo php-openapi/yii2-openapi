@@ -65,6 +65,7 @@ class IssueFixTest extends DbTestCase
         $this->deleteTableForQuoteInAlterColumn();
         $this->deleteTableForTimestampIssue143();
         $this->deleteTablesForWrongMigrationForPgsqlForStringVarcharDatatype149();
+        $this->deleteTablesForCreateMigrationForDropTable132();
     }
 
     private function deleteTablesForFloatIssue()
@@ -272,4 +273,30 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
+    // https://github.com/cebe/yii2-openapi/issues/132
+    public function testCreateMigrationForDropTable132()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        $this->deleteTablesForNoSyntaxError107();
+        $this->createTableForNoSyntaxError107();
+        $this->runGenerator($testFile, 'mysql');
+        // ... TODO
+        $this->deleteTables();
+    }
+
+    private function createTableForCreateMigrationForDropTable132()
+    {
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+        ])->execute();
+    }
+
+    private function deleteTablesForCreateMigrationForDropTable132()
+    {
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+    }
+
 }

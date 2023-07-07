@@ -273,6 +273,12 @@ Provide custom column name in case of relationship column. Example:
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+
+### `x-keep-tables`
+
+You may ... TODO docs for https://github.com/cebe/yii2-openapi/issues/132
+
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:
@@ -530,4 +536,3 @@ Professional support, consulting as well as software development services are av
 https://www.cebe.cc/en/contact
 
 Development of this library is sponsored by [cebe.:cloud: "Your Professional Deployment Platform"](https://cebe.cloud).
-
