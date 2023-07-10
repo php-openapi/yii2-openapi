@@ -27,3 +27,13 @@ components:
           default: 100
           nullable: false
           x-faker: '$faker->numberBetween(0, 100)'
+    Foo:
+      type: object
+      description: 132_create_migration_for_drop_table
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+        factor:
+          type: integer

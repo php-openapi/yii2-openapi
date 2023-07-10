@@ -292,11 +292,15 @@ class IssueFixTest extends DbTestCase
             'id' => 'pk',
             'name' => 'string(150)',
         ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+        ])->execute();
     }
 
     private function deleteTablesForCreateMigrationForDropTable132()
     {
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
     }
-
 }

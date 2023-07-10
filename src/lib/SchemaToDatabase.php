@@ -88,7 +88,7 @@ class SchemaToDatabase
             if ($junctions->isJunctionSchema($schemaName)) {
                 $schemaName = $junctions->trimPrefix($schemaName);
             }
-            /**@var \cebe\yii2openapi\lib\AttributeResolver $resolver */
+            /** @var \cebe\yii2openapi\lib\AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
             $models[$schemaName] = $resolver->resolve();
         }

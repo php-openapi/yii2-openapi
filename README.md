@@ -536,3 +536,25 @@ Professional support, consulting as well as software development services are av
 https://www.cebe.cc/en/contact
 
 Development of this library is sponsored by [cebe.:cloud: "Your Professional Deployment Platform"](https://cebe.cloud).
+
+
+---
+
+
+TODO
+
+foreach dbmodels
+  grab table names
+
+create list of all table names
+---
+fetch all table name list from DB (SQL query)
+
+find the diff
+
+create drop table mig diff tables
+
+consider `x-keep-table`
+
+
+

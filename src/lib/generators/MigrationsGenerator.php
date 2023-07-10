@@ -110,6 +110,21 @@ class MigrationsGenerator
     public function buildMigrations():array
     {
         $junctions = [];
+
+        // MySQL
+        // MariaDB TODO
+        // PgSQL TODO
+        $sql='SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES';
+        $tables = Yii::$app->db
+                 ->createCommand($sql)
+                 ->queryAll();
+        var_dump($tables); die;
+
+
+        foreach ($this->models as $model) {var_dump($model->tableAlias);}
+
+        var_dump(array_keys($this->models)); die;
+
         foreach ($this->models as $model) {
             $migration = $this->createBuilder($model)->build();
             if ($migration->notEmpty()) {

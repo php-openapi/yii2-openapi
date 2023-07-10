@@ -132,7 +132,8 @@ class MigrationModel extends BaseObject
         return $this;
     }
 
-    /**add down code, by default to top
+    /**
+     * Add down code, by default to top
      * @param array|string $code
      * @param bool         $toBottom
      * @return $this
