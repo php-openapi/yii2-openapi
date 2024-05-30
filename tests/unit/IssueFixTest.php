@@ -2,8 +2,9 @@
 
 namespace tests\unit;
 
-use Yii;
 use tests\DbTestCase;
+use Yii;
+use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
 
 // This class contains tests for various issues present at GitHub
@@ -49,12 +50,12 @@ class IssueFixTest extends DbTestCase
         $this->createTableForFloatIssue();
         $testFile = Yii::getAlias("@specs/issue_fix/float_issue/float_issue.php");
         $this->runGenerator($testFile, 'pgsql');
-        $this->expectException(\yii\base\InvalidArgumentException::class);
-        FileHelper::findDirectories(Yii::getAlias('@app').'/migration');
-        FileHelper::findDirectories(Yii::getAlias('@app').'/migrations');
-        FileHelper::findDirectories(Yii::getAlias('@app').'/migrations_mysql_db');
-        FileHelper::findDirectories(Yii::getAlias('@app').'/migrations_maria_db');
-        FileHelper::findDirectories(Yii::getAlias('@app').'/migrations_pgsql_db');
+        $this->expectException(InvalidArgumentException::class);
+        FileHelper::findDirectories(Yii::getAlias('@app') . '/migration');
+        FileHelper::findDirectories(Yii::getAlias('@app') . '/migrations');
+        FileHelper::findDirectories(Yii::getAlias('@app') . '/migrations_mysql_db');
+        FileHelper::findDirectories(Yii::getAlias('@app') . '/migrations_maria_db');
+        FileHelper::findDirectories(Yii::getAlias('@app') . '/migrations_pgsql_db');
         $this->deleteTables();
     }
 
@@ -302,5 +303,92 @@ class IssueFixTest extends DbTestCase
     {
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
+    }
+
+    public function test162BugDollarrefWithXFaker()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/162_bug_dollarref_with_x_faker/162_bug_dollarref_with_x_faker.php");
+        $this->runGenerator($testFile, 'mysql');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/162_bug_dollarref_with_x_faker/app"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // 163_generator_crash_when_using_reference_inside_an_object
+    public function test163GeneratorCrashWhenUsingReferenceInsideAnObject()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/163_generator_crash_when_using_reference_inside_an_object/index.php");
+        $this->runGenerator($testFile, 'pgsql');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/163_generator_crash_when_using_reference_inside_an_object/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // #175 https://github.com/cebe/yii2-openapi/issues/175
+    // Bug: allOf with multiple $refs
+    public function test175BugAllOfWithMultipleDollarRefs()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/175_bug_allof_with_multiple_dollarrefs/index.php");
+        $this->runGenerator($testFile, 'pgsql');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/175_bug_allof_with_multiple_dollarrefs/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // #172 https://github.com/cebe/yii2-openapi/issues/172
+    // schema.yaml: requestBody has no effect
+    public function test172SchemayamlRequestBodyHasNoEffect()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/172_schemayaml_requestbody_has_no_effect/index.php");
+        $this->runGenerator($testFile, 'pgsql');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/172_schemayaml_requestbody_has_no_effect/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/cebe/yii2-openapi/issues/159
+    public function test159BugGiiapiGeneratedRulesEmailid()
+    {
+        $this->changeDbToMariadb();
+        $testFile = Yii::getAlias("@specs/issue_fix/159_bug_giiapi_generated_rules_emailid/index.php");
+        $this->runGenerator($testFile, 'maria');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/159_bug_giiapi_generated_rules_emailid/maria"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/cebe/yii2-openapi/issues/158
+    public function test158BugGiiapiGeneratedRulesEnumWithTrim()
+    {
+        $this->changeDbToMariadb();
+        $testFile = Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/index.php");
+        $this->runGenerator($testFile, 'maria');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/maria"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 }

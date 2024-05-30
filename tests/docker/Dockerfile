@@ -35,7 +35,7 @@ RUN apt-get update && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
         # https://xdebug.org/docs/compat \
-        && if [ "$BUILD_PHP_VERSION" = "8.2" ] ; then pecl install xdebug ; else pecl install xdebug-3.1.5 ; fi \
+        && if [ "$BUILD_PHP_VERSION" = "8.2" ] || [ "$BUILD_PHP_VERSION" = "8.3" ] ; then pecl install xdebug ; else pecl install xdebug-3.1.5 ; fi \
         && docker-php-ext-enable xdebug \
         && docker-php-ext-install \
                 zip \
@@ -72,6 +72,11 @@ RUN echo "xdebug.idekey=PHP_STORM" >> $XDEBUGINI_PATH && \
     echo "xdebug.start_with_request=yes" >> $XDEBUGINI_PATH && \
     echo "xdebug.discover_client_host=1" >> $XDEBUGINI_PATH && \
     echo "xdebug.client_port=9003" >> $XDEBUGINI_PATH  && \
-    echo "xdebug.client_host=host.docker.internal" >> $XDEBUGINI_PATH
+    echo "xdebug.client_host=host.docker.internal" >> $XDEBUGINI_PATH && \
+    echo "xdebug.log_level=0" >> $XDEBUGINI_PATH
+    # to get rid of lot of message `Xdebug: [Step Debug] Could not connect to debugging client. Tried: host.docker.internal:9003 (fallback through xdebug.client_host/xdebug.client_port).` in CLI during testing, above setting (log_level=0) is applied. Remove it when xdebug is used
+    # reference: https://community.localwp.com/t/xdebug-step-debug-could-not-connect-to-debugging-client-flooding-logs/34550/4
+    # scope to apply better solutions (https://stackoverflow.com/questions/64878376/xdebug-step-debug-could-not-connect-to-debugging-client)
+
 
 WORKDIR /app

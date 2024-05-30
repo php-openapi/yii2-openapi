@@ -44,17 +44,32 @@ class FakerStubResolver
 
     public function resolve():?string
     {
-        if ($this->property->hasAttr(CustomSpecAttr::FAKER)) {
-            return $this->property->getAttr(CustomSpecAttr::FAKER);
+        if ($this->property->xFaker === false) {
+            $this->attribute->setFakerStub(null);
+            return null;
         }
+        if ($this->property->hasAttr(CustomSpecAttr::FAKER)) {
+            $fakerVal = $this->property->getAttr(CustomSpecAttr::FAKER);
+            if ($fakerVal === false) {
+                $this->attribute->setFakerStub(null);
+                return null;
+            }
+            return $fakerVal;
+        }
+
         if ($this->attribute->isReadOnly() && $this->attribute->isVirtual()) {
             return null;
         }
 
         // column name ends with `_id`
-        if (substr($this->attribute->columnName, -strlen('_id'))==='_id') {
-            return '$faker->randomElement(\\'.$this->config->modelNamespace
-                    . ($this->config->modelNamespace ? '\\' : '')
+        if (substr($this->attribute->columnName, -3) === '_id' || !empty($this->attribute->fkColName)) {
+            $config = $this->config;
+            if (!$config) {
+                $config = new Config;
+            }
+            $mn = $config->modelNamespace;
+            return '$faker->randomElement(\\'.$mn
+                    . ($mn ? '\\' : '')
                     . ucfirst($this->attribute->reference).'::find()->select("id")->column())';
         }
 
