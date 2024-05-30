@@ -2,6 +2,9 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: 132_create_migration_for_drop_table \#132
+x-delete-tables:  # don't use x-keep-table
+  - abc
+  - def
 paths:
   /:
     get:
@@ -13,7 +16,7 @@ paths:
 
 components:
   schemas:
-    Pristine:
+    Pristine: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-delete-tables`
       type: object
       description: 132_create_migration_for_drop_table
       required:
