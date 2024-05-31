@@ -460,11 +460,12 @@ class ApiGenerator extends Generator
      * Please refer to [[\yii\gii\generators\controller\Generator::generate()]] as an example
      * on how to implement this method.
      * @return CodeFile[] a list of code files to be created.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function generate():array
+    public function generate(): array
     {
         $config = $this->makeConfig();
+
         $actionsGenerator = $this->useJsonApi
             ? Yii::createObject(JsonActionGenerator::class, [$config])
             : Yii::createObject(RestActionGenerator::class, [$config]);
@@ -485,7 +486,12 @@ class ApiGenerator extends Generator
         $modelsGenerator = Yii::createObject(ModelsGenerator::class, [$config, $models]);
         $files->merge($modelsGenerator->generate());
 
-        $migrationsGenerator = Yii::createObject(MigrationsGenerator::class, [$config, $models, Yii::$app->db]);
+        $tablesToDrop = null;
+        if (isset($config->getOpenApi()->{'x-delete-tables'})) {
+            $tablesToDrop = $config->getOpenApi()->{'x-delete-tables'}; // for removed (components) schemas
+        }
+
+        $migrationsGenerator = Yii::createObject(MigrationsGenerator::class, [$config, $models, Yii::$app->db, $tablesToDrop]);
         $files->merge($migrationsGenerator->generate());
 
         return $files->all();

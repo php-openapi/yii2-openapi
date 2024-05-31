@@ -12,6 +12,7 @@ use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\MigrationModel;
 use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
 use cebe\yii2openapi\lib\migrations\PostgresMigrationBuilder;
 use Exception;
@@ -52,7 +53,9 @@ class MigrationsGenerator
      **/
     protected $sorted;
 
-    public function __construct(Config $config, array $models, Connection $db)
+    public ?array $tablesToDrop = null;
+
+    public function __construct(Config $config, array $models, Connection $db, array $tablesToDrop = null)
     {
         $this->config = $config;
         $this->models = array_filter($models, static function ($model) {
@@ -60,6 +63,7 @@ class MigrationsGenerator
         });
         $this->files = new CodeFiles([]);
         $this->db = $db;
+        $this->tablesToDrop = $tablesToDrop;
     }
 
     /**
@@ -126,6 +130,8 @@ class MigrationsGenerator
         // var_dump(array_keys($this->models)); die;
 
         foreach ($this->models as $model) {
+            /** @var DbModel $model */
+
             $migration = $this->createBuilder($model)->build();
             if ($migration->notEmpty()) {
                 $this->migrations[$model->tableAlias] = $migration;
@@ -141,6 +147,30 @@ class MigrationsGenerator
                 $junctions[] = $relation->viaTableName;
             }
         }
+
+        // for deleted schema, create migration for drop table
+        foreach ($this->tablesToDrop as $tableName) {
+            $table = Yii::$app->db->schema->getTableSchema($tableName);
+            if ($table) {
+
+                $dbModelHere = new DbModel([
+                    'pkName' => $table->primaryKey,
+                    'name' => $table->name,
+                    'tableName' => $tableName,
+                ]);
+                $mm = new MigrationModel($dbModelHere);
+                $builder = new MigrationRecordBuilder($this->db->getSchema());
+                $mm->addUpCode($builder->dropTable($tableName))
+                    ->addDownCode($builder->createTable($tableName, $table->columns))
+                ;
+                if ($mm->notEmpty()) {
+                    var_dump('$this->migrations'); die;
+                    $this->migrations[$tableName] = $mm;
+                }
+            }
+        }
+
+
         return !empty($this->migrations) ? $this->sortMigrationsByDeps() : [];
     }
 
@@ -150,9 +180,9 @@ class MigrationsGenerator
     protected function createBuilder(DbModel $model):BaseMigrationBuilder
     {
         if ($this->db->getDriverName() === 'pgsql') {
-            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model]);
+            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model, $this->tablesToDrop]);
         }
-        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model]);
+        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model, $this->tablesToDrop]);
     }
 
     /**

@@ -52,6 +52,8 @@ abstract class BaseMigrationBuilder
      */
     protected $recordBuilder;
 
+    public ?array $tablesToDrop = null;
+
     /**
      * MigrationBuilder constructor.
      * @param \yii\db\Connection                  $db
@@ -59,12 +61,13 @@ abstract class BaseMigrationBuilder
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\base\NotSupportedException
      */
-    public function __construct(Connection $db, DbModel $model)
+    public function __construct(Connection $db, DbModel $model, ?array $tablesToDrop = null)
     {
         $this->db = $db;
         $this->model = $model;
         $this->tableSchema = $db->getTableSchema($model->getTableAlias(), true);
         $this->recordBuilder = Yii::createObject(MigrationRecordBuilder::class, [$db->getSchema()]);
+        $this->tablesToDrop = $tablesToDrop;
     }
 
     /**
@@ -113,6 +116,7 @@ abstract class BaseMigrationBuilder
      */
     public function buildFresh():MigrationModel
     {
+//        var_dump('in 2'); die;
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, true, null, []]);
         $this->newColumns = $this->model->attributesToColumnSchema();
         if (empty($this->newColumns)) {
@@ -221,6 +225,7 @@ abstract class BaseMigrationBuilder
         } else {
             $this->buildRelations();
         }
+
         return $this->migration;
     }
 
