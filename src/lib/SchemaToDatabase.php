@@ -50,7 +50,7 @@ use function count;
  *                  minLength: #(numeric value, can be applied for validation rules)
  *                  default: #(int|string, default value, used for database migration and model rules)
  *                  x-db-type: #(Custom database type like JSON, JSONB, CHAR, VARCHAR, UUID, etc )
- *                  x-faker: #(custom faker generator, for ex '$faker->gender')
+ *                  x-faker: #(custom faker generator, for ex '$faker->gender'; PHP code as string)
  *                  description: #(optional, used for comment)
  */
 class SchemaToDatabase

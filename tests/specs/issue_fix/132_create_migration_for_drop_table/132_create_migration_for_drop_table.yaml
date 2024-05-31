@@ -2,9 +2,10 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: 132_create_migration_for_drop_table \#132
+
 x-delete-tables:  # don't use x-keep-table
-  - abc
-  - def
+  - itt_fruits
+
 paths:
   /:
     get:
@@ -16,21 +17,7 @@ paths:
 
 components:
   schemas:
-    Pristine: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-delete-tables`
-      type: object
-      description: 132_create_migration_for_drop_table
-      required:
-        - id
-      properties:
-        id:
-          type: integer
-        billing_factor:
-          description: integer between 0 and 100, default value 100
-          type: integer
-          default: 100
-          nullable: false
-          x-faker: '$faker->numberBetween(0, 100)'
-    Foo:
+    Foo: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-delete-tables`
       type: object
       description: 132_create_migration_for_drop_table
       required:

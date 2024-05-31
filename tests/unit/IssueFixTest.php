@@ -282,7 +282,7 @@ class IssueFixTest extends DbTestCase
         $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
         $this->deleteTablesForNoSyntaxError107();
         $this->createTableForNoSyntaxError107();
-        $this->runGenerator($testFile, 'mysql');
+        $this->runGenerator($testFile);
         // ... TODO
         $this->deleteTables();
     }

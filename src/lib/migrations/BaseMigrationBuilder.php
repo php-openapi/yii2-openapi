@@ -201,6 +201,7 @@ abstract class BaseMigrationBuilder
         $this->buildColumnsDrop($columnsForDrop);
         foreach ($columnsForChange as $commonColumn) {
             $current = $this->tableSchema->columns[$commonColumn];
+            /** @var \cebe\yii2openapi\db\ColumnSchema|\yii\db\ColumnSchema $desired */
             $desired = $this->newColumns[$commonColumn];
             if ($current->isPrimaryKey || in_array($desired->dbType, ['pk', 'upk', 'bigpk', 'ubigpk'])) {
                 // do not adjust existing primary keys
@@ -432,7 +433,7 @@ abstract class BaseMigrationBuilder
             $name = MigrationRecordBuilder::quote($columnSchema->name);
             $column = [$name.' '.$this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
-                $column = strtr($column, [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
+                $column = strtr($column[0], [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
             }
         } else {
             $column = [$columnSchema->name => $this->newColStr($tmpTableName, $columnSchema)];
