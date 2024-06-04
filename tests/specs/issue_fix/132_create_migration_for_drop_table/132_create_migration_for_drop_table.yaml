@@ -3,8 +3,9 @@ info:
   version: 1.0.0
   title: 132_create_migration_for_drop_table \#132
 
-x-delete-tables:  # don't use x-keep-table
-  - itt_fruits
+x-deleted-schemas:  # don't use x-keep-table, x-delete-tables
+  - Fruit # itt_fruits
+  - Mango: the_mango # custom table name; `x-table`
 
 paths:
   /:

@@ -161,15 +161,14 @@ class MigrationsGenerator
                 $mm = new MigrationModel($dbModelHere);
                 $builder = new MigrationRecordBuilder($this->db->getSchema());
                 $mm->addUpCode($builder->dropTable($tableName))
-                    ->addDownCode($builder->createTable($tableName, $table->columns))
+                    ->addDownCode($builder->dropTable($tableName))
                 ;
                 if ($mm->notEmpty()) {
-                    var_dump('$this->migrations'); die;
+//                    var_dump('$this->migrations'); die;
                     $this->migrations[$tableName] = $mm;
                 }
             }
         }
-
 
         return !empty($this->migrations) ? $this->sortMigrationsByDeps() : [];
     }

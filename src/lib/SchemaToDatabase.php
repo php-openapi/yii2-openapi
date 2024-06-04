@@ -92,6 +92,16 @@ class SchemaToDatabase
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
             $models[$schemaName] = $resolver->resolve();
         }
+
+        // for drop table/schema https://github.com/cebe/yii2-openapi/issues/132
+        $tablesToDrop = null;
+        if (isset($this->config->getOpenApi()->{'x-delete-tables'})) {
+            $tablesToDrop = $this->config->getOpenApi()->{'x-delete-tables'}; // for removed (components) schemas
+        }
+        foreach ($tablesToDrop as $table) {
+
+        }
+
         foreach ($models as  $model) {
             foreach ($model->many2many as $relation) {
                 if (isset($models[$relation->viaModelName])) {

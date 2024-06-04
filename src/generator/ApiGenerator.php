@@ -486,12 +486,7 @@ class ApiGenerator extends Generator
         $modelsGenerator = Yii::createObject(ModelsGenerator::class, [$config, $models]);
         $files->merge($modelsGenerator->generate());
 
-        $tablesToDrop = null;
-        if (isset($config->getOpenApi()->{'x-delete-tables'})) {
-            $tablesToDrop = $config->getOpenApi()->{'x-delete-tables'}; // for removed (components) schemas
-        }
-
-        $migrationsGenerator = Yii::createObject(MigrationsGenerator::class, [$config, $models, Yii::$app->db, $tablesToDrop]);
+        $migrationsGenerator = Yii::createObject(MigrationsGenerator::class, [$config, $models, Yii::$app->db/*, $tablesToDrop*/]);
         $files->merge($migrationsGenerator->generate());
 
         return $files->all();

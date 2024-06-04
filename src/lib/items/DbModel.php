@@ -76,6 +76,12 @@ class DbModel extends BaseObject
 
     public $isNotDb = false;
 
+    /**
+     * @var bool
+     * Drop table if schema is removed. Also see `x-delete-tables`
+     */
+    public $drop = false;
+
     public function getTableAlias():string
     {
         return '{{%' . $this->tableName . '}}';
