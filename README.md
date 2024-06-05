@@ -4,17 +4,17 @@ REST API application generator for Yii2, openapi 3.0 YAML -> Yii2.
 
 Base on [Gii, the Yii Framework Code Generator](https://www.yiiframework.com/extension/yiisoft/yii2-gii).
 
-[![Latest Stable Version](https://poser.pugx.org/cebe/yii2-openapi/v/stable)](https://packagist.org/packages/cebe/yii2-openapi)
-[![Latest Alpha Version](https://poser.pugx.org/cebe/yii2-openapi/v/unstable)](https://packagist.org/packages/cebe/yii2-openapi)
-[![Total Downloads](https://poser.pugx.org/cebe/yii2-openapi/downloads)](https://packagist.org/packages/cebe/yii2-openapi)
-[![License](https://poser.pugx.org/cebe/yii2-openapi/license)](https://packagist.org/packages/cebe/yii2-openapi)
-![yii2-openapi](https://github.com/cebe/yii2-openapi/workflows/yii2-openapi/badge.svg?branch=wip)
+[![Latest Stable Version](https://poser.pugx.org/php-openapi/yii2-openapi/v/stable)](https://packagist.org/packages/php-openapi/yii2-openapi)
+[![Latest Alpha Version](https://poser.pugx.org/php-openapi/yii2-openapi/v/unstable)](https://packagist.org/packages/php-openapi/yii2-openapi)
+[![Total Downloads](https://poser.pugx.org/php-openapi/yii2-openapi/downloads)](https://packagist.org/packages/php-openapi/yii2-openapi)
+[![License](https://poser.pugx.org/php-openapi/yii2-openapi/license)](https://packagist.org/packages/php-openapi/yii2-openapi)
+![yii2-openapi](https://github.com/php-openapi/yii2-openapi/workflows/yii2-openapi/badge.svg?branch=wip)
 
 ## TLDR; what is this?
 
 A code generator for OpenAPI and Yii Framework based PHP API application.
 
-Input: [OpenAPI 3.0 YAML or JSON](https://github.com/OAI/OpenAPI-Specification#the-openapi-specification) (via [cebe/php-openapi](https://github.com/cebe/php-openapi))
+Input: [OpenAPI 3.0 YAML or JSON](https://github.com/OAI/OpenAPI-Specification#the-openapi-specification) (via [cebe/php-openapi](https://github.com/php-openapi/php-openapi))
 
 Output: Yii Framework Application with Controllers, Models, database schema
 
@@ -36,12 +36,12 @@ Currently available features:
 
 ## Install
 
-    composer require cebe/yii2-openapi:^2.0@beta
+    composer require php-openapi/yii2-openapi:^2.0@beta
 
 ## Usage
 
 You can use this package in your existing application or start a new project using the
-[yii2-app-api](https://github.com/cebe/yii2-app-api) application template.
+[yii2-app-api](https://github.com/php-openapi/yii2-app-api) application template.
 For usage of the template, see instructions in the template repo readme.
 
 In your existing Yii application config (works for console as well as web):
@@ -76,7 +76,7 @@ return $config;
 
 To use the web generator, open `index.php?r=gii` and select the `REST API Generator`.
 
-On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml` should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see also [cebe/php-openapi](https://github.com/cebe/php-openapi/) for supported formats).
+On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml` should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
 
 Run `./yii gii/api --help` for all options. Example: Disable generation of migrations files `./yii gii/api --generateMigrations=0`
 
