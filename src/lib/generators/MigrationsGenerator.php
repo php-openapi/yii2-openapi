@@ -53,9 +53,9 @@ class MigrationsGenerator
      **/
     protected $sorted;
 
-    public ?array $tablesToDrop = null;
+    public array $tablesToDrop = [];
 
-    public function __construct(Config $config, array $models, Connection $db, array $tablesToDrop = null)
+    public function __construct(Config $config, array $models, Connection $db, array $tablesToDrop = [])
     {
         $this->config = $config;
         $this->models = array_filter($models, static function ($model) {

@@ -3,9 +3,9 @@ info:
   version: 1.0.0
   title: 132_create_migration_for_drop_table \#132
 
-x-deleted-schemas:  # don't use x-keep-table, x-delete-tables
-  - Fruit # itt_fruits
-  - Mango: the_mango # custom table name; `x-table`
+x-deleted-schemas:  # don't use x-keep-table, use x-deleted-schemas
+ - Fruit # table name evaluated to `itt_fruits`. `itt_` is prefix
+ - Mango: the_mango7 # custom table name; `x-table`
 
 paths:
   /:
@@ -18,7 +18,7 @@ paths:
 
 components:
   schemas:
-    Foo: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-delete-tables`
+    Foo: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-deleted-schemas`
       type: object
       description: 132_create_migration_for_drop_table
       required:

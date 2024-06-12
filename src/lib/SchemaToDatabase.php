@@ -7,11 +7,14 @@
 
 namespace cebe\yii2openapi\lib;
 
+use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
+use cebe\yii2openapi\lib\items\MigrationModel;
+use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
-use yii\helpers\StringHelper;
+use yii\helpers\{StringHelper, ArrayHelper, Inflector};
 use function count;
 
 /**
@@ -93,15 +96,6 @@ class SchemaToDatabase
             $models[$schemaName] = $resolver->resolve();
         }
 
-        // for drop table/schema https://github.com/cebe/yii2-openapi/issues/132
-        $tablesToDrop = null;
-        if (isset($this->config->getOpenApi()->{'x-delete-tables'})) {
-            $tablesToDrop = $this->config->getOpenApi()->{'x-delete-tables'}; // for removed (components) schemas
-        }
-        foreach ($tablesToDrop as $table) {
-
-        }
-
         foreach ($models as  $model) {
             foreach ($model->many2many as $relation) {
                 if (isset($models[$relation->viaModelName])) {
@@ -114,7 +108,15 @@ class SchemaToDatabase
 
         // TODO generate inverse relations
 
-        return $models;
+        // for drop table/schema https://github.com/cebe/yii2-openapi/issues/132
+        $tablesToDrop = $modelsToDrop = [];
+        if (isset($this->config->getOpenApi()->{'x-deleted-schemas'})) {
+            $tablesToDrop = $this->config->getOpenApi()->{'x-deleted-schemas'}; // for removed (components) schemas
+            $modelsToDrop = static::f7($tablesToDrop);
+
+        }
+
+        return ArrayHelper::merge($models, $modelsToDrop);
     }
 
     /**
@@ -232,5 +234,64 @@ class SchemaToDatabase
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param array $schemasToDrop. Example:
+     * ```
+     * array(2) {
+     * [0]=>
+     *  string(5) "Fruit"
+     * [1]=>
+     * array(1) {
+     *  ["Mango"]=>
+     *      string(10) "the_mango_table_name"
+     *  }
+     * }
+     * ```
+     * @return DbModel[]
+     */
+    public static function f7(array $schemasToDrop): array // TODO rename
+    {
+        $dbModelsToDrop = [];
+        foreach ($schemasToDrop as $key => $value) {
+            if (is_string($value)) { // schema name
+                $schemaName = $value;
+                $tableName = static::resolveTableNameHere($schemaName);
+            } elseif (is_array($value)) {
+                $schemaName = array_key_first($value);
+                $tableName = $value[$schemaName];
+            } else {
+                throw new \Exception('Malformed list of schemas to delete');
+            }
+
+            $table = Yii::$app->db->schema->getTableSchema("{{%$tableName}}");
+            if ($table) {
+                $dbModelHere = new DbModel([
+                    'pkName' => $table->primaryKey[0],
+                    'name' => $schemaName,
+                    'tableName' => $tableName,
+                    'attributes' => [],
+                    'drop' => true
+                ]);
+                $mm = new MigrationModel($dbModelHere);
+                // $builder = new MigrationRecordBuilder($this->db->getSchema());
+                // $mm->addUpCode($builder->dropTable($tableName))
+                //     ->addDownCode($builder->dropTable($tableName))
+                // ;
+                // if ($mm->notEmpty()) {
+                    // var_dump('$this->migrations'); die;
+                    // $this->migrations[$tableName] = $mm;
+                // }
+            }
+
+        }
+        return $dbModelsToDrop;
+
+    }
+
+    public static function resolveTableNameHere(string $schemaName):string // TODO rename
+    {
+        return Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
     }
 }

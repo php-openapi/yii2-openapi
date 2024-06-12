@@ -78,7 +78,9 @@ class DbModel extends BaseObject
 
     /**
      * @var bool
-     * Drop table if schema is removed. Also see `x-delete-tables`
+     * Drop table if schema is removed.
+     * @see `x-deleted-schemas` in README.md
+     * @see https://github.com/cebe/yii2-openapi/issues/132
      */
     public $drop = false;
 
