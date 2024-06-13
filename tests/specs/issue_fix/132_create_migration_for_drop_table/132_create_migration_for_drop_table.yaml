@@ -4,7 +4,8 @@ info:
   title: 132_create_migration_for_drop_table \#132
 
 x-deleted-schemas:  # don't use x-keep-table, use x-deleted-schemas
- - Fruit # table name evaluated to `itt_fruits`. `itt_` is prefix
+# - Fruit # table name evaluated to `itt_fruits`. `itt_` is prefix
+ - Pristine
 # - Mango: the_mango7 # custom table name; `x-table`
 
 paths:

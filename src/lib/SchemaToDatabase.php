@@ -283,7 +283,6 @@ class SchemaToDatabase
                 //     ->addDownCode($builder->dropTable($tableName))
                 // ;
                 // if ($mm->notEmpty()) {
-                    // var_dump('$this->migrations'); die;
                     // $this->migrations[$tableName] = $mm;
                 // }
             }
@@ -302,18 +301,18 @@ class SchemaToDatabase
     public static function attributesFromColumnSchemas(array $columnSchemas)
     {
         $attributes = [];
-        foreach ($columnSchemas as $columnName => $schema) {
+        foreach ($columnSchemas as $columnName => $columnSchema) {
             /** @var $columnName string */
-            /** @var $schema \yii\db\ColumnSchema */
+            /** @var $columnSchema \yii\db\ColumnSchema */
             unset($attribute);
-            $attribute = new Attribute($schema->name, [
-                'phpType' => $schema->phpType,
-                'dbType' => $schema->dbType,
-                'nullable' => $schema->allowNull,
-                'size' => $schema->size,
+            $attribute = new Attribute($columnSchema->name, [
+                'phpType' => $columnSchema->phpType,
+                'dbType' => $columnSchema->dbType,
+                'nullable' => $columnSchema->allowNull,
+                'size' => $columnSchema->size,
                 // 'limits' => ['min' => null, 'max' => null, 'minLength' => null], // TODO
-                'primary' => $schema->isPrimaryKey,
-                'enumValues' => $schema->enumValues,
+                'primary' => $columnSchema->isPrimaryKey,
+                'enumValues' => $columnSchema->enumValues,
             ]);
             $attributes[] = $attribute;
         }

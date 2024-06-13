@@ -279,15 +279,19 @@ class IssueFixTest extends DbTestCase
     // https://github.com/cebe/yii2-openapi/issues/132
     public function testCreateMigrationForDropTable132()
     {
+//        $this->changeDbToMariadb();
         $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
-        $this->deleteTablesForNoSyntaxError107();
-        $this->createTableForNoSyntaxError107();
+//        $this->deleteTablesForCreateMigrationForDropTable132();
+        $this->createTablesForCreateMigrationForDropTable132();
+//        sleep(3000);
         $this->runGenerator($testFile);
+//        $this->runActualMigrations('mysql', 3);
         // ... TODO
-        $this->deleteTables();
+        $this->deleteTablesForCreateMigrationForDropTable132();
+//        $this->deleteTables();
     }
 
-    private function createTableForCreateMigrationForDropTable132()
+    private function createTablesForCreateMigrationForDropTable132()
     {
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
@@ -295,14 +299,18 @@ class IssueFixTest extends DbTestCase
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
             'id' => 'pk',
-            'name' => 'string(150)',
+            'name' => 'string(151)',
+            'fruit_id' => 'integer(11)', // FK
         ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('name', '{{%pristines}}', 'fruit_id', '{{%fruits}}', 'id')->execute();
     }
 
     private function deleteTablesForCreateMigrationForDropTable132()
     {
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
+//        Yii::$app->db->createCommand('')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
 
     public function test162BugDollarrefWithXFaker()
