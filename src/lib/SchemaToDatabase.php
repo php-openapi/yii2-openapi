@@ -7,6 +7,7 @@
 
 namespace cebe\yii2openapi\lib;
 
+use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\items\MigrationModel;
@@ -113,7 +114,6 @@ class SchemaToDatabase
         if (isset($this->config->getOpenApi()->{'x-deleted-schemas'})) {
             $tablesToDrop = $this->config->getOpenApi()->{'x-deleted-schemas'}; // for removed (components) schemas
             $modelsToDrop = static::f7($tablesToDrop);
-
         }
 
         return ArrayHelper::merge($models, $modelsToDrop);
@@ -271,10 +271,11 @@ class SchemaToDatabase
                     'pkName' => $table->primaryKey[0],
                     'name' => $schemaName,
                     'tableName' => $tableName,
-                    'attributes' => [],
+                    'attributes' => static::attributesFromColumnSchemas($table->columns),
                     'drop' => true
                 ]);
-                $mm = new MigrationModel($dbModelHere);
+                $dbModelsToDrop[$key] = $dbModelHere;
+//                $mm = new MigrationModel($dbModelHere);
                 // $builder = new MigrationRecordBuilder($this->db->getSchema());
                 // $mm->addUpCode($builder->dropTable($tableName))
                 //     ->addDownCode($builder->dropTable($tableName))
@@ -293,5 +294,29 @@ class SchemaToDatabase
     public static function resolveTableNameHere(string $schemaName):string // TODO rename
     {
         return Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
+    }
+
+    /**
+     * @return Attribute[]
+     */
+    public static function attributesFromColumnSchemas(array $columnSchemas)
+    {
+        $attributes = [];
+        foreach ($columnSchemas as $columnName => $schema) {
+            /** @var $columnName string */
+            /** @var $schema \yii\db\ColumnSchema */
+            unset($attribute);
+            $attribute = new Attribute($schema->name, [
+                'phpType' => $schema->phpType,
+                'dbType' => $schema->dbType,
+                'nullable' => $schema->allowNull,
+                'size' => $schema->size,
+                // 'limits' => ['min' => null, 'max' => null, 'minLength' => null], // TODO
+                'primary' => $schema->isPrimaryKey,
+                'enumValues' => $schema->enumValues,
+            ]);
+            $attributes[] = $attribute;
+        }
+        return $attributes;
     }
 }

@@ -5,7 +5,7 @@ info:
 
 x-deleted-schemas:  # don't use x-keep-table, use x-deleted-schemas
  - Fruit # table name evaluated to `itt_fruits`. `itt_` is prefix
- - Mango: the_mango7 # custom table name; `x-table`
+# - Mango: the_mango7 # custom table name; `x-table`
 
 paths:
   /:

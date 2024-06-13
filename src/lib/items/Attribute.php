@@ -53,8 +53,8 @@ class Attribute extends BaseObject
     /**
      * @var string
      * Contains foreign key column name
-     * @example 'redelivery_of'
-     * See usage docs in README for more info
+     * @example 'redelivery_of' instead of 'redelivery_of_id'
+     * @see `x-fk-column-name` in README.md
      */
     public $fkColName;
 

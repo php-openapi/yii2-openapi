@@ -25,12 +25,4 @@ class ColumnSchema extends \yii\db\ColumnSchema
      * ```
      */
     public $xDbType;
-
-    public function toAttribute(): \cebe\yii2openapi\lib\items\Attribute
-    {
-        return new Attribute('id', [
-            'phpType' => 'int',
-            'dbType' => 'pk' // TODO resume from here
-        ]);
-    }
 }

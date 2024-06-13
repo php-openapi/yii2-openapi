@@ -116,7 +116,6 @@ abstract class BaseMigrationBuilder
      */
     public function buildFresh():MigrationModel
     {
-//        var_dump('in 2'); die;
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, true, null, []]);
         $this->newColumns = $this->model->attributesToColumnSchema();
         if (empty($this->newColumns)) {
@@ -175,6 +174,7 @@ abstract class BaseMigrationBuilder
     {
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, false, $relation, []]);
         $this->newColumns = $relation->columnSchema ?? $this->model->attributesToColumnSchema();
+        $this->newColumns = $this->model->drop ? [] : $this->newColumns; // TODO refactor
         $wantNames = array_keys($this->newColumns);
         $haveNames = $this->tableSchema->columnNames;
         $columnsForCreate = array_map(
@@ -226,6 +226,8 @@ abstract class BaseMigrationBuilder
             $this->buildRelations();
         }
 
+        $this->buildTablesDrop();
+
         return $this->migration;
     }
 
@@ -253,6 +255,9 @@ abstract class BaseMigrationBuilder
      */
     protected function buildColumnsDrop(array $columns):void
     {
+        if ($this->model->drop) {
+            return;
+        }
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
             if ($column->isPrimaryKey && !$column->autoIncrement) {
@@ -579,5 +584,14 @@ abstract class BaseMigrationBuilder
             return;
         }
         $desired->dbType = $desiredFromDb->dbType;
+    }
+
+    public function buildTablesDrop(): void
+    {
+        if (!$this->model->drop) {
+            return;
+        }
+        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->tableName) )
+            ->addDownCode($this->recordBuilder->createTable($this->model->tableName, $this->model->attributesToColumnSchema()));
     }
 }

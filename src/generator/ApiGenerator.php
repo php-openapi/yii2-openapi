@@ -486,7 +486,7 @@ class ApiGenerator extends Generator
         $modelsGenerator = Yii::createObject(ModelsGenerator::class, [$config, $models]);
         $files->merge($modelsGenerator->generate());
 
-        $migrationsGenerator = Yii::createObject(MigrationsGenerator::class, [$config, $models, Yii::$app->db/*, $tablesToDrop*/]);
+        $migrationsGenerator = Yii::createObject(MigrationsGenerator::class, [$config, $models, Yii::$app->db]);
         $files->merge($migrationsGenerator->generate());
 
         return $files->all();
