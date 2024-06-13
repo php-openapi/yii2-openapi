@@ -53,9 +53,7 @@ class MigrationsGenerator
      **/
     protected $sorted;
 
-    public array $tablesToDrop = [];
-
-    public function __construct(Config $config, array $models, Connection $db, array $tablesToDrop = [])
+    public function __construct(Config $config, array $models, Connection $db)
     {
         $this->config = $config;
         $this->models = array_filter($models, static function ($model) {
@@ -63,7 +61,6 @@ class MigrationsGenerator
         });
         $this->files = new CodeFiles([]);
         $this->db = $db;
-        $this->tablesToDrop = $tablesToDrop;
     }
 
     /**
@@ -115,20 +112,6 @@ class MigrationsGenerator
     {
         $junctions = [];
 
-        // MySQL
-        // MariaDB TODO
-        // PgSQL TODO
-        // $sql='SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES';
-        // $tables = Yii::$app->db
-        //          ->createCommand($sql)
-        //          ->queryAll();
-        // var_dump($tables); die;
-
-
-        // foreach ($this->models as $model) {var_dump($model->tableAlias);}
-
-        // var_dump(array_keys($this->models)); die;
-
         foreach ($this->models as $model) {
             /** @var DbModel $model */
 
@@ -179,9 +162,9 @@ class MigrationsGenerator
     protected function createBuilder(DbModel $model):BaseMigrationBuilder
     {
         if ($this->db->getDriverName() === 'pgsql') {
-            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model, $this->tablesToDrop]);
+            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model]);
         }
-        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model, $this->tablesToDrop]);
+        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model]);
     }
 
     /**

@@ -592,7 +592,6 @@ find the diff
 
 create drop table mig diff tables
 
-consider `x-keep-table`
 
 
 
