@@ -147,7 +147,7 @@ class MigrationsGenerator
 //                    ->addDownCode($builder->dropTable($tableName))
 //                ;
 //                if ($mm->notEmpty()) {
-////                    var_dump('$this->migrations'); die;
+        ////                    var_dump('$this->migrations'); die;
 //                    $this->migrations[$tableName] = $mm;
 //                }
 //            }

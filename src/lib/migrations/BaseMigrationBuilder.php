@@ -588,7 +588,7 @@ abstract class BaseMigrationBuilder
         if (!$this->model->drop) {
             return;
         }
-        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()) )
+        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()))
             ->addDownCode($this->recordBuilder->createTable($this->model->getTableAlias(), $this->model->attributesToColumnSchema()));
     }
 }

@@ -15,7 +15,9 @@ use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
-use yii\helpers\{StringHelper, ArrayHelper, Inflector};
+use yii\helpers\StringHelper;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Inflector;
 use function count;
 
 /**
@@ -285,10 +287,8 @@ class SchemaToDatabase
                     // $this->migrations[$tableName] = $mm;
                 // }
             }
-
         }
         return $dbModelsToDrop;
-
     }
 
     public static function resolveTableNameHere(string $schemaName):string // TODO rename
