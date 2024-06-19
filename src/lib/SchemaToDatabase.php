@@ -15,6 +15,7 @@ use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
+use yii\db\Schema;
 use yii\helpers\StringHelper;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
@@ -306,14 +307,31 @@ class SchemaToDatabase
             /** @var $columnSchema \yii\db\ColumnSchema */
             unset($attribute);
             $attribute = new Attribute($columnSchema->name, [
-                'phpType' => $columnSchema->phpType,
-                'dbType' => $columnSchema->dbType,
+                'phpType' => $columnSchema->phpType, // pk
+                'dbType' => $columnSchema->dbType, // pk
                 'nullable' => $columnSchema->allowNull,
                 'size' => $columnSchema->size,
                 // 'limits' => ['min' => null, 'max' => null, 'minLength' => null], // TODO
                 'primary' => $columnSchema->isPrimaryKey,
                 'enumValues' => $columnSchema->enumValues,
             ]);
+
+            // generate PK using `->primaryKeys()` or similar methods instead of separate SQL statement which sets only PK to a column of table
+            if ($columnSchema->phpType === 'integer' && $columnSchema->isPrimaryKey === true && $columnSchema->autoIncrement) {
+                if ($columnSchema->dbType === 'BIGINT' || $columnSchema->dbType === 'bigserial') {
+                    if ($columnSchema->unsigned) {
+                        $attribute->dbType = Schema::TYPE_UBIGPK;
+                    } else {
+                        $attribute->dbType = Schema::TYPE_BIGPK;
+                    }
+                } else {
+                    if ($columnSchema->unsigned) {
+                        $attribute->dbType = Schema::TYPE_UPK;
+                    } else {
+                        $attribute->dbType = Schema::TYPE_PK;
+                    }
+                }
+            }
             $attributes[] = $attribute;
         }
         return $attributes;

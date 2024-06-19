@@ -66,7 +66,7 @@ class IssueFixTest extends DbTestCase
         $this->deleteTableForQuoteInAlterColumn();
         $this->deleteTableForTimestampIssue143();
         $this->deleteTablesForWrongMigrationForPgsqlForStringVarcharDatatype149();
-        $this->deleteTablesForCreateMigrationForDropTable132();
+//        $this->deleteTablesForCreateMigrationForDropTable132();
     }
 
     private function deleteTablesForFloatIssue()

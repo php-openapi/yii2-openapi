@@ -591,16 +591,15 @@ abstract class BaseMigrationBuilder
             return;
         }
 
-        $this->migration->addDownCode($this->recordBuilder->addPrimaryKey($this->model->getTableAlias(), $this->tableSchema->primaryKey));
+//        $this->migration->addDownCode($this->recordBuilder->addPrimaryKey($this->model->getTableAlias(), $this->tableSchema->primaryKey));
 
         $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()))
             ->addDownCode(
                 $this->recordBuilder->createTable(
                     $this->model->getTableAlias(),
-//                    $this->model->attributesToColumnSchema()
-                    $this->tableSchema->columns
+                    $this->model->attributesToColumnSchema()
+//                    $this->tableSchema->columns
                 )
             );
-
     }
 }
