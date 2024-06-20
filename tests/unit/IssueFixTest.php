@@ -277,30 +277,31 @@ class IssueFixTest extends DbTestCase
 
     // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
     // https://github.com/cebe/yii2-openapi/issues/132
-    public function testCreateMigrationForDropTable132()
-    {
+   public function testCreateMigrationForDropTable132()
+   {
 //        $this->changeDbToMariadb();
-        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+       $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
 //        $this->deleteTablesForCreateMigrationForDropTable132();
-        $this->createTablesForCreateMigrationForDropTable132();
+       $this->createTablesForCreateMigrationForDropTable132();
 //        sleep(3000);
-        $this->runGenerator($testFile);
+       $this->runGenerator($testFile);
 //        $this->runActualMigrations('mysql', 3);
-        // ... TODO
-        $this->deleteTablesForCreateMigrationForDropTable132();
+       // ... TODO
+       $this->deleteTablesForCreateMigrationForDropTable132();
 //        $this->deleteTables();
-    }
+   }
 
     private function createTablesForCreateMigrationForDropTable132()
     {
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
-            'id' => 'pk',
+            'id' => 'ubigpk',
             'name' => 'string(150)',
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
             'id' => 'pk',
             'name' => 'string(151)',
-            'fruit_id' => 'integer(11)', // FK
+             'fruit_id' => 'bigint unsigned', // FK
+//            'fruit_id' => $this->integer()->unsigned(), // FK
         ])->execute();
         Yii::$app->db->createCommand()->addForeignKey('name', '{{%pristines}}', 'fruit_id', '{{%fruits}}', 'id')->execute();
     }
@@ -308,7 +309,6 @@ class IssueFixTest extends DbTestCase
     private function deleteTablesForCreateMigrationForDropTable132()
     {
         Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
-//        Yii::$app->db->createCommand('')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }

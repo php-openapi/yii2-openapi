@@ -7,18 +7,22 @@
 
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
-use cebe\yii2openapi\lib\items\MigrationModel;
-use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
+use yii\db\ColumnSchema;
 use yii\db\Schema;
-use yii\helpers\StringHelper;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
+use yii\helpers\StringHelper;
 use function count;
 
 /**
@@ -63,7 +67,7 @@ use function count;
 class SchemaToDatabase
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
@@ -73,15 +77,15 @@ class SchemaToDatabase
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\DbModel[]
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
+     * @return array|DbModel[]
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidDefinitionException
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function prepareModels():array
+    public function prepareModels(): array
     {
         $models = [];
         $openApi = $this->config->getOpenApi();
@@ -95,12 +99,12 @@ class SchemaToDatabase
             if ($junctions->isJunctionSchema($schemaName)) {
                 $schemaName = $junctions->trimPrefix($schemaName);
             }
-            /** @var \cebe\yii2openapi\lib\AttributeResolver $resolver */
+            /** @var AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
             $models[$schemaName] = $resolver->resolve();
         }
 
-        foreach ($models as  $model) {
+        foreach ($models as $model) {
             foreach ($model->many2many as $relation) {
                 if (isset($models[$relation->viaModelName])) {
                     $relation->hasViaModel = true;
@@ -123,14 +127,14 @@ class SchemaToDatabase
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\JunctionSchemas
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
+     * @return JunctionSchemas
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function findJunctionSchemas():JunctionSchemas
+    public function findJunctionSchemas(): JunctionSchemas
     {
         $junctions = [];
         $openApi = $this->config->getOpenApi();
@@ -210,7 +214,7 @@ class SchemaToDatabase
         return Yii::createObject(JunctionSchemas::class, [$junctions]);
     }
 
-    private function canGenerateModel(string $schemaName, ComponentSchema $schema):bool
+    private function canGenerateModel(string $schemaName, ComponentSchema $schema): bool
     {
         // only generate tables for schemas of type object and those who have defined properties
         if ($schema->isObjectSchema() && !$schema->hasProperties()) {
@@ -240,7 +244,7 @@ class SchemaToDatabase
     }
 
     /**
-     * @param array $schemasToDrop. Example:
+     * @param array $schemasToDrop . Example:
      * ```
      * array(2) {
      * [0]=>
@@ -278,20 +282,21 @@ class SchemaToDatabase
                     'drop' => true
                 ]);
                 $dbModelsToDrop[$key] = $dbModelHere;
+                // TODO
 //                $mm = new MigrationModel($dbModelHere);
                 // $builder = new MigrationRecordBuilder($this->db->getSchema());
                 // $mm->addUpCode($builder->dropTable($tableName))
                 //     ->addDownCode($builder->dropTable($tableName))
                 // ;
                 // if ($mm->notEmpty()) {
-                    // $this->migrations[$tableName] = $mm;
+                // $this->migrations[$tableName] = $mm;
                 // }
             }
         }
         return $dbModelsToDrop;
     }
 
-    public static function resolveTableNameHere(string $schemaName):string // TODO rename
+    public static function resolveTableNameHere(string $schemaName): string // TODO rename
     {
         return Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
     }
@@ -304,7 +309,7 @@ class SchemaToDatabase
         $attributes = [];
         foreach ($columnSchemas as $columnName => $columnSchema) {
             /** @var $columnName string */
-            /** @var $columnSchema \yii\db\ColumnSchema */
+            /** @var $columnSchema ColumnSchema */
             unset($attribute);
             $attribute = new Attribute($columnSchema->name, [
                 'phpType' => $columnSchema->phpType, // pk
@@ -317,8 +322,16 @@ class SchemaToDatabase
             ]);
 
             // generate PK using `->primaryKeys()` or similar methods instead of separate SQL statement which sets only PK to a column of table
-            if ($columnSchema->phpType === 'integer' && $columnSchema->isPrimaryKey === true && $columnSchema->autoIncrement) {
-                if ($columnSchema->dbType === 'BIGINT' || $columnSchema->dbType === 'bigserial') {
+            // https://github.com/cebe/yii2-openapi/issues/132
+            if (in_array($columnSchema->phpType, [
+                    'integer',
+                    'string' # https://github.com/yiisoft/yii2/issues/14663
+                ])
+                && $columnSchema->isPrimaryKey === true && $columnSchema->autoIncrement
+            ) {
+                if (stripos($columnSchema->dbType, 'BIGINT') !== false # MySQL, MariaDB
+                    || stripos($columnSchema->dbType, 'bigserial') !== false # PgSQL
+                ) {
                     if ($columnSchema->unsigned) {
                         $attribute->dbType = Schema::TYPE_UBIGPK;
                     } else {
@@ -332,6 +345,7 @@ class SchemaToDatabase
                     }
                 }
             }
+
             $attributes[] = $attribute;
         }
         return $attributes;
