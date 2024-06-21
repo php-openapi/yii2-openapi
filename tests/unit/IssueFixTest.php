@@ -283,18 +283,27 @@ class IssueFixTest extends DbTestCase
         // $this->deleteTablesForCreateMigrationForDropTable132();
         $this->createTablesForCreateMigrationForDropTable132();
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 3);
+        $this->runActualMigrations('mysql', 6);
         // ... TODO compare files
         $this->deleteTablesForCreateMigrationForDropTable132();
-        // $this->deleteTables();
+        $this->deleteTables();
     }
 
     private function createTablesForCreateMigrationForDropTable132()
     {
-//        Yii::$app->db->createCommand()->createTable('{{%upks}}', [
-//            'id' => 'upk',
-//            'name' => 'string(150)',
-//        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%upks}}', [
+            'id' => 'upk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%bigpks}}', [
+            'id' => 'bigpk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%ubigpks}}', [
+            'id' => 'ubigpk',
+            'name' => 'string(150)',
+        ])->execute();
+
 
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
@@ -314,6 +323,8 @@ class IssueFixTest extends DbTestCase
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
     }
 
     public function test162BugDollarrefWithXFaker()

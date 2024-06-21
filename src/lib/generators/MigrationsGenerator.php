@@ -131,6 +131,7 @@ class MigrationsGenerator
             }
         }
 
+        // TODO remove
         // for deleted schema, create migration for drop table
 //        foreach ($this->tablesToDrop as $tableName) {
 //            $table = Yii::$app->db->schema->getTableSchema($tableName);
