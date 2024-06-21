@@ -3,7 +3,7 @@
 /**
  * Table for Fakerable
  */
-class m200000_000003_create_table_fakerable extends \yii\db\Migration
+class m200000_000004_create_table_fakerable extends \yii\db\Migration
 {
     public function safeUp()
     {

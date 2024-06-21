@@ -3,7 +3,7 @@
 /**
  * Table for User
  */
-class m200000_000001_create_table_users extends \yii\db\Migration
+class m200000_000000_create_table_users extends \yii\db\Migration
 {
     public function up()
     {
