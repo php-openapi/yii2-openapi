@@ -198,7 +198,7 @@ class MigrationsGenerator
                 //echo "adding dep $dependency\n";
                 $this->sortByDependencyRecurse($this->migrations[$dependency]);
             }
-            unset($this->sorted[$migration->tableAlias]);//necessary for provide valid order
+            unset($this->sorted[$migration->tableAlias]); // necessary for provide valid order
             $this->sorted[$migration->tableAlias] = $migration;
         } elseif ($this->sorted[$migration->tableAlias] === false) {
             throw new Exception("A circular dependency is detected for table '{$migration->tableAlias}'.");
