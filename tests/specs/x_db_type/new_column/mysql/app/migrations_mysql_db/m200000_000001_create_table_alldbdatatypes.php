@@ -3,7 +3,7 @@
 /**
  * Table for Alldbdatatype
  */
-class m200000_000000_create_table_alldbdatatypes extends \yii\db\Migration
+class m200000_000001_create_table_alldbdatatypes extends \yii\db\Migration
 {
     public function up()
     {
@@ -11,7 +11,7 @@ class m200000_000000_create_table_alldbdatatypes extends \yii\db\Migration
             'id' => $this->bigPrimaryKey(),
             0 => 'string_col varchar(255) NULL DEFAULT NULL',
             1 => 'varchar_col varchar(132) NULL DEFAULT NULL',
-            2 => 'text_col text NULL DEFAULT NULL',
+            2 => 'text_col text NULL',
             3 => 'varchar_4_col varchar(4) NULL DEFAULT NULL',
             4 => 'char_4_col char(4) NULL DEFAULT NULL',
             5 => 'char_5_col char NULL DEFAULT NULL',
@@ -20,7 +20,7 @@ class m200000_000000_create_table_alldbdatatypes extends \yii\db\Migration
             8 => 'char_8_col char NULL DEFAULT \'d\'',
             9 => 'decimal_col decimal(12,3) NULL DEFAULT NULL',
             10 => 'varbinary_col varbinary(5) NULL DEFAULT NULL',
-            11 => 'blob_col blob NULL DEFAULT NULL',
+            11 => 'blob_col blob NULL',
             12 => 'bit_col bit NULL DEFAULT NULL',
             13 => 'bit_2 bit(1) NULL DEFAULT NULL',
             14 => 'bit_3 bit(64) NULL DEFAULT NULL',
@@ -47,11 +47,11 @@ class m200000_000000_create_table_alldbdatatypes extends \yii\db\Migration
             35 => 'timestamp_col timestamp NULL DEFAULT NULL',
             36 => 'year_col year NULL DEFAULT NULL',
             37 => 'json_col json NOT NULL',
-            38 => 'json_col_def json NOT NULL DEFAULT \'[]\'',
-            39 => 'json_col_def_2 json NOT NULL DEFAULT \'[]\'',
-            40 => 'blob_def blob NULL DEFAULT \'the blob\'',
-            41 => 'text_def text NULL DEFAULT \'the text\'',
-            42 => 'json_def json NOT NULL DEFAULT \'{"a":"b"}\'',
+            38 => 'json_col_def json NOT NULL',
+            39 => 'json_col_def_2 json NOT NULL',
+            40 => 'blob_def blob NULL',
+            41 => 'text_def text NULL',
+            42 => 'json_def json NOT NULL',
         ]);
     }
 
