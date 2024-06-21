@@ -334,9 +334,9 @@ abstract class BaseMigrationBuilder
         $tableAlias = $this->model->getTableAlias();
         $existedRelations = [];
         foreach ($this->tableSchema->foreignKeys as $fkName => $relation) {
-            $refTable = $this->unPrefixTableName(array_shift($relation));
-            $refCol = array_keys($relation)[0];
-            $fkCol = $relation[$refCol];
+            $refTable = array_shift($relation);
+            $fkCol = array_keys($relation)[0];
+            $refCol = $relation[$fkCol];
             $existedRelations[$fkName] = ['refTable' => $refTable, 'refCol' => $refCol, 'fkCol' => $fkCol];
         }
 
