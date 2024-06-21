@@ -3,7 +3,7 @@
 /**
  * Table for Dropfirstcol
  */
-class m200000_000002_change_table_dropfirstcols extends \yii\db\Migration
+class m200000_000004_change_table_dropfirstcols extends \yii\db\Migration
 {
     public function up()
     {

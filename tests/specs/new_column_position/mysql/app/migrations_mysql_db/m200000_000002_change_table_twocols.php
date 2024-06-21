@@ -3,7 +3,7 @@
 /**
  * Table for Twocol
  */
-class m200000_000007_change_table_twocols extends \yii\db\Migration
+class m200000_000002_change_table_twocols extends \yii\db\Migration
 {
     public function up()
     {
