@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Table for D123
+ * Table for C123
  */
-class m200000_000004_create_table_d123s extends \yii\db\Migration
+class m200000_000003_create_table_c123s extends \yii\db\Migration
 {
     public function safeUp()
     {
-        $this->createTable('{{%d123s}}', [
+        $this->createTable('{{%c123s}}', [
             'id' => $this->primaryKey(),
             'name' => $this->text()->null()->defaultValue(null),
         ]);
@@ -15,6 +15,6 @@ class m200000_000004_create_table_d123s extends \yii\db\Migration
 
     public function safeDown()
     {
-        $this->dropTable('{{%d123s}}');
+        $this->dropTable('{{%c123s}}');
     }
 }

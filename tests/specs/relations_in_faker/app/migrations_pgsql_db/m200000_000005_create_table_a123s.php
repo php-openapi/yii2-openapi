@@ -3,7 +3,7 @@
 /**
  * Table for A123
  */
-class m200000_000002_create_table_a123s extends \yii\db\Migration
+class m200000_000005_create_table_a123s extends \yii\db\Migration
 {
     public function safeUp()
     {
