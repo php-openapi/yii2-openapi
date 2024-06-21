@@ -277,31 +277,33 @@ class IssueFixTest extends DbTestCase
 
     // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
     // https://github.com/cebe/yii2-openapi/issues/132
-   public function testCreateMigrationForDropTable132()
-   {
-//        $this->changeDbToMariadb();
-       $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
-//        $this->deleteTablesForCreateMigrationForDropTable132();
-       $this->createTablesForCreateMigrationForDropTable132();
-//        sleep(3000);
-       $this->runGenerator($testFile);
-//        $this->runActualMigrations('mysql', 3);
-       // ... TODO
-       $this->deleteTablesForCreateMigrationForDropTable132();
-//        $this->deleteTables();
-   }
+    public function testCreateMigrationForDropTable132()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        // $this->deleteTablesForCreateMigrationForDropTable132();
+        $this->createTablesForCreateMigrationForDropTable132();
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 3);
+        // ... TODO compare files
+        $this->deleteTablesForCreateMigrationForDropTable132();
+        // $this->deleteTables();
+    }
 
     private function createTablesForCreateMigrationForDropTable132()
     {
+//        Yii::$app->db->createCommand()->createTable('{{%upks}}', [
+//            'id' => 'upk',
+//            'name' => 'string(150)',
+//        ])->execute();
+
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
-            'id' => 'ubigpk',
+            'id' => 'pk',
             'name' => 'string(150)',
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
             'id' => 'pk',
             'name' => 'string(151)',
-             'fruit_id' => 'bigint unsigned', // FK
-//            'fruit_id' => $this->integer()->unsigned(), // FK
+            'fruit_id' => 'int', // FK
         ])->execute();
         Yii::$app->db->createCommand()->addForeignKey('name', '{{%pristines}}', 'fruit_id', '{{%fruits}}', 'id')->execute();
     }
@@ -311,6 +313,7 @@ class IssueFixTest extends DbTestCase
         Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
     }
 
     public function test162BugDollarrefWithXFaker()
