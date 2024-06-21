@@ -3,9 +3,9 @@
 /**
  * Table for Posts2Tags
  */
-class m200000_000002_create_table_posts2tags extends \yii\db\Migration
+class m200000_000004_create_table_posts2tags extends \yii\db\Migration
 {
-    public function up()
+    public function safeUp()
     {
         $this->createTable('{{%posts2tags}}', [
             'post_id' => $this->bigInteger()->notNull(),
@@ -16,7 +16,7 @@ class m200000_000002_create_table_posts2tags extends \yii\db\Migration
         $this->addForeignKey('fk_posts2tags_tag_id_v2_tags_id', '{{%posts2tags}}', 'tag_id', '{{%v2_tags}}', 'id');
     }
 
-    public function down()
+    public function safeDown()
     {
         $this->dropForeignKey('fk_posts2tags_tag_id_v2_tags_id', '{{%posts2tags}}');
         $this->dropForeignKey('fk_posts2tags_post_id_v2_posts_id', '{{%posts2tags}}');
