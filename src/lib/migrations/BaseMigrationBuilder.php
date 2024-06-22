@@ -172,8 +172,6 @@ abstract class BaseMigrationBuilder
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, false, $relation, []]);
         $this->newColumns = $relation->columnSchema ?? $this->model->attributesToColumnSchema();
 
-        $this->newColumns = $this->model->drop ? [] : $this->newColumns;
-
         $wantNames = array_keys($this->newColumns);
         $haveNames = $this->tableSchema->columnNames;
         $columnsForCreate = array_map(
@@ -191,6 +189,14 @@ abstract class BaseMigrationBuilder
         );
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
+
+        if ($this->model->drop) {
+            $this->newColumns = [];
+            $wantNames = [];
+            $columnsForCreate = [];
+            $columnsForChange = [];
+            $columnsForDrop = [];
+        }
 
         $this->buildColumnsCreation($columnsForCreate);
         if ($this->model->junctionCols && !isset($this->model->attributes[$this->model->pkName])) {
@@ -254,9 +260,6 @@ abstract class BaseMigrationBuilder
      */
     protected function buildColumnsDrop(array $columns):void
     {
-        if ($this->model->drop) {
-            return;
-        }
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
             if ($column->isPrimaryKey && !$column->autoIncrement) {

@@ -314,11 +314,16 @@ class SchemaToDatabase
             $attribute = new Attribute($columnSchema->name, [
                 'phpType' => $columnSchema->phpType, // pk
                 'dbType' => $columnSchema->dbType, // pk
+                'fkColName' => $columnSchema->name,
+
+                'required' => !$columnSchema->allowNull && ($columnSchema->defaultValue === null),
                 'nullable' => $columnSchema->allowNull,
                 'size' => $columnSchema->size,
-                // 'limits' => ['min' => null, 'max' => null, 'minLength' => null], // TODO
+
                 'primary' => $columnSchema->isPrimaryKey,
                 'enumValues' => $columnSchema->enumValues,
+                'defaultValue' => $columnSchema->defaultValue,
+                'description' => $columnSchema->comment,
             ]);
 
             // generate PK using `->primaryKeys()` or similar methods instead of separate SQL statement which sets only PK to a column of table

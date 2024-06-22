@@ -18,6 +18,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
      * @param array|ColumnSchema[] $columns
      * @throws \yii\base\InvalidConfigException
      */
+    #[\Override]
     protected function buildColumnsCreation(array $columns):void
     {
         foreach ($columns as $column) {
@@ -35,6 +36,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
      * @param array|ColumnSchema[] $columns
      * @throws \yii\base\InvalidConfigException
      */
+    #[\Override]
     protected function buildColumnsDrop(array $columns):void
     {
         foreach ($columns as $column) {
