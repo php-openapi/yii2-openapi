@@ -3,10 +3,11 @@ info:
   version: 1.0.0
   title: 132_create_migration_for_drop_table \#132
 
-x-deleted-schemas:  # don't use x-keep-table, use x-deleted-schemas
+x-deleted-schemas:
  - Pristine
- - Fruit # table name evaluated to `itt_fruits`. `itt_` is prefix
-# - Mango: the_mango7 # custom table name; `x-table`
+ - Fruit # Example: table name evaluated to `itt_fruits`. `itt_` is prefix set in DB config
+ - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
+ - Animal: the_animal_table_name
  - Upk
  - Bigpk
  - Ubigpk

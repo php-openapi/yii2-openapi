@@ -283,7 +283,7 @@ class IssueFixTest extends DbTestCase
         // $this->deleteTablesForCreateMigrationForDropTable132();
         $this->createTablesForCreateMigrationForDropTable132();
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 6);
+        $this->runActualMigrations('mysql', 8);
         // ... TODO compare files
         $this->deleteTablesForCreateMigrationForDropTable132();
         $this->deleteTables();
@@ -304,10 +304,11 @@ class IssueFixTest extends DbTestCase
             'name' => 'string(150)',
         ])->execute();
 
-
+        // ---
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
             'name' => 'string(150)',
+            'food_of' => 'int'
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
             'id' => 'pk',
@@ -315,16 +316,35 @@ class IssueFixTest extends DbTestCase
             'fruit_id' => 'int', // FK
         ])->execute();
         Yii::$app->db->createCommand()->addForeignKey('name', '{{%pristines}}', 'fruit_id', '{{%fruits}}', 'id')->execute();
+
+        // ---
+        Yii::$app->db->createCommand()->createTable('{{%the_animal_table_name}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('name2', '{{%fruits}}', 'food_of', '{{%the_animal_table_name}}', 'id')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%the_mango_table_name}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+            'food_of' => 'int'
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}', 'food_of', '{{%the_animal_table_name}}', 'id')->execute();
     }
 
     private function deleteTablesForCreateMigrationForDropTable132()
     {
         Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
+        Yii::$app->db->createCommand()->dropForeignKey('name2', '{{%fruits}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
+
+        Yii::$app->db->createCommand()->dropForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_mango_table_name}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_animal_table_name}}')->execute();
     }
 
     public function test162BugDollarrefWithXFaker()

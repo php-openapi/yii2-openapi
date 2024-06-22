@@ -175,7 +175,6 @@ class MigrationsGenerator
     protected function sortMigrationsByDeps():array
     {
         $this->sorted = [];
-//        ksort($this->migrations);
         foreach ($this->migrations as $migration) {
             //echo "adding {$migration->tableAlias}\n";
             $this->sortByDependencyRecurse($migration);

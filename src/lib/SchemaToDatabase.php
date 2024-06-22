@@ -282,7 +282,7 @@ class SchemaToDatabase
                     'drop' => true
                 ]);
                 $dbModelsToDrop[$key] = $dbModelHere;
-                // TODO
+                // TODO remove
 //                $mm = new MigrationModel($dbModelHere);
                 // $builder = new MigrationRecordBuilder($this->db->getSchema());
                 // $mm->addUpCode($builder->dropTable($tableName))
