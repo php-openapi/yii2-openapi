@@ -334,7 +334,7 @@ class SchemaToDatabase
                 ])
                 && $columnSchema->isPrimaryKey === true && $columnSchema->autoIncrement
             ) {
-                str_ireplace(['BIGINT', 'int8', 'bigserial', 'serial8'], 'nothing',$columnSchema->dbType, $count); # can be refactored if https://github.com/yiisoft/yii2/issues/20209 is fixed
+                str_ireplace(['BIGINT', 'int8', 'bigserial', 'serial8'], 'nothing', $columnSchema->dbType, $count); # can be refactored if https://github.com/yiisoft/yii2/issues/20209 is fixed
                 if ($count) {
                     if ($columnSchema->unsigned) {
                         $attribute->dbType = Schema::TYPE_UBIGPK;
