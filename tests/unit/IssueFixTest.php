@@ -383,6 +383,9 @@ class IssueFixTest extends DbTestCase
 //            'd SMALLINT UNSIGNED ZEROFILL',
 //            'e' => 'SMALLINT UNSIGNED ZEROFILL',
 //            'f' => 'decimal(12,4)',
+            'g5' => 'text[]',
+            'g6' => 'text[][]',
+            'g7' => 'numeric(10,4)',
         ])->execute();
 
         // ---

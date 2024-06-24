@@ -272,7 +272,7 @@ class SchemaToDatabase
                 throw new \Exception('Malformed list of schemas to delete');
             }
 
-            $table = Yii::$app->db->schema->getTableSchema("{{%$tableName}}");
+            $table = Yii::$app->db->schema->getTableSchema("{{%$tableName}}", true);
             if ($table) {
                 $dbModelHere = new DbModel([
                     'pkName' => $table->primaryKey[0],
@@ -312,8 +312,8 @@ class SchemaToDatabase
             /** @var $columnSchema ColumnSchema */
             unset($attribute);
             $attribute = new Attribute($columnSchema->name, [
-                'phpType' => $columnSchema->phpType, // pk
-                'dbType' => $columnSchema->dbType, // pk
+                'phpType' => $columnSchema->phpType,
+                'dbType' => $columnSchema->dbType,
                 'fkColName' => $columnSchema->name,
 
                 'required' => !$columnSchema->allowNull && ($columnSchema->defaultValue === null),
@@ -325,6 +325,13 @@ class SchemaToDatabase
                 'defaultValue' => $columnSchema->defaultValue,
                 'description' => $columnSchema->comment,
             ]);
+
+            // PgSQL array
+            if (property_exists($columnSchema, 'dimension') && $columnSchema->dimension !== 0) {
+                for ($i = 0; $i < $columnSchema->dimension; $i++) {
+                    $attribute->dbType .= '[]';
+                }
+            }
 
             // generate PK using `->primaryKeys()` or similar methods instead of separate SQL statement which sets only PK to a column of table
             // https://github.com/cebe/yii2-openapi/issues/132
