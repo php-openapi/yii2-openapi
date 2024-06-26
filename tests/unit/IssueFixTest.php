@@ -247,7 +247,15 @@ class IssueFixTest extends DbTestCase
        $this->createTablesForCreateMigrationForDropTable132();
        $this->runGenerator($testFile);
        $this->runActualMigrations('mysql', 8);
-       // ... TODO compare files
+
+       $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+           'recursive' => true,
+       ]);
+       $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/mysql"), [
+           'recursive' => true,
+       ]);
+       $this->checkFiles($actualFiles, $expectedFiles);
+
        $this->deleteTablesForCreateMigrationForDropTable132();
    }
 
@@ -325,7 +333,15 @@ class IssueFixTest extends DbTestCase
        $this->createTablesForCreateMigrationForDropTable132ForPgsql();
        $this->runGenerator($testFile, 'pgsql');
        $this->runActualMigrations('pgsql', 8);
-       // ... TODO compare files
+
+       $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+           'recursive' => true,
+       ]);
+       $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/pgsql"), [
+           'recursive' => true,
+       ]);
+       $this->checkFiles($actualFiles, $expectedFiles);
+
        $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
    }
 
