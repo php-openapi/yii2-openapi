@@ -10,6 +10,7 @@ namespace cebe\yii2openapi\lib;
 use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
@@ -278,7 +279,7 @@ class SchemaToDatabase
                     'pkName' => $table->primaryKey[0],
                     'name' => $schemaName,
                     'tableName' => $tableName,
-                    'attributes' => static::attributesFromColumnSchemas($table->columns),
+                    'attributes' => static::attributesFromColumnSchemas(static::enhanceColumnSchemas($table->columns)),
                     'drop' => true
                 ]);
                 $dbModelsToDrop[$key] = $dbModelHere;
@@ -325,12 +326,23 @@ class SchemaToDatabase
                 'defaultValue' => $columnSchema->defaultValue,
                 'description' => $columnSchema->comment,
             ]);
+            $attributes[] = $attribute;
+        }
+        return $attributes;
+    }
 
+    public static function enhanceColumnSchemas(array $columnSchemas)
+    {
+        foreach ($columnSchemas as $columnSchema) {
             // PgSQL array
             if (property_exists($columnSchema, 'dimension') && $columnSchema->dimension !== 0) {
                 for ($i = 0; $i < $columnSchema->dimension; $i++) {
-                    $attribute->dbType .= '[]';
+                    $columnSchema->dbType .= '[]';
                 }
+            }
+
+            if (ApiGenerator::isPostgres() && $columnSchema->type === Schema::TYPE_DECIMAL) {
+                $columnSchema->dbType .= '('.$columnSchema->precision.','.$columnSchema->scale.')';
             }
 
             // generate PK using `->primaryKeys()` or similar methods instead of separate SQL statement which sets only PK to a column of table
@@ -344,21 +356,19 @@ class SchemaToDatabase
                 str_ireplace(['BIGINT', 'int8', 'bigserial', 'serial8'], 'nothing', $columnSchema->dbType, $count); # can be refactored if https://github.com/yiisoft/yii2/issues/20209 is fixed
                 if ($count) {
                     if ($columnSchema->unsigned) {
-                        $attribute->dbType = Schema::TYPE_UBIGPK;
+                        $columnSchema->dbType = Schema::TYPE_UBIGPK;
                     } else {
-                        $attribute->dbType = Schema::TYPE_BIGPK;
+                        $columnSchema->dbType = Schema::TYPE_BIGPK;
                     }
                 } else {
                     if ($columnSchema->unsigned) {
-                        $attribute->dbType = Schema::TYPE_UPK;
+                        $columnSchema->dbType = Schema::TYPE_UPK;
                     } else {
-                        $attribute->dbType = Schema::TYPE_PK;
+                        $columnSchema->dbType = Schema::TYPE_PK;
                     }
                 }
             }
-
-            $attributes[] = $attribute;
         }
-        return $attributes;
+        return $columnSchemas;
     }
 }

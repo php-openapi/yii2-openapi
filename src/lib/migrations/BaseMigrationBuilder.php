@@ -12,6 +12,7 @@ use cebe\yii2openapi\lib\ColumnToCode;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ManyToManyRelation;
 use cebe\yii2openapi\lib\items\MigrationModel;
+use cebe\yii2openapi\lib\SchemaToDatabase;
 use Yii;
 use yii\db\ColumnSchema;
 use yii\db\Connection;
@@ -450,6 +451,9 @@ abstract class BaseMigrationBuilder
         } else {
             $column = [$columnSchema->name => $this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
+                $clonedSchema = clone $columnSchema;
+                $clonedSchema->dbType = trim($innerEnumTypeName, '"');
+                $column = [$columnSchema->name => $this->newColStr($tmpTableName, $clonedSchema)];
                 $column[$columnSchema->name] = strtr($column[$columnSchema->name], [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
             }
         }
@@ -600,8 +604,8 @@ abstract class BaseMigrationBuilder
             ->addDownCode(
                 $this->recordBuilder->createTable(
                     $this->model->getTableAlias(),
-                    $this->model->attributesToColumnSchema()
-//                    $this->tableSchema->columns
+//                    $this->model->attributesToColumnSchema()
+                    SchemaToDatabase::enhanceColumnSchemas($this->tableSchema->columns)
                 )
             );
     }
