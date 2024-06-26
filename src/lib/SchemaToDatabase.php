@@ -118,10 +118,10 @@ class SchemaToDatabase
         // TODO generate inverse relations
 
         // for drop table/schema https://github.com/cebe/yii2-openapi/issues/132
-        $tablesToDrop = $modelsToDrop = [];
-        if (isset($this->config->getOpenApi()->{'x-deleted-schemas'})) {
-            $tablesToDrop = $this->config->getOpenApi()->{'x-deleted-schemas'}; // for removed (components) schemas
-            $modelsToDrop = static::f7($tablesToDrop);
+        $modelsToDrop = [];
+        if (isset($this->config->getOpenApi()->{CustomSpecAttr::DELETED_SCHEMAS})) {
+            $tablesToDrop = $this->config->getOpenApi()->{CustomSpecAttr::DELETED_SCHEMAS}; // for removed (components) schemas
+            $modelsToDrop = static::dbModelsForDropTable($tablesToDrop);
         }
 
         return ArrayHelper::merge($models, $modelsToDrop);
@@ -245,7 +245,7 @@ class SchemaToDatabase
     }
 
     /**
-     * @param array $schemasToDrop . Example:
+     * @param array $schemasToDrop . Example structure:
      * ```
      * array(2) {
      * [0]=>
@@ -253,19 +253,19 @@ class SchemaToDatabase
      * [1]=>
      * array(1) {
      *  ["Mango"]=>
-     *      string(10) "the_mango_table_name"
+     *      string(10) "the_mango_custom_table_name"
      *  }
      * }
      * ```
      * @return DbModel[]
      */
-    public static function f7(array $schemasToDrop): array // TODO rename
+    public static function dbModelsForDropTable(array $schemasToDrop): array
     {
         $dbModelsToDrop = [];
         foreach ($schemasToDrop as $key => $value) {
             if (is_string($value)) { // schema name
                 $schemaName = $value;
-                $tableName = static::resolveTableNameHere($schemaName);
+                $tableName = static::resolveTableName($schemaName);
             } elseif (is_array($value)) {
                 $schemaName = array_key_first($value);
                 $tableName = $value[$schemaName];
@@ -283,21 +283,12 @@ class SchemaToDatabase
                     'drop' => true
                 ]);
                 $dbModelsToDrop[$key] = $dbModelHere;
-                // TODO remove
-//                $mm = new MigrationModel($dbModelHere);
-                // $builder = new MigrationRecordBuilder($this->db->getSchema());
-                // $mm->addUpCode($builder->dropTable($tableName))
-                //     ->addDownCode($builder->dropTable($tableName))
-                // ;
-                // if ($mm->notEmpty()) {
-                // $this->migrations[$tableName] = $mm;
-                // }
             }
         }
         return $dbModelsToDrop;
     }
 
-    public static function resolveTableNameHere(string $schemaName): string // TODO rename
+    public static function resolveTableName(string $schemaName): string
     {
         return Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
     }
@@ -305,7 +296,7 @@ class SchemaToDatabase
     /**
      * @return Attribute[]
      */
-    public static function attributesFromColumnSchemas(array $columnSchemas)
+    public static function attributesFromColumnSchemas(array $columnSchemas): array
     {
         $attributes = [];
         foreach ($columnSchemas as $columnName => $columnSchema) {

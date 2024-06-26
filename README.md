@@ -310,9 +310,21 @@ Provide custom database table column name in case of relationship column. This w
 ```
 
 
-### `x-keep-tables`
+### `x-deleted-schemas`
 
-You may ... TODO docs for https://github.com/cebe/yii2-openapi/issues/132
+This is root level key used to generate "drop table" migration for the deleted component schema. If a component schema (DB model) is removed from OpenAPI spec then its following entities should be also deleted from the code:
+
+ - DB table (migrations)
+ - model
+ - faker
+
+So to generate appropriate migration for the removed schema, explicitly setting schema name or schema name + custom table name is required in this key. Only then the migrations will be generated. It should be set as:
+
+```yaml
+x-deleted-schemas:
+  - Fruit # Example: table name is evaluated to `itt_fruits`, if `itt_` is prefix set in DB config
+  - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
+```
 
 
 ## Many-to-Many relation definition
@@ -574,24 +586,3 @@ Professional support, consulting as well as software development services are av
 https://www.cebe.cc/en/contact
 
 Development of this library is sponsored by [cebe.:cloud: "Your Professional Deployment Platform"](https://cebe.cloud).
-
-
----
-
-
-TODO
-
-foreach dbmodels
-  grab table names
-
-create list of all table names
----
-fetch all table name list from DB (SQL query)
-
-find the diff
-
-create drop table mig diff tables
-
-
-
-

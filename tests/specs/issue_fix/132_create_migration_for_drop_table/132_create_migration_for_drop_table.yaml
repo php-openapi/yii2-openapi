@@ -5,7 +5,7 @@ info:
 
 x-deleted-schemas:
   - Pristine
-  - Fruit # Example: table name evaluated to `itt_fruits`. `itt_` is prefix set in DB config
+  - Fruit # Example: table name is evaluated to `itt_fruits`, if `itt_` is prefix set in DB config
   - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
   - Animal: the_animal_table_name
   - Upk

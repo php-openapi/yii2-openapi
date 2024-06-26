@@ -131,29 +131,6 @@ class MigrationsGenerator
             }
         }
 
-        // TODO remove
-        // for deleted schema, create migration for drop table
-//        foreach ($this->tablesToDrop as $tableName) {
-//            $table = Yii::$app->db->schema->getTableSchema($tableName);
-//            if ($table) {
-//
-//                $dbModelHere = new DbModel([
-//                    'pkName' => $table->primaryKey,
-//                    'name' => $table->name,
-//                    'tableName' => $tableName,
-//                ]);
-//                $mm = new MigrationModel($dbModelHere);
-//                $builder = new MigrationRecordBuilder($this->db->getSchema());
-//                $mm->addUpCode($builder->dropTable($tableName))
-//                    ->addDownCode($builder->dropTable($tableName))
-//                ;
-//                if ($mm->notEmpty()) {
-        ////                    var_dump('$this->migrations'); die;
-//                    $this->migrations[$tableName] = $mm;
-//                }
-//            }
-//        }
-
         return !empty($this->migrations) ? $this->sortMigrationsByDeps() : [];
     }
 

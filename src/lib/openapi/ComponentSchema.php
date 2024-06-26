@@ -112,7 +112,7 @@ class ComponentSchema
     public function resolveTableName(string $schemaName):string
     {
         return $this->schema->{CustomSpecAttr::TABLE} ??
-            SchemaToDatabase::resolveTableNameHere($schemaName);
+            SchemaToDatabase::resolveTableName($schemaName);
     }
 
     public function hasCustomTableName():bool
