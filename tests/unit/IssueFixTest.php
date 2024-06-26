@@ -390,6 +390,7 @@ class IssueFixTest extends DbTestCase
 
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
         Yii::$app->db->createCommand('DROP TYPE mood')->execute();
+        Yii::$app->db->createCommand('DROP TYPE enum_itt_upks_e2')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
 
