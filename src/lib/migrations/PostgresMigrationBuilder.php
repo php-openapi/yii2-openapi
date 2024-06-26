@@ -18,6 +18,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
      * @param array|ColumnSchema[] $columns
      * @throws \yii\base\InvalidConfigException
      */
+    #[\Override]
     protected function buildColumnsCreation(array $columns):void
     {
         foreach ($columns as $column) {
@@ -35,6 +36,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
      * @param array|ColumnSchema[] $columns
      * @throws \yii\base\InvalidConfigException
      */
+    #[\Override]
     protected function buildColumnsDrop(array $columns):void
     {
         foreach ($columns as $column) {
@@ -230,7 +232,7 @@ SQL;
 
     public function modifyDesired(ColumnSchema $desired): void
     {
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
+        /** @var $desired \cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
         if (in_array($desired->phpType, ['int', 'integer']) && $desired->defaultValue !== null) {
             $desired->defaultValue = (int)$desired->defaultValue;
         }
@@ -243,7 +245,7 @@ SQL;
     public function modifyDesiredInContextOfCurrent(ColumnSchema $current, ColumnSchema $desired): void
     {
         /** @var $current \yii\db\pgsql\ColumnSchema */
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
+        /** @var $desired \cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
         if ($current->type === $desired->type && !$desired->size && $this->isDbDefaultSize($current)) {
             $desired->size = $current->size;
         }

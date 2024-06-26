@@ -12,6 +12,7 @@ use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\MigrationModel;
 use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
 use cebe\yii2openapi\lib\migrations\PostgresMigrationBuilder;
 use Exception;
@@ -110,7 +111,10 @@ class MigrationsGenerator
     public function buildMigrations():array
     {
         $junctions = [];
+
         foreach ($this->models as $model) {
+            /** @var DbModel $model */
+
             $migration = $this->createBuilder($model)->build();
             if ($migration->notEmpty()) {
                 $this->migrations[$model->tableAlias] = $migration;
@@ -126,6 +130,7 @@ class MigrationsGenerator
                 $junctions[] = $relation->viaTableName;
             }
         }
+
         return !empty($this->migrations) ? $this->sortMigrationsByDeps() : [];
     }
 
@@ -147,7 +152,6 @@ class MigrationsGenerator
     protected function sortMigrationsByDeps():array
     {
         $this->sorted = [];
-        ksort($this->migrations);
         foreach ($this->migrations as $migration) {
             //echo "adding {$migration->tableAlias}\n";
             $this->sortByDependencyRecurse($migration);
@@ -171,7 +175,7 @@ class MigrationsGenerator
                 //echo "adding dep $dependency\n";
                 $this->sortByDependencyRecurse($this->migrations[$dependency]);
             }
-            unset($this->sorted[$migration->tableAlias]);//necessary for provide valid order
+            unset($this->sorted[$migration->tableAlias]); // necessary for provide valid order
             $this->sorted[$migration->tableAlias] = $migration;
         } elseif ($this->sorted[$migration->tableAlias] === false) {
             throw new Exception("A circular dependency is detected for table '{$migration->tableAlias}'.");

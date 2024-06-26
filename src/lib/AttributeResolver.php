@@ -7,8 +7,6 @@
 
 namespace cebe\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\AttributeRelation;
@@ -20,9 +18,9 @@ use cebe\yii2openapi\lib\items\NonDbRelation;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function explode;
 use function strpos;
 use function strtolower;
@@ -63,7 +61,7 @@ class AttributeResolver
     private $schema;
 
     /**
-     * @var \cebe\yii2openapi\lib\items\JunctionSchemas
+     * @var JunctionSchemas
      */
     private $junctions;
 
@@ -88,14 +86,14 @@ class AttributeResolver
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\DbModel
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @return DbModel
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
-    public function resolve():DbModel
+    public function resolve(): DbModel
     {
         foreach ($this->schema->getProperties() as $property) {
-            /** @var $property \cebe\yii2openapi\lib\openapi\PropertySchema */
+            /** @var $property PropertySchema */
 
             $isRequired = $this->schema->isRequiredProperty($property->getName());
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
@@ -130,24 +128,25 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
-     * @param bool                                         $isRequired
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @param PropertySchema $property
+     * @param bool $isRequired
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
-    protected function resolveJunctionTableProperty(PropertySchema $property, bool $isRequired):void
+    protected function resolveJunctionTableProperty(PropertySchema $property, bool $isRequired): void
     {
         if ($this->junctions->isJunctionProperty($this->schemaName, $property->getName())) {
             $junkAttribute = $this->junctions->byJunctionSchema($this->schemaName)[$property->getName()];
             $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
             $attribute->setRequired($isRequired)
-                      ->setDescription($property->getAttr('description', ''))
-                      ->setReadOnly($property->isReadonly())
-                      ->setIsPrimary($property->isPrimaryKey())
-                      ->asReference($junkAttribute['relatedClassName'])
-                      ->setPhpType($junkAttribute['phpType'])
-                      ->setDbType($junkAttribute['dbType'])
-                      ->setForeignKeyColumnName($property->fkColName);
+                ->setDescription($property->getAttr('description', ''))
+                ->setReadOnly($property->isReadonly())
+                ->setIsPrimary($property->isPrimaryKey())
+                ->asReference($junkAttribute['relatedClassName'])
+                ->setPhpType($junkAttribute['phpType'])
+                ->setDbType($junkAttribute['dbType'])
+                ->setForeignKeyColumnName($property->fkColName)
+                ->setTableName($this->schema->resolveTableName($this->schemaName));
             $relation = Yii::createObject(AttributeRelation::class, [
                 $property->getName(),
                 $junkAttribute['relatedTableName'],
@@ -162,12 +161,12 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
-     * @param bool                                         $isRequired
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @param PropertySchema $property
+     * @param bool $isRequired
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
-    protected function resolveHasMany2ManyTableProperty(PropertySchema $property, bool $isRequired):void
+    protected function resolveHasMany2ManyTableProperty(PropertySchema $property, bool $isRequired): void
     {
         if ($this->junctions->isManyToManyProperty($this->schemaName, $property->getName())) {
             return;
@@ -197,7 +196,7 @@ class AttributeResolver
 
             $this->relations[Inflector::pluralize($junkRef)] =
                 Yii::createObject(AttributeRelation::class, [$junkRef, $junkAttribute['junctionTable'], $viaModel])
-                   ->asHasMany([$junkAttribute['pairProperty'] . '_id' => $this->schema->getPkName()]);
+                    ->asHasMany([$junkAttribute['pairProperty'] . '_id' => $this->schema->getPkName()]);
             return;
         }
 
@@ -205,35 +204,36 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
-     * @param bool                                         $isRequired
-     * @param bool|null|string                             $nullableValue if string then its value will be only constant `ARG_ABSENT`. Default `null` is avoided because it can be in passed value in method call
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @param PropertySchema $property
+     * @param bool $isRequired
+     * @param bool|null|string $nullableValue if string then its value will be only constant `ARG_ABSENT`. Default `null` is avoided because it can be in passed value in method call
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
     protected function resolveProperty(
         PropertySchema $property,
-        bool $isRequired,
+        bool           $isRequired,
         $nullableValue = 'ARG_ABSENT'
-    ):void {
+    ): void {
         if ($nullableValue === 'ARG_ABSENT') {
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
         }
         $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
         $attribute->setRequired($isRequired)
-                  ->setDescription($property->getAttr('description', ''))
-                  ->setReadOnly($property->isReadonly())
-                  ->setDefault($property->guessDefault())
-                  ->setXDbType($property->getAttr(CustomSpecAttr::DB_TYPE))
-                  ->setXDbDefaultExpression($property->getAttr(CustomSpecAttr::DB_DEFAULT_EXPRESSION))
-                  ->setNullable($nullableValue)
-                  ->setIsPrimary($property->isPrimaryKey())
-                  ->setForeignKeyColumnName($property->fkColName);
+            ->setDescription($property->getAttr('description', ''))
+            ->setReadOnly($property->isReadonly())
+            ->setDefault($property->guessDefault())
+            ->setXDbType($property->getAttr(CustomSpecAttr::DB_TYPE))
+            ->setXDbDefaultExpression($property->getAttr(CustomSpecAttr::DB_DEFAULT_EXPRESSION))
+            ->setNullable($nullableValue)
+            ->setIsPrimary($property->isPrimaryKey())
+            ->setForeignKeyColumnName($property->fkColName)
+            ->setTableName($this->schema->resolveTableName($this->schemaName));
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
             }
-            
+
             if ($property->isNonDbReference()) {
                 $attribute->asNonDbReference($property->getRefClassName());
                 $relation = Yii::createObject(
@@ -258,17 +258,17 @@ class AttributeResolver
             [$min, $max] = $fkProperty->guessMinMax();
             $attribute->asReference($relatedClassName);
             $attribute->setPhpType($fkProperty->guessPhpType())
-                      ->setDbType($fkProperty->guessDbType(true))
-                      ->setSize($fkProperty->getMaxLength())
-                      ->setDescription($property->getRefSchema()->getDescription())
-                      ->setDefault($fkProperty->guessDefault())
-                      ->setLimits($min, $max, $fkProperty->getMinLength());
+                ->setDbType($fkProperty->guessDbType(true))
+                ->setSize($fkProperty->getMaxLength())
+                ->setDescription($property->getRefSchema()->getDescription())
+                ->setDefault($fkProperty->guessDefault())
+                ->setLimits($min, $max, $fkProperty->getMinLength());
 
             $relation = Yii::createObject(
                 AttributeRelation::class,
                 [$property->getName(), $relatedTableName, $relatedClassName]
             )
-                           ->asHasOne([$fkProperty->getName() => $attribute->columnName]);
+                ->asHasOne([$fkProperty->getName() => $attribute->columnName]);
             $relation->onUpdateFkConstraint = $property->onUpdateFkConstraint;
             $relation->onDeleteFkConstraint = $property->onDeleteFkConstraint;
             if ($property->isRefPointerToSelf()) {
@@ -279,10 +279,10 @@ class AttributeResolver
         if (!$property->isReference() && !$property->hasRefItems()) {
             [$min, $max] = $property->guessMinMax();
             $attribute->setIsVirtual($property->isVirtual())
-                      ->setPhpType($property->guessPhpType())
-                      ->setDbType($property->guessDbType())
-                      ->setSize($property->getMaxLength())
-                      ->setLimits($min, $max, $property->getMinLength());
+                ->setPhpType($property->guessPhpType())
+                ->setDbType($property->guessDbType())
+                ->setSize($property->getMaxLength())
+                ->setLimits($min, $max, $property->getMinLength());
             if ($property->hasEnum()) {
                 $attribute->setEnumValues($property->getAttr('enum'));
             }
@@ -319,7 +319,7 @@ class AttributeResolver
                             AttributeRelation::class,
                             [$property->getName(), $relatedTableName, $relatedClassName]
                         )
-                           ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
+                            ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
                     return;
                 }
                 $foreignPk = Inflector::camel2id($fkProperty->getName(), '_') . '_id';
@@ -328,7 +328,7 @@ class AttributeResolver
                         AttributeRelation::class,
                         [$property->getName(), $relatedTableName, $relatedClassName]
                     )
-                       ->asHasMany([$foreignPk => $this->schema->getPkName()]);
+                        ->asHasMany([$foreignPk => $this->schema->getPkName()]);
                 return;
             }
             $relatedClassName = $property->getRefClassName();
@@ -347,7 +347,7 @@ class AttributeResolver
                     AttributeRelation::class,
                     [$property->getName(), $relatedTableName, $relatedClassName]
                 )
-                   ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->schema->getPkName()]);
+                    ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->schema->getPkName()]);
             return;
         }
         if ($this->schema->isNonDb() && $attribute->isReference()) {
@@ -367,14 +367,14 @@ class AttributeResolver
      * @param string $relatedTableName
      * @param ComponentSchema $refSchema
      * @return bool
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function catchManyToMany(
-        string $propertyName,
-        string $relatedSchemaName,
-        string $relatedTableName,
+        string          $propertyName,
+        string          $relatedSchemaName,
+        string          $relatedTableName,
         ComponentSchema $refSchema
-    ):bool {
+    ): bool {
         if (strtolower(Inflector::id2camel($propertyName, '_'))
             !== strtolower(Inflector::pluralize($relatedSchemaName))) {
             return false;
@@ -406,9 +406,9 @@ class AttributeResolver
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function guessFakerStub(Attribute $attribute, PropertySchema $property):?string
+    protected function guessFakerStub(Attribute $attribute, PropertySchema $property): ?string
     {
         $resolver = Yii::createObject(['class' => FakerStubResolver::class], [$attribute, $property, $this->config]);
         return $resolver->resolve();
@@ -417,9 +417,9 @@ class AttributeResolver
     /**
      * @param array $indexes
      * @return array|DbIndex[]
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws InvalidDefinitionException
      */
-    protected function prepareIndexes(array $indexes):array
+    protected function prepareIndexes(array $indexes): array
     {
         $dbIndexes = [];
         foreach ($indexes as $index) {
@@ -470,12 +470,12 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
-     * @param \cebe\yii2openapi\lib\items\Attribute        $attribute
+     * @param PropertySchema $property
+     * @param Attribute $attribute
      * @return void
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function resolvePropertyRef(PropertySchema $property, Attribute $attribute):void
+    protected function resolvePropertyRef(PropertySchema $property, Attribute $attribute): void
     {
         $fkProperty = new PropertySchema(
             $property->getRefSchema()->getSchema(),
@@ -484,11 +484,11 @@ class AttributeResolver
         );
         [$min, $max] = $fkProperty->guessMinMax();
         $attribute->setPhpType($fkProperty->guessPhpType())
-                  ->setDbType($fkProperty->guessDbType(true))
-                  ->setSize($fkProperty->getMaxLength())
-                  ->setDescription($fkProperty->getAttr('description'))
-                  ->setDefault($fkProperty->guessDefault())
-                  ->setLimits($min, $max, $fkProperty->getMinLength());
+            ->setDbType($fkProperty->guessDbType(true))
+            ->setSize($fkProperty->getMaxLength())
+            ->setDescription($fkProperty->getAttr('description'))
+            ->setDefault($fkProperty->guessDefault())
+            ->setLimits($min, $max, $fkProperty->getMinLength());
         $this->attributes[$property->getName()] =
             $attribute->setFakerStub($this->guessFakerStub($attribute, $fkProperty));
     }

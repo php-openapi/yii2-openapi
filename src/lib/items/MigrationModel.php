@@ -62,13 +62,18 @@ class MigrationModel extends BaseObject
         $this->model = $model;
         $this->relation = $relation;
         if ($relation === null) {
-            $this->fileName = $isFresh
-                ? 'create_table_' . $model->tableName
-                : 'change_table_' . $model->tableName;
+            $this->fileName = $model->drop ?
+                'delete_table_' . $model->tableName :
+                    ($isFresh
+                        ? 'create_table_' . $model->tableName
+                        : 'change_table_' . $model->tableName);
         } else {
-            $this->fileName = $isFresh
-                ? 'create_table_' . $relation->viaTableName
-                : 'change_table_' . $relation->viaTableName;
+            $this->fileName =
+                $model->drop ?
+                    'delete_table_' . $relation->viaTableName :
+                    ($isFresh
+                    ? 'create_table_' . $relation->viaTableName
+                    : 'change_table_' . $relation->viaTableName);
         }
     }
 
@@ -132,7 +137,8 @@ class MigrationModel extends BaseObject
         return $this;
     }
 
-    /**add down code, by default to top
+    /**
+     * Add down code, by default to top
      * @param array|string $code
      * @param bool         $toBottom
      * @return $this

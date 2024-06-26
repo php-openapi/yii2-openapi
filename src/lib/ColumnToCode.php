@@ -398,8 +398,9 @@ class ColumnToCode
     private function resolveEnumType():void
     {
         if (ApiGenerator::isPostgres()) {
-            $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            // $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
+            // $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            $this->rawParts['type'] = '"'.$this->column->dbType.'"';
             return;
         }
         $this->rawParts['type'] = 'enum(' . self::mysqlEnumToString($this->column->enumValues) . ')';

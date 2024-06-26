@@ -76,6 +76,14 @@ class DbModel extends BaseObject
 
     public $isNotDb = false;
 
+    /**
+     * @var bool
+     * Drop table if schema is removed.
+     * @see `x-deleted-schemas` in README.md
+     * @see https://github.com/cebe/yii2-openapi/issues/132
+     */
+    public $drop = false;
+
     public function getTableAlias():string
     {
         return '{{%' . $this->tableName . '}}';
