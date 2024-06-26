@@ -12,6 +12,7 @@ use cebe\yii2openapi\lib\ColumnToCode;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ManyToManyRelation;
 use cebe\yii2openapi\lib\items\MigrationModel;
+use cebe\yii2openapi\lib\SchemaToDatabase;
 use Yii;
 use yii\db\ColumnSchema;
 use yii\db\Connection;
@@ -171,6 +172,7 @@ abstract class BaseMigrationBuilder
     {
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, false, $relation, []]);
         $this->newColumns = $relation->columnSchema ?? $this->model->attributesToColumnSchema();
+
         $wantNames = array_keys($this->newColumns);
         $haveNames = $this->tableSchema->columnNames;
         $columnsForCreate = array_map(
@@ -189,6 +191,14 @@ abstract class BaseMigrationBuilder
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
 
+        if ($this->model->drop) {
+            $this->newColumns = [];
+            $wantNames = [];
+            $columnsForCreate = [];
+            $columnsForChange = [];
+            $columnsForDrop = [];
+        }
+
         $this->buildColumnsCreation($columnsForCreate);
         if ($this->model->junctionCols && !isset($this->model->attributes[$this->model->pkName])) {
             if (!empty(array_intersect($columnsForDrop, $this->model->junctionCols))) {
@@ -201,6 +211,7 @@ abstract class BaseMigrationBuilder
         $this->buildColumnsDrop($columnsForDrop);
         foreach ($columnsForChange as $commonColumn) {
             $current = $this->tableSchema->columns[$commonColumn];
+            /** @var \cebe\yii2openapi\db\ColumnSchema|\yii\db\ColumnSchema $desired */
             $desired = $this->newColumns[$commonColumn];
             if ($current->isPrimaryKey || in_array($desired->dbType, ['pk', 'upk', 'bigpk', 'ubigpk'])) {
                 // do not adjust existing primary keys
@@ -220,6 +231,9 @@ abstract class BaseMigrationBuilder
         } else {
             $this->buildRelations();
         }
+
+        $this->buildTablesDrop();
+
         return $this->migration;
     }
 
@@ -324,9 +338,9 @@ abstract class BaseMigrationBuilder
         $tableAlias = $this->model->getTableAlias();
         $existedRelations = [];
         foreach ($this->tableSchema->foreignKeys as $fkName => $relation) {
-            $refTable = $this->unPrefixTableName(array_shift($relation));
-            $refCol = array_keys($relation)[0];
-            $fkCol = $relation[$refCol];
+            $refTable = array_shift($relation);
+            $fkCol = array_keys($relation)[0];
+            $refCol = $relation[$fkCol];
             $existedRelations[$fkName] = ['refTable' => $refTable, 'refCol' => $refCol, 'fkCol' => $fkCol];
         }
 
@@ -432,11 +446,14 @@ abstract class BaseMigrationBuilder
             $name = MigrationRecordBuilder::quote($columnSchema->name);
             $column = [$name.' '.$this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
-                $column = strtr($column, [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
+                $column = strtr($column[0], [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
             }
         } else {
             $column = [$columnSchema->name => $this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
+                $clonedSchema = clone $columnSchema;
+                $clonedSchema->dbType = trim($innerEnumTypeName, '"');
+                $column = [$columnSchema->name => $this->newColStr($tmpTableName, $clonedSchema)];
                 $column[$columnSchema->name] = strtr($column[$columnSchema->name], [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
             }
         }
@@ -573,5 +590,20 @@ abstract class BaseMigrationBuilder
             return;
         }
         $desired->dbType = $desiredFromDb->dbType;
+    }
+
+    public function buildTablesDrop(): void
+    {
+        if (!$this->model->drop) {
+            return;
+        }
+
+        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()))
+            ->addDownCode(
+                $this->recordBuilder->createTable(
+                    $this->model->getTableAlias(),
+                    SchemaToDatabase::enhanceColumnSchemas($this->tableSchema->columns)
+                )
+            );
     }
 }

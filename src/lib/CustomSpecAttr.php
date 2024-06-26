@@ -40,4 +40,10 @@ class CustomSpecAttr
      * Foreign key column name. See README for usage docs
      */
     public const FK_COLUMN_NAME = 'x-fk-column-name';
+
+    /**
+     * Drop table Migrations to be generated from removed component schemas
+     * See README for docs
+     */
+    public const DELETED_SCHEMAS = 'x-deleted-schemas';
 }
