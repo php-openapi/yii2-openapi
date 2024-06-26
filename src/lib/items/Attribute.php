@@ -334,9 +334,9 @@ class Attribute extends BaseObject
         }
         if (is_array($this->enumValues)) {
             $column->enumValues = $this->enumValues;
-             if (ApiGenerator::isPostgres() && empty($this->xDbType)) {
+            if (ApiGenerator::isPostgres() && empty($this->xDbType)) {
                 $column->dbType = 'enum_'.Yii::$app->db->tablePrefix.$this->tableName.'_' . $column->name;
-             }
+            }
         }
         $this->handleDecimal($column);
 
