@@ -150,7 +150,7 @@ class Attribute extends BaseObject
         return $this;
     }
 
-    public function setTableName(string $tableName):Attribute
+    public function setTableName(string $tableName): Attribute
     {
         $this->tableName = $tableName;
         return $this;
