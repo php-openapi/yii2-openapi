@@ -1,10 +1,5 @@
 # yii2-openapi
 
->
-> **This repository has been moved to <https://github.com/php-openapi/yii2-openapi>.**  
-> **Please use the new package `php-openapi/yii2-openapi` instead.**
->
-
 REST API application generator for Yii2, openapi 3.0 YAML -> Yii2.
 
 Base on [Gii, the Yii Framework Code Generator](https://www.yiiframework.com/extension/yiisoft/yii2-gii).
