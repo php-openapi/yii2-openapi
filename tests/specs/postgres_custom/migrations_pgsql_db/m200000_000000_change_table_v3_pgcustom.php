@@ -7,6 +7,7 @@ class m200000_000000_change_table_v3_pgcustom extends \yii\db\Migration
 {
     public function safeUp()
     {
+        $this->createIndex('v3_pgcustom_search_gin_index', '{{%v3_pgcustom}}', 'search', 'gin(to_tsvector(\'english\', status))');
         $this->alterColumn('{{%v3_pgcustom}}', 'json1', "SET NOT NULL");
         $this->alterColumn('{{%v3_pgcustom}}', 'json1', "SET DEFAULT '[]'");
         $this->alterColumn('{{%v3_pgcustom}}', 'json2', "SET NOT NULL");
@@ -17,7 +18,6 @@ class m200000_000000_change_table_v3_pgcustom extends \yii\db\Migration
         $this->alterColumn('{{%v3_pgcustom}}', 'json4', "SET DEFAULT '{\"foo\":\"bar\",\"bar\":\"baz\"}'");
         $this->alterColumn('{{%v3_pgcustom}}', 'status', "SET DEFAULT 'draft'");
         $this->alterColumn('{{%v3_pgcustom}}', 'status_x', "SET DEFAULT 'draft'");
-        $this->createIndex('v3_pgcustom_search_gin_index', '{{%v3_pgcustom}}', 'search', 'gin(to_tsvector(\'english\', status))');
     }
 
     public function safeDown()
