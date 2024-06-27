@@ -167,8 +167,8 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.' --interactive=0', $upOutput, $upExitCode);
         $last = count($upOutput) - 1;
         $lastThird = count($upOutput) - 3;
-        $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$last], 'Migrated up successfully.');
+        $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' applied.');
         // 1 migration was applied.
         // 2 migrations were applied.
