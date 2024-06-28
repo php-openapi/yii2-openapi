@@ -95,6 +95,14 @@ with Zend OPcache v7.4.27, Copyright (c), by Zend Technologies
 with Xdebug v2.9.6, Copyright (c) 2002-2020, by Derick Rethans
 ```
 
+If a PHP version is changed as mentioned above, then following operations must be performed:
+
+```
+rm -rf vendor
+rm -rf composer.lock
+composer install
+```
+
 Issues and solutions
 --------------------
 
