@@ -425,7 +425,9 @@ class AttributeResolver
         foreach ($indexes as $index) {
             $unique = false;
             if (strpos($index, ':') !== false) {
-                [$indexType, $props] = explode(':', $index);
+                $props = strrchr($index, ':');
+                $props = substr($props, 1);
+                $indexType = str_replace(':'.$props, '', $index);
             } else {
                 $props = $index;
                 $indexType = null;

@@ -35,7 +35,7 @@ components:
         Custom:
             x-table: v3_pgcustom
             x-indexes:
-               - "gin(to_tsvector('english', status)):search"
+               - "gin(to_tsvector('english', search::text)):search"
             required:
                 - id
             properties:
