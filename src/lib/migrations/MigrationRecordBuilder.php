@@ -245,6 +245,7 @@ final class MigrationRecordBuilder
         $indexType = $using === null ? 'false' : "'".ColumnToCode::escapeQuotes($using)."'";
 
         if (ApiGenerator::isPostgres() && $using && stripos($using, '(') !== false) {
+            // if `$using` is `gin(to_tsvector('english', search::text))`
             $r = explode('(', $using, 2);
             $indexType = "'".$r[0]."'"; # `gin`
             $columnDbIndexExpression = substr($r[1], 0, -1); # to_tsvector('english', search::text)
