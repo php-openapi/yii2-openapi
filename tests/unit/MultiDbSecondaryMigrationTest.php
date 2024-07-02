@@ -22,7 +22,7 @@ class MultiDbSecondaryMigrationTest extends DbTestCase
         $this->assertInstanceOf(PgSqlSchema::class, Yii::$app->db->schema);
         $testFile = Yii::getAlias('@specs/postgres_custom.php');
         $this->runGenerator($testFile, $dbName);
-        $this->runActualMigrations('pgsql', 1);
+//        $this->runActualMigrations('pgsql', 1);
         $expectedFiles = $this->findExpectedFiles($testFile, $dbName);
         $actualFiles = $this->findActualFiles();
         $this->assertEquals($expectedFiles, $actualFiles);

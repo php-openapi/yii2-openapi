@@ -246,7 +246,7 @@ final class MigrationRecordBuilder
             self::ADD_INDEX,
             $indexName,
             $tableAlias,
-            count($columns) === 1 ? "'{$columns[0]}'" : '["'.implode('", "', $columns).'"]',
+            count($columns) === 1 ? "'". ColumnToCode::escapeQuotes($columns[0])."'" : '["'.implode('", "', $columns).'"]',
             $indexType
         );
     }
