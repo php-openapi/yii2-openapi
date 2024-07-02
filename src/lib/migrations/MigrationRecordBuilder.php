@@ -227,6 +227,7 @@ final class MigrationRecordBuilder
                 $onUpdate
             );
         }
+        throw new \Exception('Cannot add foreign key');
     }
 
     public function addUniqueIndex(string $tableAlias, string $indexName, array $columns):string
@@ -242,11 +243,19 @@ final class MigrationRecordBuilder
     public function addIndex(string $tableAlias, string $indexName, array $columns, ?string $using = null):string
     {
         $indexType = $using === null ? 'false' : "'".ColumnToCode::escapeQuotes($using)."'";
+
+        if (ApiGenerator::isPostgres() && $using && stripos($using, '(') !== false) {
+            $r = explode('(', $using, 2);
+            $indexType = "'".$r[0]."'"; # `gin`
+            $columnDbIndexExpression = substr($r[1], 0, -1); # to_tsvector('english', search::text)
+            $columns = [ColumnToCode::escapeQuotes($columnDbIndexExpression)];
+        }
+
         return sprintf(
             self::ADD_INDEX,
             $indexName,
             $tableAlias,
-            count($columns) === 1 ? "'". ColumnToCode::escapeQuotes($columns[0])."'" : '["'.implode('", "', $columns).'"]',
+            count($columns) === 1 ? "'". $columns[0]."'" : '["'.implode('", "', $columns).'"]',
             $indexType
         );
     }
