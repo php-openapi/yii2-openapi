@@ -434,7 +434,7 @@ class AttributeResolver
                 $props = $index;
                 $indexType = null;
             }
-            if (strtolower($indexType) === 'unique') {
+            if (strtolower((string) $indexType) === 'unique') {
                 $indexType = null;
                 $unique = true;
             }
