@@ -26,6 +26,7 @@ class MultiDbFreshMigrationTest extends DbTestCase
         $this->assertInstanceOf(MySqlSchema::class, Yii::$app->db->schema);
         $testFile = Yii::getAlias('@specs/blog.php');
         $this->runGenerator($testFile, $dbName);
+        $this->runActualMigrations($dbName, 5);
         $expectedFiles = $this->findExpectedFiles($testFile, $dbName);
         $actualFiles = $this->findActualFiles();
         $this->assertEquals($expectedFiles, $actualFiles);
@@ -39,6 +40,7 @@ class MultiDbFreshMigrationTest extends DbTestCase
         $this->assertInstanceOf(PgSqlSchema::class, Yii::$app->db->schema);
         $testFile = Yii::getAlias('@specs/blog.php');
         $this->runGenerator($testFile, $dbName);
+        $this->runActualMigrations($dbName, 5);
         $expectedFiles = $this->findExpectedFiles($testFile, $dbName);
         $actualFiles = $this->findActualFiles();
         $this->assertEquals($expectedFiles, $actualFiles);
@@ -52,6 +54,7 @@ class MultiDbFreshMigrationTest extends DbTestCase
         $this->assertInstanceOf(MySqlSchema::class, Yii::$app->db->schema);
         $testFile = Yii::getAlias('@specs/blog.php');
         $this->runGenerator($testFile, $dbName);
+        $this->runActualMigrations($dbName, 5);
         $expectedFiles = $this->findExpectedFiles($testFile, $dbName);
         $actualFiles = $this->findActualFiles();
         $this->assertEquals($expectedFiles, $actualFiles);

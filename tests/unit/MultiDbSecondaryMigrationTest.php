@@ -22,6 +22,7 @@ class MultiDbSecondaryMigrationTest extends DbTestCase
         $this->assertInstanceOf(PgSqlSchema::class, Yii::$app->db->schema);
         $testFile = Yii::getAlias('@specs/postgres_custom.php');
         $this->runGenerator($testFile, $dbName);
+        $this->runActualMigrations($dbName, 1);
         $expectedFiles = $this->findExpectedFiles($testFile, $dbName);
         $actualFiles = $this->findActualFiles();
         $this->assertEquals($expectedFiles, $actualFiles);
@@ -35,6 +36,7 @@ class MultiDbSecondaryMigrationTest extends DbTestCase
         $this->assertInstanceOf(MySqlSchema::class, Yii::$app->db->schema);
         $testFile = Yii::getAlias('@specs/blog_v2.php');
         $this->runGenerator($testFile, $dbName);
+//        $this->runActualMigrations($dbName, 6); since PK is changed, no need to run actual migrations here
         $expectedFiles = $this->findExpectedFiles($testFile, $dbName);
         $actualFiles = $this->findActualFiles();
         $this->assertEquals($expectedFiles, $actualFiles);

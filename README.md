@@ -212,6 +212,14 @@ Specify table indexes
            default: '{}' 
 ```
 
+If raw DB expression is needed in index, then it must be for only one column. Example:
+
+```yaml
+    x-indexes:
+       - "gin(to_tsvector('english', search::text)):search" # valid
+       - "gin(to_tsvector('english', search::text)):search,column2" # invalid
+```
+
 ### `x-db-default-expression`
 
 Ability to provide default value by database expression
