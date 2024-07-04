@@ -345,7 +345,9 @@ class ColumnToCode
         $fluentSize = $this->column->size ? '(' . $this->column->size . ')' : '()';
         $rawSize = $this->column->size ? '(' . $this->column->size . ')' : '';
         $this->rawParts['nullable'] = $this->column->allowNull ? 'NULL' : 'NOT NULL';
-        $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
+//        if (!ApiGenerator::isPostgres()) {
+            $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
+//        }
         if (array_key_exists($dbType, self::INT_TYPE_MAP)) {
             $this->fluentParts['type'] = self::INT_TYPE_MAP[$dbType] . $fluentSize;
             $this->rawParts['type'] =
@@ -384,6 +386,7 @@ class ColumnToCode
         if ($this->isEnum()) {
             return false;
         }
+
         if ($this->fromDb === true) {
             return isset(
                 (new ColumnSchemaBuilder(''))->categoryMap[$type]
