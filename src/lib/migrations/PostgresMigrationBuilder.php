@@ -76,7 +76,6 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         if (in_array('allowNull', $changed, true)
             && ($forUp === false || $forDown === false)
         ) {
-            // TODO            if last up code contains `null()` string then do execute below statement, same for notNull() and same in down code
             if ($desired->allowNull === true) {
                 $this->migration->addUpCode($this->recordBuilder->dropColumnNotNull($tableName, $desired));
                 $this->migration->addDownCode($this->recordBuilder->setColumnNotNull($tableName, $current), true);
