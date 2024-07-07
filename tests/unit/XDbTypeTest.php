@@ -2,17 +2,9 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\generator\ApiGenerator;
 use tests\DbTestCase;
 use Yii;
-use yii\db\mysql\Schema as MySqlSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\helpers\FileHelper;
-use yii\helpers\VarDumper;
-use yii\validators\DateValidator;
-use function array_filter;
-use function getenv;
-use function strpos;
 
 class XDbTypeTest extends DbTestCase
 {
@@ -226,7 +218,7 @@ class XDbTypeTest extends DbTestCase
         Yii::$app->db->schema->refresh();
         $this->runFaker();
         $this->runDownMigrations('mysql', 4);
-        FileHelper::removeDirectory(Yii::getAlias('@app').'/models');
+        FileHelper::removeDirectory(Yii::getAlias('@app') . '/models');
         $this->deleteTables();
 
         // MariaDB
@@ -247,7 +239,7 @@ class XDbTypeTest extends DbTestCase
         Yii::$app->db->schema->refresh();
         $this->runFaker();
         $this->runDownMigrations('maria', 4);
-        FileHelper::removeDirectory(Yii::getAlias('@app').'/models');
+        FileHelper::removeDirectory(Yii::getAlias('@app') . '/models');
         $this->deleteTables();
 
         // for PgSQL
@@ -268,7 +260,7 @@ class XDbTypeTest extends DbTestCase
         Yii::$app->db->schema->refresh();
         $this->runFaker();
         $this->runDownMigrations('pgsql', 4);
-        FileHelper::removeDirectory(Yii::getAlias('@app').'/models');
+        FileHelper::removeDirectory(Yii::getAlias('@app') . '/models');
         $this->deleteTables();
     }
 

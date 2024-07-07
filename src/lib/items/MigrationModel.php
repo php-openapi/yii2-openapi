@@ -49,11 +49,11 @@ class MigrationModel extends BaseObject
     private $fileClassName = '';
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var DbModel
      */
     private $model;
 
-    /**@var \cebe\yii2openapi\lib\items\ManyToManyRelation|null **/
+    /**@var ManyToManyRelation|null * */
     private $relation;
 
     public function __construct(DbModel $model, bool $isFresh = true, ManyToManyRelation $relation = null, $config = [])
@@ -72,39 +72,39 @@ class MigrationModel extends BaseObject
         }
     }
 
-    public function getUpCodeString():string
+    public function getUpCodeString(): string
     {
         return !empty($this->upCodes) ? implode(PHP_EOL, $this->upCodes) : '';
     }
 
-    public function getDownCodeString():string
+    public function getDownCodeString(): string
     {
         return !empty($this->downCodes) ? implode(PHP_EOL, $this->downCodes) : '';
     }
 
-    public function notEmpty():bool
+    public function notEmpty(): bool
     {
         return !empty($this->upCodes) && !empty($this->downCodes);
     }
 
-    public function getTableAlias():string
+    public function getTableAlias(): string
     {
-        return $this->relation === null? $this->model->tableAlias : $this->relation->viaTableAlias;
+        return $this->relation === null ? $this->model->tableAlias : $this->relation->viaTableAlias;
     }
 
-    public function getFileClassName():string
+    public function getFileClassName(): string
     {
         return $this->fileClassName;
     }
 
-    public function getDescription():string
+    public function getDescription(): string
     {
-        return $this->relation === null?
-            'Table for '.$this->model->getClassName():
-            'Table for '.$this->relation->getViaModelName();
+        return $this->relation === null ?
+            'Table for ' . $this->model->getClassName() :
+            'Table for ' . $this->relation->getViaModelName();
     }
 
-    public function makeClassNameByTime(int $index, ?string $nameSpace = null, ?string $date = null):string
+    public function makeClassNameByTime(int $index, ?string $nameSpace = null, ?string $date = null): string
     {
         if ($nameSpace) {
             $m = sprintf('%s%04d', ($date ?: date('ymdH')), $index);
@@ -118,10 +118,10 @@ class MigrationModel extends BaseObject
 
     /**Add up code, by default at bottom
      * @param array|string $code
-     * @param bool         $toTop
+     * @param bool $toTop
      * @return $this
      */
-    public function addUpCode($code, bool $toTop = false):MigrationModel
+    public function addUpCode($code, bool $toTop = false): MigrationModel
     {
         $code = is_string($code) ? [$code] : $code;
         if ($toTop === true) {
@@ -134,10 +134,10 @@ class MigrationModel extends BaseObject
 
     /**add down code, by default to top
      * @param array|string $code
-     * @param bool         $toBottom
+     * @param bool $toBottom
      * @return $this
      */
-    public function addDownCode($code, bool $toBottom = false):MigrationModel
+    public function addDownCode($code, bool $toBottom = false): MigrationModel
     {
         $code = is_string($code) ? [$code] : $code;
         if ($toBottom === true) {

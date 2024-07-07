@@ -9,20 +9,22 @@ namespace cebe\yii2openapi\lib\generators;
 
 use cebe\yii2openapi\lib\CodeFiles;
 use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\items\DbModel;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\gii\CodeFile;
 
 class ModelsGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|DbModel[]
      */
     protected $models;
 
@@ -39,9 +41,9 @@ class ModelsGenerator
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function generate():CodeFiles
+    public function generate(): CodeFiles
     {
         if (!$this->config->generateModels) {
             return $this->files;

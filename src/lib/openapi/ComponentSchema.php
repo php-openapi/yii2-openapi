@@ -7,12 +7,15 @@
 
 namespace cebe\yii2openapi\lib\openapi;
 
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
 use cebe\yii2openapi\lib\CustomSpecAttr;
 use Generator;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use function in_array;
@@ -20,13 +23,13 @@ use function in_array;
 class ComponentSchema
 {
     /**
-     * @var \cebe\openapi\spec\Schema
+     * @var Schema
      */
     private $schema;
 
     /**
      * @var string
-    **/
+     **/
     private $name;
 
     /**
@@ -46,7 +49,7 @@ class ComponentSchema
     private $indexes;
 
     /**
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @throws UnresolvableReferenceException
      */
     public function __construct(SpecObjectInterface $openApiSchema, string $name)
     {
@@ -73,76 +76,76 @@ class ComponentSchema
         return $this->name;
     }
 
-    public function isReference():bool
+    public function isReference(): bool
     {
         return $this->isReference;
     }
 
-    public function isObjectSchema():bool
+    public function isObjectSchema(): bool
     {
         return (empty($this->schema->type) || $this->schema->type === 'object');
     }
 
-    public function isCompositeSchema():bool
+    public function isCompositeSchema(): bool
     {
         return $this->schema->allOf || $this->schema->anyOf || $this->schema->multipleOf || $this->schema->oneOf;
     }
 
-    public function getPkName():string
+    public function getPkName(): string
     {
         return $this->pkName;
     }
 
-    public function getRequiredProperties():array
+    public function getRequiredProperties(): array
     {
         return $this->requiredProps;
     }
 
-    public function isRequiredProperty(string $propName):bool
+    public function isRequiredProperty(string $propName): bool
     {
         return in_array($propName, $this->requiredProps, true);
     }
 
-    public function isNonDb():bool
+    public function isNonDb(): bool
     {
         return isset($this->schema->{CustomSpecAttr::TABLE}) && $this->schema->{CustomSpecAttr::TABLE} === false;
     }
 
-    public function resolveTableName(string $schemaName):string
+    public function resolveTableName(string $schemaName): string
     {
         return $this->schema->{CustomSpecAttr::TABLE} ??
             Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
     }
 
-    public function hasCustomTableName():bool
+    public function hasCustomTableName(): bool
     {
         return isset($this->schema->{CustomSpecAttr::TABLE});
     }
 
-    public function getIndexes():array
+    public function getIndexes(): array
     {
         return $this->schema->{CustomSpecAttr::INDEXES} ?? [];
     }
 
-    public function getDescription():string
+    public function getDescription(): string
     {
         return $this->schema->description ?? '';
     }
 
-    public function hasProperties():bool
+    public function hasProperties(): bool
     {
         return !empty($this->schema->properties);
     }
 
-    public function hasProperty(string $name):bool
+    public function hasProperty(string $name): bool
     {
         return isset($this->schema->properties[$name]);
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getProperty(string $name):?PropertySchema
+    public function getProperty(string $name): ?PropertySchema
     {
         if (!$this->hasProperty($name)) {
             return null;
@@ -151,10 +154,10 @@ class ComponentSchema
     }
 
     /**
-     * @return \Generator|\cebe\yii2openapi\lib\openapi\PropertySchema[]
-     * @throws \yii\base\InvalidConfigException
+     * @return Generator|PropertySchema[]
+     * @throws InvalidConfigException
      */
-    public function getProperties():Generator
+    public function getProperties(): Generator
     {
         foreach ($this->schema->properties as $name => $property) {
             yield Yii::createObject(PropertySchema::class, [$property, $name, $this]);

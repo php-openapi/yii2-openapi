@@ -2,13 +2,9 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\generator\ApiGenerator;
 use tests\DbTestCase;
 use Yii;
-use yii\db\mysql\Schema as MySqlSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\helpers\FileHelper;
-use yii\helpers\VarDumper;
 
 
 class NewColumnPositionTest extends DbTestCase

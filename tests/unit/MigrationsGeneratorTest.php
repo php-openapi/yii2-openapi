@@ -9,12 +9,13 @@ use cebe\yii2openapi\lib\items\DbIndex;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\MigrationModel;
 use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
-use tests\TestCase;
+use Exception;
 use tests\DbTestCase;
 use Yii;
 use yii\db\Schema;
 use yii\db\TableSchema;
 use yii\helpers\VarDumper;
+use function array_values;
 use function count;
 use function preg_replace;
 
@@ -34,11 +35,11 @@ class MigrationsGeneratorTest extends DbTestCase
 
     /**
      * @dataProvider simpleDbModelsProvider
-     * @param array|DbModel[]        $dbModels
+     * @param array|DbModel[] $dbModels
      * @param array|MigrationModel[] $expected
-     * @throws \Exception
+     * @throws Exception
      */
-    public function testGenerateSimple(array $dbModels, array $expected):void
+    public function testGenerateSimple(array $dbModels, array $expected): void
     {
         $this->prepareTempDir();
         // $this->mockApplication($this->mockDbSchemaAsEmpty());
@@ -46,43 +47,43 @@ class MigrationsGeneratorTest extends DbTestCase
         $this->mockApplication();
         $generator = new MigrationsGenerator(new Config(), $dbModels, Yii::$app->db);
         $models = $generator->buildMigrations();
-        $model = \array_values($models)[0];
+        $model = array_values($models)[0];
         self::assertInstanceOf(MigrationModel::class, $model);
         self::assertEquals($expected[0]->fileName, $model->fileName);
         self::assertEquals($expected[0]->dependencies, $model->dependencies);
         self::assertCount(count($expected[0]->upCodes), $model->upCodes);
         self::assertCount(count($expected[0]->downCodes), $model->downCodes);
         self::assertEquals(
-            preg_replace('~\s{1,}~',' ',trim($expected[0]->getUpCodeString())),
-            preg_replace('~\s{1,}~',' ',trim($model->getUpCodeString()))
+            preg_replace('~\s{1,}~', ' ', trim($expected[0]->getUpCodeString())),
+            preg_replace('~\s{1,}~', ' ', trim($model->getUpCodeString()))
         );
         self::assertEquals(
-            preg_replace('~\s{1,}~',' ',trim($expected[0]->getDownCodeString())),
-            preg_replace('~\s{1,}~',' ',trim($model->getDownCodeString()))
+            preg_replace('~\s{1,}~', ' ', trim($expected[0]->getDownCodeString())),
+            preg_replace('~\s{1,}~', ' ', trim($model->getDownCodeString()))
         );
     }
 
-    public function tableSchemaStub(string $tableName):?TableSchema
+    public function tableSchemaStub(string $tableName): ?TableSchema
     {
         $stub = [];
         return $stub[$tableName] ?? null;
     }
 
-    public function simpleDbModelsProvider():array
+    public function simpleDbModelsProvider(): array
     {
         $dbModel = new DbModel([
             'name' => 'dummy',
             'tableName' => 'dummy',
             'attributes' => [
                 (new Attribute('id'))->setPhpType('int')->setDbType(Schema::TYPE_PK)
-                                     ->setRequired(true)->setReadOnly(true),
+                    ->setRequired(true)->setReadOnly(true),
                 (new Attribute('title'))->setPhpType('string')
-                                        ->setDbType('string')
-                                        ->setSize(60)
-                                        ->setRequired(true),
+                    ->setDbType('string')
+                    ->setSize(60)
+                    ->setRequired(true),
                 (new Attribute('article'))->setPhpType('string')->setDbType('text'), // for Mysql default in text data type is not allowed
             ],
-            'indexes'=> [
+            'indexes' => [
                 'dummy_title_index' => DbIndex::make('dummy', ['title']),
                 'dummy_article_hash_index' => DbIndex::make('dummy', ['article'], 'hash'),
                 'dummy_article_key' => DbIndex::make('dummy', ['article'], null, true),
@@ -122,21 +123,21 @@ class MigrationsGeneratorTest extends DbTestCase
         ];
     }
 
-    public function simpleDbModelsProviderForNonMysqlDb():array
+    public function simpleDbModelsProviderForNonMysqlDb(): array
     {
         $dbModel = new DbModel([
             'name' => 'dummy',
             'tableName' => 'dummy',
             'attributes' => [
                 (new Attribute('id'))->setPhpType('int')->setDbType(Schema::TYPE_PK)
-                                     ->setRequired(true)->setReadOnly(true),
+                    ->setRequired(true)->setReadOnly(true),
                 (new Attribute('title'))->setPhpType('string')
-                                        ->setDbType('string')
-                                        ->setSize(60)
-                                        ->setRequired(true),
+                    ->setDbType('string')
+                    ->setSize(60)
+                    ->setRequired(true),
                 (new Attribute('article'))->setPhpType('string')->setDbType('text')->setDefault(''),
             ],
-            'indexes'=> [
+            'indexes' => [
                 'dummy_title_index' => DbIndex::make('dummy', ['title']),
                 'dummy_article_hash_index' => DbIndex::make('dummy', ['article'], 'hash'),
                 'dummy_article_key' => DbIndex::make('dummy', ['article'], null, true),
@@ -172,17 +173,17 @@ class MigrationsGeneratorTest extends DbTestCase
     /**
      * TODO refactor
      * @dataProvider simpleDbModelsProviderForNonMysqlDb
-     * @param array|DbModel[]        $dbModels
+     * @param array|DbModel[] $dbModels
      * @param array|MigrationModel[] $expected
-     * @throws \Exception
+     * @throws Exception
      */
-    public function testGenerateSimpleNonMysql(array $dbModels, array $expected):void
+    public function testGenerateSimpleNonMysql(array $dbModels, array $expected): void
     {
         $this->prepareTempDir();
         // $this->mockApplication($this->mockDbSchemaAsEmpty());
         // $this->mockRealApplication();
         $this->mockApplication();
-        foreach(['maria', 'pgsql'] as $database) {
+        foreach (['maria', 'pgsql'] as $database) {
             if ($database === 'maria') {
                 $this->changeDbToMariadb();
             }
@@ -193,19 +194,19 @@ class MigrationsGeneratorTest extends DbTestCase
             // var_dump(Yii::$app->db); die;
             $models = $generator->buildMigrations();
             // var_dump($models); die;
-            $model = \array_values($models)[0];
+            $model = array_values($models)[0];
             self::assertInstanceOf(MigrationModel::class, $model);
             self::assertEquals($expected[0]->fileName, $model->fileName);
             self::assertEquals($expected[0]->dependencies, $model->dependencies);
             self::assertCount(count($expected[0]->upCodes), $model->upCodes);
             self::assertCount(count($expected[0]->downCodes), $model->downCodes);
             self::assertEquals(
-                preg_replace('~\s{1,}~',' ',trim($expected[0]->getUpCodeString())),
-                preg_replace('~\s{1,}~',' ',trim($model->getUpCodeString()))
+                preg_replace('~\s{1,}~', ' ', trim($expected[0]->getUpCodeString())),
+                preg_replace('~\s{1,}~', ' ', trim($model->getUpCodeString()))
             );
             self::assertEquals(
-                preg_replace('~\s{1,}~',' ',trim($expected[0]->getDownCodeString())),
-                preg_replace('~\s{1,}~',' ',trim($model->getDownCodeString()))
+                preg_replace('~\s{1,}~', ' ', trim($expected[0]->getDownCodeString())),
+                preg_replace('~\s{1,}~', ' ', trim($model->getDownCodeString()))
             );
         }
     }

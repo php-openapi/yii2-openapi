@@ -18,16 +18,16 @@ use function sort;
 use function strtolower;
 
 /**
- * @property-read string                 $viaTableName
- * @property-read string[]               $link
- * @property-read string                 $relatedFk
- * @property-read string                 $selfFk
- * @property-read string                 $viaTableAlias
- * @property-read string                 $camelName
- * @property-read string                 $className
- * @property-read string                 $relatedClassName
- * @property-read \yii\db\ColumnSchema[] $columnSchema
- * @property-read string[]               $viaLink
+ * @property-read string $viaTableName
+ * @property-read string[] $link
+ * @property-read string $relatedFk
+ * @property-read string $selfFk
+ * @property-read string $viaTableAlias
+ * @property-read string $camelName
+ * @property-read string $className
+ * @property-read string $relatedClassName
+ * @property-read ColumnSchema[] $columnSchema
+ * @property-read string[] $viaLink
  */
 class ManyToManyRelation extends BaseObject
 {
@@ -49,10 +49,10 @@ class ManyToManyRelation extends BaseObject
     /**@var bool* */
     public $hasViaModel = false;
 
-    /**@var \cebe\yii2openapi\lib\items\Attribute */
+    /**@var Attribute */
     public $pkAttribute;
 
-    /**@var \cebe\yii2openapi\lib\items\Attribute */
+    /**@var Attribute */
     public $relatedPkAttribute;
 
     /**@var string* */
@@ -67,17 +67,17 @@ class ManyToManyRelation extends BaseObject
     /**@var string* */
     public $relatedFkProperty;
 
-    public function getCamelName():string
+    public function getCamelName(): string
     {
         return Inflector::camelize($this->name);
     }
 
-    public function getClassName():string
+    public function getClassName(): string
     {
         return Inflector::id2camel($this->schemaName, '_');
     }
 
-    public function getRelatedClassName():string
+    public function getRelatedClassName(): string
     {
         return Inflector::id2camel($this->relatedSchemaName, '_');
     }
@@ -88,7 +88,7 @@ class ManyToManyRelation extends BaseObject
      *  model Document n-n Label -> Documents2Labels
      *  model Post  n-n Tag  -> Posts2Tags
      */
-    public function getViaModelName():string
+    public function getViaModelName(): string
     {
         if (!$this->viaModelName) {
             $names = [
@@ -105,7 +105,7 @@ class ManyToManyRelation extends BaseObject
      * For cases when relation name and viaModel are different
      * @return string
      */
-    public function getViaRelationName():string
+    public function getViaRelationName(): string
     {
         return $this->viaRelationName ?: $this->getViaModelName();
     }
@@ -116,7 +116,7 @@ class ManyToManyRelation extends BaseObject
      *  model Document n-n Label -> documents2labels
      *  model Post  n-n Tag  -> posts2tags
      */
-    public function getViaTableName():string
+    public function getViaTableName(): string
     {
         $names = [
             strtolower(Inflector::camel2id(Inflector::pluralize($this->schemaName), '_')),
@@ -126,29 +126,29 @@ class ManyToManyRelation extends BaseObject
         return implode('2', $names);
     }
 
-    public function getViaTableAlias():string
+    public function getViaTableAlias(): string
     {
         return '{{%' . $this->getViaTableName() . '}}';
     }
 
-    public function getSelfFk():string
+    public function getSelfFk(): string
     {
         $fk = $this->fkProperty ?? $this->schemaName;
         return strtolower(Inflector::camel2id($fk, '_')) . '_id';
     }
 
-    public function getRelatedFk():string
+    public function getRelatedFk(): string
     {
         $fk = $this->relatedFkProperty ?? $this->relatedSchemaName;
         return strtolower(Inflector::camel2id($fk, '_')) . '_id';
     }
 
-    public function getLink():array
+    public function getLink(): array
     {
         return [$this->pkAttribute->propertyName => $this->getRelatedFk()];
     }
 
-    public function linkToString(array $link):string
+    public function linkToString(array $link): string
     {
         return str_replace(
             [',', '=>', ', ]'],
@@ -157,16 +157,16 @@ class ManyToManyRelation extends BaseObject
         );
     }
 
-    public function getViaLink():array
+    public function getViaLink(): array
     {
         return [$this->getSelfFk() => $this->pkAttribute->propertyName];
     }
 
     /**
      * Default columns for generate migration for junction table, when viaModel not defined
-     * @return array|\yii\db\ColumnSchema[]
+     * @return array|ColumnSchema[]
      */
-    public function getColumnSchema():array
+    public function getColumnSchema(): array
     {
         $pkTypeMap = [
             Schema::TYPE_PK => Schema::TYPE_INTEGER,
@@ -196,18 +196,18 @@ class ManyToManyRelation extends BaseObject
 
     /**
      * Relations for migration for junction table, when viaModel not defined
-     * @return array|\cebe\yii2openapi\lib\items\AttributeRelation
+     * @return array|AttributeRelation
      */
-    public function getRelations():array
+    public function getRelations(): array
     {
         return [
             Yii::createObject(AttributeRelation::class, [$this->selfFk, $this->tableName, $this->className])
-               ->asHasOne(['id' => $this->selfFk]),
+                ->asHasOne(['id' => $this->selfFk]),
             Yii::createObject(
                 AttributeRelation::class,
                 [$this->relatedFk, $this->relatedTableName, $this->relatedClassName]
             )
-               ->asHasOne(['id' => $this->relatedFk]),
+                ->asHasOne(['id' => $this->relatedFk]),
         ];
     }
 }

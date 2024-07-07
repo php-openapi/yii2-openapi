@@ -16,6 +16,7 @@ use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
 use cebe\yii2openapi\lib\migrations\PostgresMigrationBuilder;
 use Exception;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\Connection;
 use yii\gii\CodeFile;
 use const YII_ENV_TEST;
@@ -23,12 +24,12 @@ use const YII_ENV_TEST;
 class MigrationsGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|DbModel[]
      */
     protected $models;
 
@@ -38,7 +39,7 @@ class MigrationsGenerator
     protected $files;
 
     /**
-     * @var \yii\db\Connection
+     * @var Connection
      */
     protected $db;
 
@@ -63,10 +64,10 @@ class MigrationsGenerator
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
-     * @throws \Exception
+     * @throws InvalidConfigException
+     * @throws Exception
      */
-    public function generate():CodeFiles
+    public function generate(): CodeFiles
     {
         if (!$this->config->generateMigrations) {
             return $this->files;
@@ -104,10 +105,10 @@ class MigrationsGenerator
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\MigrationModel[]
-     * @throws \Exception
+     * @return array|MigrationModel[]
+     * @throws Exception
      */
-    public function buildMigrations():array
+    public function buildMigrations(): array
     {
         $junctions = [];
         foreach ($this->models as $model) {
@@ -130,9 +131,9 @@ class MigrationsGenerator
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function createBuilder(DbModel $model):BaseMigrationBuilder
+    protected function createBuilder(DbModel $model): BaseMigrationBuilder
     {
         if ($this->db->getDriverName() === 'pgsql') {
             return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model]);
@@ -142,9 +143,9 @@ class MigrationsGenerator
 
     /**
      * @return array|MigrationModel[]
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function sortMigrationsByDeps():array
+    protected function sortMigrationsByDeps(): array
     {
         $this->sorted = [];
         ksort($this->migrations);
@@ -156,10 +157,10 @@ class MigrationsGenerator
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\items\MigrationModel $migration
-     * @throws \Exception
+     * @param MigrationModel $migration
+     * @throws Exception
      */
-    protected function sortByDependencyRecurse(MigrationModel $migration):void
+    protected function sortByDependencyRecurse(MigrationModel $migration): void
     {
         if (!isset($this->sorted[$migration->tableAlias])) {
             $this->sorted[$migration->tableAlias] = false;

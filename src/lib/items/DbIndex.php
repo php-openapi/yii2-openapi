@@ -34,20 +34,20 @@ class DbIndex extends BaseObject
      */
     public $isUnique = false;
 
-    public function isEqual(DbIndex $dbIndex) : bool
+    public function isEqual(DbIndex $dbIndex): bool
     {
         return $this->type === $dbIndex->type
-               && $this->isUnique === $dbIndex->isUnique
-               && $this->columns === $dbIndex->columns;
+            && $this->isUnique === $dbIndex->isUnique
+            && $this->columns === $dbIndex->columns;
     }
 
-    public static function make(string $tableName, array $columns, $type = null, $isUnique = false):DbIndex
+    public static function make(string $tableName, array $columns, $type = null, $isUnique = false): DbIndex
     {
         if ($type === 'btree') {
             $type = null; //Default type
         }
-        $typeName = isset($type) ? '_'.explode('(', $type)[0]: '';
-        $name = $isUnique !== false ? $tableName . '_'  . implode('_', $columns).'_key'
+        $typeName = isset($type) ? '_' . explode('(', $type)[0] : '';
+        $name = $isUnique !== false ? $tableName . '_' . implode('_', $columns) . '_key'
             : $tableName . '_' . implode('_', $columns) . $typeName . '_index';
         return new static([
             'name' => substr($name, 0, 63),
@@ -57,9 +57,9 @@ class DbIndex extends BaseObject
         ]);
     }
 
-    public static function fromConstraint(string $tableName, IndexConstraint $constraint):DbIndex
+    public static function fromConstraint(string $tableName, IndexConstraint $constraint): DbIndex
     {
-        $name = $constraint->isUnique !== false ? $tableName . '_'  . implode('_', $constraint->columnNames).'_key'
+        $name = $constraint->isUnique !== false ? $tableName . '_' . implode('_', $constraint->columnNames) . '_key'
             : $tableName . '_' . implode('_', $constraint->columnNames) . '_index';
         return new static([
             'name' => substr($name, 0, 63),

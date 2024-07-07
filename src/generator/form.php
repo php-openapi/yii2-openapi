@@ -2,63 +2,66 @@
 
 /* @var $this yii\web\View */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $generator \cebe\yii2openapi\generator\ApiGenerator */
+/* @var $generator ApiGenerator */
+
+use cebe\yii2openapi\assets\BootstrapCardAsset;
+use cebe\yii2openapi\generator\ApiGenerator;
 
 echo $form->field($generator, 'openApiPath')->error(['encode' => false]);
 echo $form->field($generator, 'ignoreSpecErrors')->checkbox();
 ?>
-<div class="panel panel-default card">
-    <div class="panel-heading card-header">
-        <?= $form->field($generator, 'generateUrls')->checkbox() ?>
-    </div>
-    <div class="panel-body card-body">
-        <?= $form->field($generator, 'urlConfigFile') ?>
-    </div>
-</div>
-
-<div class="panel panel-default card">
-    <div class="panel-heading card-header">
-        <?= $form->field($generator, 'generateControllers')->checkbox() ?>
-    </div>
-    <div class="panel-body card-body">
-        <?= $form->field($generator, 'controllerNamespace') ?>
-        <?= $form->field($generator, 'useJsonApi')->checkbox(['checked' => false]) ?>
-        <div id="json_api_opts" class="hidden">
-            <?= $form->field($generator, 'transformerNamespace') ?>
-            <?= $form->field($generator, 'extendableTransformers')->checkbox(['checked' => true]) ?>
-            <?= $form->field($generator, 'singularResourceKeys')->checkbox() ?>
+    <div class="panel panel-default card">
+        <div class="panel-heading card-header">
+            <?= $form->field($generator, 'generateUrls')->checkbox() ?>
+        </div>
+        <div class="panel-body card-body">
+            <?= $form->field($generator, 'urlConfigFile') ?>
         </div>
     </div>
-</div>
 
-<div class="panel panel-default card">
-    <div class="panel-heading card-header">
-        <?= $form->field($generator, 'generateModels')->checkbox() ?>
-    </div>
-    <div class="panel-body card-body">
-        <?= $form->field($generator, 'modelNamespace') ?>
-        <?= $form->field($generator, 'generateModelFaker')->checkbox() ?>
-        <div id="faker_opts">
-            <?= $form->field($generator, 'fakerNamespace') ?>
+    <div class="panel panel-default card">
+        <div class="panel-heading card-header">
+            <?= $form->field($generator, 'generateControllers')->checkbox() ?>
         </div>
-        <?= $form->field($generator, 'generateModelsOnlyXTable')->checkbox() ?>
-        <?= $form->field($generator, 'skipUnderscoredSchemas')->checkbox() ?>
+        <div class="panel-body card-body">
+            <?= $form->field($generator, 'controllerNamespace') ?>
+            <?= $form->field($generator, 'useJsonApi')->checkbox(['checked' => false]) ?>
+            <div id="json_api_opts" class="hidden">
+                <?= $form->field($generator, 'transformerNamespace') ?>
+                <?= $form->field($generator, 'extendableTransformers')->checkbox(['checked' => true]) ?>
+                <?= $form->field($generator, 'singularResourceKeys')->checkbox() ?>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="panel panel-default card">
-    <div class="panel-heading card-header">
-        <?= $form->field($generator, 'generateMigrations')->checkbox() ?>
+    <div class="panel panel-default card">
+        <div class="panel-heading card-header">
+            <?= $form->field($generator, 'generateModels')->checkbox() ?>
+        </div>
+        <div class="panel-body card-body">
+            <?= $form->field($generator, 'modelNamespace') ?>
+            <?= $form->field($generator, 'generateModelFaker')->checkbox() ?>
+            <div id="faker_opts">
+                <?= $form->field($generator, 'fakerNamespace') ?>
+            </div>
+            <?= $form->field($generator, 'generateModelsOnlyXTable')->checkbox() ?>
+            <?= $form->field($generator, 'skipUnderscoredSchemas')->checkbox() ?>
+        </div>
     </div>
-    <div class="panel-body card-body">
-        <?= $form->field($generator, 'migrationPath') ?>
-        <?= $form->field($generator, 'migrationNamespace') ?>
+
+    <div class="panel panel-default card">
+        <div class="panel-heading card-header">
+            <?= $form->field($generator, 'generateMigrations')->checkbox() ?>
+        </div>
+        <div class="panel-body card-body">
+            <?= $form->field($generator, 'migrationPath') ?>
+            <?= $form->field($generator, 'migrationNamespace') ?>
+        </div>
     </div>
-</div>
 
 <?php
 
-\cebe\yii2openapi\assets\BootstrapCardAsset::register($this);
+BootstrapCardAsset::register($this);
 $this->registerCss(
     <<<CSS
     /* bootstrap 4, Gii 2.1.x */

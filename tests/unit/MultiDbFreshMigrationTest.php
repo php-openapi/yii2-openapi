@@ -2,19 +2,20 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\lib\ColumnToCode;
-use cebe\yii2openapi\lib\items\DbModel;
-use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
 use tests\DbTestCase;
 use Yii;
-use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\ColumnSchema;
+use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\helpers\FileHelper;
 use function array_filter;
 use function getenv;
+use function sort;
 use function strpos;
 
 class MultiDbFreshMigrationTest extends DbTestCase
@@ -89,28 +90,28 @@ class MultiDbFreshMigrationTest extends DbTestCase
         }
     }
 
-    protected function findActualFiles():array
+    protected function findActualFiles(): array
     {
-        $actualFiles =  array_map(function($file) {
+        $actualFiles = array_map(function ($file) {
             return '@app' . substr($file, strlen(Yii::getAlias('@app')));
         },
             FileHelper::findFiles(Yii::getAlias('@app'), ['recursive' => true]));
-        \sort($actualFiles);
+        sort($actualFiles);
         return $actualFiles;
     }
 
-    protected function findExpectedFiles(string $testFile, string $dbName):array
+    protected function findExpectedFiles(string $testFile, string $dbName): array
     {
-        $expectedFiles = array_map(function($file) use ($testFile) {
+        $expectedFiles = array_map(function ($file) use ($testFile) {
             return '@app' . substr($file, strlen($testFile) - 4);
         },
             FileHelper::findFiles(substr($testFile, 0, -4), ['recursive' => true]));
 
         $expectedFiles = array_filter($expectedFiles,
-            function($file) use ($dbName) {
+            function ($file) use ($dbName) {
                 return strpos($file, 'models') !== false || strpos($file, $dbName) !== false;
             });
-        \sort($expectedFiles);
+        sort($expectedFiles);
         return $expectedFiles;
     }
 

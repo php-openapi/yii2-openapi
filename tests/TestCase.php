@@ -2,14 +2,12 @@
 
 namespace tests;
 
-use PHPUnit\Runner\Version;
 use Yii;
 use yii\db\Connection;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\web\Application;
-use function array_diff;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -20,7 +18,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Yii::setAlias('@app', __DIR__ . '/tmp/app');
     }
 
-    protected function mockApplication(?Connection $dbMock, array $extendConfig = []):Application
+    protected function mockApplication(?Connection $dbMock, array $extendConfig = []): Application
     {
         $config = ArrayHelper::merge([
             'id' => 'yii2-openapi-test',
@@ -45,7 +43,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $schema = $this->createMock(Schema::class);
         $schema->method('getTableSchema')->willReturn(null);
         $schema->method('findUniqueIndexes')->willReturn([]);
-        $schema->method('quoteValue')->willReturnCallback(function($v) { return "'$v'"; });
+        $schema->method('quoteValue')->willReturnCallback(function ($v) {
+            return "'$v'";
+        });
         $db = $this->createMock(Connection::class);
         $db->method('getSchema')->willReturn($schema);
         $db->method('getTableSchema')->willReturn(null);

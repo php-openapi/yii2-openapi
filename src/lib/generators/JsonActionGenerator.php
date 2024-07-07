@@ -7,26 +7,29 @@
 
 namespace cebe\yii2openapi\lib\generators;
 
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\spec\Operation;
 use cebe\yii2openapi\lib\items\FractalAction;
+use cebe\yii2openapi\lib\items\RestAction;
 use cebe\yii2openapi\lib\items\RouteData;
 use cebe\yii2openapi\lib\openapi\ResponseSchema;
 use Yii;
 use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
 use yii\helpers\Inflector;
 
 class JsonActionGenerator extends RestActionGenerator
 {
 
     /**
-     * @param string                                $method
-     * @param \cebe\openapi\spec\Operation          $operation
-     * @param \cebe\yii2openapi\lib\items\RouteData $routeData
-     * @return \cebe\yii2openapi\lib\items\RestAction|object
-     * @throws \yii\base\InvalidConfigException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @param string $method
+     * @param Operation $operation
+     * @param RouteData $routeData
+     * @return RestAction|object
+     * @throws InvalidConfigException
+     * @throws UnresolvableReferenceException
      */
-    protected function prepareAction(string $method, Operation $operation, RouteData $routeData):BaseObject
+    protected function prepareAction(string $method, Operation $operation, RouteData $routeData): BaseObject
     {
         $actionType = $this->resolveActionType($routeData, $method);
         $modelClass = ResponseSchema::guessModelClass($operation, $actionType);

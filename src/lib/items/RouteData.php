@@ -20,18 +20,18 @@ use function reset;
 use function trim;
 
 /**
- * @property-read array        $partsWithoutParams
- * @property-read array        $firstParam
- * @property-read array        $parts
- * @property-read string       $lastPart
- * @property-read  string      $path
- * @property-read  string      $type
- * @property-read  string      $pattern
- * @property-read  string      $controller
- * @property-read  string      $action
+ * @property-read array $partsWithoutParams
+ * @property-read array $firstParam
+ * @property-read array $parts
+ * @property-read string $lastPart
+ * @property-read  string $path
+ * @property-read  string $type
+ * @property-read  string $pattern
+ * @property-read  string $controller
+ * @property-read  string $action
  * @property-read  string|null $idParam
  * @property-read  string|null $parentParam
- * @property-read  array       $params
+ * @property-read  array $params
  */
 final class RouteData extends BaseObject
 {
@@ -219,16 +219,16 @@ final class RouteData extends BaseObject
 
             //check minimum/maximum for routes like <year:\d{4}> ?
             if ($type === 'integer') {
-                $patternParts[$p] = '<' . $paramName . ':'.$intRegex.'+>';
+                $patternParts[$p] = '<' . $paramName . ':' . $intRegex . '+>';
             } elseif ($type === 'string') {
-                $patternParts[$p] = '<' . $paramName . ':'.$strRegex.'+>';
+                $patternParts[$p] = '<' . $paramName . ':' . $strRegex . '+>';
             } else {
                 $patternParts[$p] = '<' . $paramName . '>';
             }
         }
         $this->pattern = implode('/', $patternParts);
         if ($this->prefix) {
-            $this->pattern = trim($this->prefix, '/').'/'.$this->pattern;
+            $this->pattern = trim($this->prefix, '/') . '/' . $this->pattern;
         }
         if ($this->hasParams && $this->isRelationship()) {
             $this->relatedModel = $this->getFirstParam()['model'] ?? null;
@@ -238,7 +238,7 @@ final class RouteData extends BaseObject
     /**
      * @return string
      */
-    public function getPrefix():string
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -246,7 +246,7 @@ final class RouteData extends BaseObject
     /**
      * @return string
      */
-    public function getUnprefixedPath():string
+    public function getUnprefixedPath(): string
     {
         return $this->unprefixedPath;
     }
@@ -254,12 +254,12 @@ final class RouteData extends BaseObject
     /**
      * @return array
      */
-    public function getPrefixSettings():array
+    public function getPrefixSettings(): array
     {
         return $this->prefixSettings;
     }
 
-    protected function detectUrlPattern():void
+    protected function detectUrlPattern(): void
     {
         if ($this->path === '/') {
             $this->type = self::TYPE_DEFAULT;
@@ -322,62 +322,62 @@ final class RouteData extends BaseObject
         }
     }
 
-    public function getType():string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getPattern():string
+    public function getPattern(): string
     {
         return $this->pattern;
     }
 
-    public function getAction():string
+    public function getAction(): string
     {
         return $this->action;
     }
 
-    public function getController():?string
+    public function getController(): ?string
     {
         return $this->controller;
     }
 
-    public function getIdParam():?string
+    public function getIdParam(): ?string
     {
         return $this->idParam;
     }
 
-    public function getParentParam():?string
+    public function getParentParam(): ?string
     {
         return $this->parentParam;
     }
 
-    public function getParams():array
+    public function getParams(): array
     {
         return $this->params;
     }
 
-    public function getPath():string
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    public function getParts():array
+    public function getParts(): array
     {
         return $this->parts;
     }
 
-    public function getRelatedModel():?string
+    public function getRelatedModel(): ?string
     {
         return $this->relatedModel;
     }
 
-    public function isRelationship():bool
+    public function isRelationship(): bool
     {
         return $this->type === self::TYPE_RELATIONSHIP;
     }
 
-    public function resolveGetActionType():string
+    public function resolveGetActionType(): string
     {
         if ($this->type === self::TYPE_DEFAULT) {
             return '';
@@ -394,17 +394,17 @@ final class RouteData extends BaseObject
         return 'list';
     }
 
-    private function getLastPart():string
+    private function getLastPart(): string
     {
         return $this->parts[count($this->parts) - 1];
     }
 
-    private function isLastPartIsParam():bool
+    private function isLastPartIsParam(): bool
     {
         return preg_match(self::PATTERN_PARAM, $this->getLastPart());
     }
 
-    private function getPartsWithoutParams():array
+    private function getPartsWithoutParams(): array
     {
         return array_filter(
             $this->parts,
@@ -414,22 +414,22 @@ final class RouteData extends BaseObject
         );
     }
 
-    private function getFirstParam():array
+    private function getFirstParam(): array
     {
         return reset($this->params);
     }
 
-    private function isSingularAction():bool
+    private function isSingularAction(): bool
     {
         return $this->action && Inflector::singularize($this->action) === $this->action;
     }
 
-    public function isModelBasedType():bool
+    public function isModelBasedType(): bool
     {
         return !in_array($this->type, [self::TYPE_DEFAULT, self::TYPE_PROFILE]);
     }
 
-    public function isNonCrudAction():bool
+    public function isNonCrudAction(): bool
     {
         return in_array($this->type, [self::TYPE_DEFAULT, self::TYPE_RESOURCE_OPERATION]);
     }

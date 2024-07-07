@@ -21,7 +21,8 @@ make cli
 # create new branch from master and Happy contributing!
 ```
 
-These commands are available to develop and check the tests. It is available inside the Docker container. To enter into bash shell of container, run `make cli` .
+These commands are available to develop and check the tests. It is available inside the Docker container. To enter into
+bash shell of container, run `make cli` .
 
 ```bash
 cd tests
@@ -49,17 +50,19 @@ To apply multiple migration with one command:
 PHPUnit run only one test by regex
 ----------------------------------
 
-If a PHPUnit test file have 2 test method with names like `testEdit()` and `testEditExpression()` then by running `./vendor/bin/phpunit --filter XDbDefaultExpressionTest::testEdit` both tests will run. In order to run only one test `testEdit()`, run below command:
+If a PHPUnit test file have 2 test method with names like `testEdit()` and `testEditExpression()` then by
+running `./vendor/bin/phpunit --filter XDbDefaultExpressionTest::testEdit` both tests will run. In order to run only one
+test `testEdit()`, run below command:
 
 ```bash
 ./vendor/bin/phpunit --filter '/XDbDefaultExpressionTest::testEdit$/'
 ```
 
-
 Switching PHP versions
 ----------------------
 
-You can switch the PHP version of the docker runtime by changing the `PHP_VERSION` environment variable in the `.env` file.
+You can switch the PHP version of the docker runtime by changing the `PHP_VERSION` environment variable in the `.env`
+file.
 
 If you have no `.env` file yet, create it by copying `.env.dist` to `.env`.
 
@@ -113,7 +116,6 @@ sudo rm -rf vendor
 composer update
 ```
 
-
 ## Use PR of your own fork of this library in your project to check new changes
 
 Say you have a fork of this library at https://github.com/SOHELAHMED7/yii2-openapi
@@ -124,9 +126,7 @@ You wanted to check this new changes in your own project which is using this lib
 
 You can accomplish it by:
 
-
 Add below to composer.json of your project file
-
 
 ```json
     "repositories": [
@@ -151,4 +151,5 @@ Run below command:
 composer require cebe/yii2-openapi:dev-143-if-data-type-is-not-changed-then-still-migrations-are-generated-for-timestamp-in-mysql
 ```
 
-Ensure to use upstream package name `cebe/yii2-openapi` instead of your fork (`sohelahmed7/yii2-openapi`) in composer command. And prefix branch name by `dev-`
+Ensure to use upstream package name `cebe/yii2-openapi` instead of your fork (`sohelahmed7/yii2-openapi`) in composer
+command. And prefix branch name by `dev-`

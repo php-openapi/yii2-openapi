@@ -19,20 +19,20 @@ class ValidatorRulesBuilderTest extends TestCase
             'tableName' => 'dummy',
             'attributes' => [
                 (new Attribute('id'))->setPhpType('int')->setDbType(Schema::TYPE_PK)
-                                     ->setRequired(true)->setReadOnly(true),
+                    ->setRequired(true)->setReadOnly(true),
                 (new Attribute('title'))->setPhpType('string')
-                                        ->setDbType('string')
-                                        ->setSize(60)
-                                        ->setRequired(true),
+                    ->setDbType('string')
+                    ->setSize(60)
+                    ->setRequired(true),
                 (new Attribute('article'))->setPhpType('string')->setDbType('text')->setDefault(''),
                 (new Attribute('active'))->setPhpType('bool')->setDbType('boolean'),
                 (new Attribute('category'))->asReference('Category')
-                                           ->setRequired(true)->setPhpType('int')->setDbType('integer'),
+                    ->setRequired(true)->setPhpType('int')->setDbType('integer'),
                 (new Attribute('state'))->setPhpType('string')->setDbType('string')->setEnumValues(['active', 'draft']),
                 (new Attribute('created_at'))->setPhpType('string')->setDbType('datetime'),
                 (new Attribute('contact_email'))->setPhpType('string')->setDbType('string'),
                 (new Attribute('required_with_def'))->setPhpType('string')
-                                                    ->setDbType('string')->setRequired()->setDefault('xxx'),
+                    ->setDbType('string')->setRequired()->setDefault('xxx'),
             ],
             'indexes' => [
                 'dummy_title_active_key' => DbIndex::make('dummy', ['title', 'active'], null, true),

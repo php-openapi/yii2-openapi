@@ -7,7 +7,6 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
 use function gettype;
 use function implode;
@@ -32,20 +31,20 @@ final class ValidationRule
         $this->params = $params;
     }
 
-    public function __toString():string
+    public function __toString(): string
     {
         $attrs = implode("', '", $this->attributes);
         $params = empty($this->params) ? '' : ', ' . $this->arrayToString($this->params);
         return sprintf("[['%s'], '%s'%s]", $attrs, $this->validator, $params);
     }
 
-    private function arrayToString(array $data):string
+    private function arrayToString(array $data): string
     {
         $params = [];
         foreach ($data as $key => $val) {
             $type = gettype($val);
             $value = VarDumper::export($val);
-            $value = str_replace(PHP_EOL, PHP_EOL.'    ', $value);
+            $value = str_replace(PHP_EOL, PHP_EOL . '    ', $value);
             $params[] = is_string($key) ? "'$key' => $value" : $value;
         }
         return implode(', ', $params);

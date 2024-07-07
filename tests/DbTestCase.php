@@ -3,12 +3,12 @@
 namespace tests;
 
 use cebe\yii2openapi\generator\ApiGenerator;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use Yii;
-use yii\di\Container;
 use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
-use \SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\helpers\{ArrayHelper, VarDumper, StringHelper, Console};
+use yii\di\Container;
+use yii\helpers\{ArrayHelper, StringHelper};
 use yii\helpers\FileHelper;
 
 class DbTestCase extends \PHPUnit\Framework\TestCase
@@ -121,9 +121,9 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
                 // Laminas Code adds 2 newlines between { } in version 3, but does not in version 4
                 file_put_contents($file,
                     preg_replace('~(class .*)\n{\n}~i', "$1\n{\n\n\n}",
-                    preg_replace('~(class .*?)\n{\n*( *public function.*)}\n}\n\n$~is', "$1\n{\n\n$2}\n\n\n}\n\n",
-                        file_get_contents($file)
-                    ))
+                        preg_replace('~(class .*?)\n{\n*( *public function.*)}\n}\n\n$~is', "$1\n{\n\n$2}\n\n\n}\n\n",
+                            file_get_contents($file)
+                        ))
                 );
             }
 
@@ -144,13 +144,13 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
             'only' => ['*Faker.php'],
             'except' => ['BaseModelFaker.php'],
         ]);
-        foreach($fakers as $fakerFile) {
+        foreach ($fakers as $fakerFile) {
             $className = 'app\\models\\' .
                 (ApiGenerator::isPostgres() ? "pgsqlfaker\\" : '') .
                 (ApiGenerator::isMariaDb() ? "mariafaker\\" : '') .
                 StringHelper::basename($fakerFile, '.php');
             $faker = new $className;
-            for($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i < 10; $i++) {
                 $model = $faker->generateModel();
                 if (!$model->validate()) {
                     $this->assertSame([], $model->getErrors());
@@ -164,12 +164,12 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
     protected function runUpMigrations(string $db = 'mysql', int $number = 2): void
     {
         // up
-        exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.' --interactive=0', $upOutput, $upExitCode);
+        exec('cd tests; php -dxdebug.mode=develop ./yii migrate-' . $db . ' --interactive=0', $upOutput, $upExitCode);
         $last = count($upOutput) - 1;
         $lastThird = count($upOutput) - 3;
         $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$last], 'Migrated up successfully.');
-        $this->assertSame($upOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' applied.');
+        $this->assertSame($upOutput[$lastThird], $number . ' ' . (($number === 1) ? 'migration was' : 'migrations were') . ' applied.');
         // 1 migration was applied.
         // 2 migrations were applied.
     }
@@ -177,11 +177,11 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
     protected function runDownMigrations(string $db = 'mysql', int $number = 2): void
     {
         // down
-        exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.'/down --interactive=0 '.$number, $downOutput, $downExitCode);
+        exec('cd tests; php -dxdebug.mode=develop ./yii migrate-' . $db . '/down --interactive=0 ' . $number, $downOutput, $downExitCode);
         $last = count($downOutput) - 1;
         $lastThird = count($downOutput) - 3;
         $this->assertSame($downExitCode, 0);
         $this->assertSame($downOutput[$last], 'Migrated down successfully.');
-        $this->assertSame($downOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' reverted.');
+        $this->assertSame($downOutput[$lastThird], $number . ' ' . (($number === 1) ? 'migration was' : 'migrations were') . ' reverted.');
     }
 }

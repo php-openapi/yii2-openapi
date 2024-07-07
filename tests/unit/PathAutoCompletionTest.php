@@ -2,8 +2,8 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\lib\PathAutoCompletion;
 use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\PathAutoCompletion;
 use tests\TestCase;
 use Yii;
 
@@ -44,12 +44,12 @@ class PathAutoCompletionTest extends TestCase
 
     private function registerApp()
     {
-        Yii::setAlias('@vendor', __DIR__.'/items');
+        Yii::setAlias('@vendor', __DIR__ . '/items');
         $this->prepareTempDir();
-        Yii::setAlias('@runtime', __DIR__.'/../tmp/app');
+        Yii::setAlias('@runtime', __DIR__ . '/../tmp/app');
 
         $this->mockRealApplication(); // to register cache component
-        Yii::setAlias('@app', __DIR__.'/../specs');
-        Yii::setAlias('@webroot', __DIR__.'@app/web');
+        Yii::setAlias('@app', __DIR__ . '/../specs');
+        Yii::setAlias('@webroot', __DIR__ . '@app/web');
     }
 }

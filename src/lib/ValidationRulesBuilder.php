@@ -10,8 +10,7 @@ namespace cebe\yii2openapi\lib;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ValidationRule;
-use yii\helpers\VarDumper;
-use yii\validators\DateValidator;
+use yii\db\Expression;
 use function count;
 use function implode;
 use function in_array;
@@ -21,7 +20,7 @@ use function strtolower;
 class ValidationRulesBuilder
 {
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var DbModel
      */
     private $model;
 
@@ -43,9 +42,9 @@ class ValidationRulesBuilder
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\ValidationRule[]
+     * @return array|ValidationRule[]
      */
-    public function build():array
+    public function build(): array
     {
         $this->prepareTypeScope();
 
@@ -80,13 +79,13 @@ class ValidationRulesBuilder
         return $this->rules;
     }
 
-    private function addUniqueRule(array $columns):void
+    private function addUniqueRule(array $columns): void
     {
         $params = count($columns) > 1 ? ['targetAttribute' => $columns] : [];
         $this->rules[implode('_', $columns) . '_unique'] = new ValidationRule($columns, 'unique', $params);
     }
 
-    private function resolveAttributeRules(Attribute $attribute):void
+    private function resolveAttributeRules(Attribute $attribute): void
     {
         if ($attribute->isReadOnly()) {
             return;
@@ -134,7 +133,7 @@ class ValidationRulesBuilder
         $this->addRulesByAttributeName($attribute);
     }
 
-    private function addRulesByAttributeName(Attribute $attribute):void
+    private function addRulesByAttributeName(Attribute $attribute): void
     {
         //@TODO: probably also patterns for file, image
         $patterns = [
@@ -154,7 +153,7 @@ class ValidationRulesBuilder
     /**
      * @param array|Attribute[] $relations
      */
-    private function addExistRules(array $relations):void
+    private function addExistRules(array $relations): void
     {
         foreach ($relations as $attribute) {
             if ($attribute->phpType === 'int' || $attribute->phpType === 'integer') {
@@ -170,7 +169,7 @@ class ValidationRulesBuilder
         }
     }
 
-    private function addStringRule(Attribute $attribute):void
+    private function addStringRule(Attribute $attribute): void
     {
         $params = [];
         if ($attribute->maxLength === $attribute->minLength && $attribute->minLength !== null) {
@@ -187,12 +186,12 @@ class ValidationRulesBuilder
         $this->rules[$key] = new ValidationRule([$attribute->columnName], 'string', $params);
     }
 
-    private function defaultRule(Attribute $attribute):void
+    private function defaultRule(Attribute $attribute): void
     {
         if ($attribute->defaultValue === null) {
             return;
         }
-        if ($attribute->defaultValue instanceof \yii\db\Expression) {
+        if ($attribute->defaultValue instanceof Expression) {
             return;
         }
 
@@ -202,7 +201,7 @@ class ValidationRulesBuilder
         $this->rules[$key] = new ValidationRule([$attribute->columnName], 'default', $params);
     }
 
-    private function addNumericRule(Attribute $attribute):void
+    private function addNumericRule(Attribute $attribute): void
     {
         $params = [];
         if ($attribute->limits['min'] !== null) {
@@ -216,10 +215,10 @@ class ValidationRulesBuilder
         $this->rules[$key] = new ValidationRule([$attribute->columnName], $validator, $params);
     }
 
-    private function prepareTypeScope():void
+    private function prepareTypeScope(): void
     {
         foreach ($this->model->attributes as $attribute) {
-            /** @var $attribute \cebe\yii2openapi\lib\items\Attribute */
+            /** @var $attribute Attribute */
             if ($attribute->isReadOnly()) {
                 continue;
             }

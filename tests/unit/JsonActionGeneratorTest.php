@@ -2,11 +2,15 @@
 
 namespace tests\unit;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\generators\JsonActionGenerator;
 use cebe\yii2openapi\lib\items\FractalAction;
 use cebe\yii2openapi\lib\items\RouteData;
 use tests\TestCase;
+use yii\base\InvalidConfigException;
 
 class JsonActionGeneratorTest extends TestCase
 {
@@ -17,12 +21,12 @@ class JsonActionGeneratorTest extends TestCase
      * @param string $modelNs
      * @param string $transformerNs
      * @param        $expected
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    public function testGenerate(string $schemaFile, string $modelNs, string $transformerNs, $expected):void
+    public function testGenerate(string $schemaFile, string $modelNs, string $transformerNs, $expected): void
     {
         $config = new Config([
             'openApiPath' => $schemaFile,
@@ -39,15 +43,16 @@ class JsonActionGeneratorTest extends TestCase
      * @dataProvider dataProviderWithNamingMap
      * @param string $schemaFile
      * @param string $modelNs
-     * @param array  $namingMap
+     * @param array $namingMap
      * @param string $transformerNs
      * @param        $expected
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
     public function testGenerateWithNamingMap(
         string $schemaFile, string $modelNs, array $namingMap, string $transformerNs, $expected
-    ):void {
+    ): void
+    {
         $config = new Config([
             'openApiPath' => $schemaFile,
             'modelNamespace' => $modelNs,
@@ -60,7 +65,7 @@ class JsonActionGeneratorTest extends TestCase
         }
     }
 
-    public function dataProvider():array
+    public function dataProvider(): array
     {
         return [
             [
@@ -78,7 +83,7 @@ class JsonActionGeneratorTest extends TestCase
         ];
     }
 
-    public function dataProviderWithNamingMap():array
+    public function dataProviderWithNamingMap(): array
     {
         return [
             [
@@ -98,7 +103,7 @@ class JsonActionGeneratorTest extends TestCase
         ];
     }
 
-    private function blogActions():array
+    private function blogActions(): array
     {
         return [
             new FractalAction([
@@ -466,7 +471,7 @@ class JsonActionGeneratorTest extends TestCase
         ];
     }
 
-    private function blogActionsWithNaming():array
+    private function blogActionsWithNaming(): array
     {
         return [
             new FractalAction([
@@ -834,7 +839,7 @@ class JsonActionGeneratorTest extends TestCase
         ];
     }
 
-    private function petStoreActions():array
+    private function petStoreActions(): array
     {
         return [
             new FractalAction([

@@ -2,8 +2,8 @@
 
 namespace tests\unit;
 
-use Yii;
 use tests\DbTestCase;
+use Yii;
 use yii\helpers\FileHelper;
 
 class IdNotInRulesTest extends DbTestCase

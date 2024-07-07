@@ -2,15 +2,12 @@
 
 namespace tests\unit;
 
-use cebe\openapi\Reader;
-use cebe\openapi\spec\OpenApi;
 use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\SchemaToDatabase;
 use tests\TestCase;
 use Yii;
-use yii\helpers\VarDumper;
 use function array_keys;
 
 class SchemaToDatabaseTest extends TestCase
