@@ -101,8 +101,7 @@ class ControllersGenerator
         string $className,
         string $controllerNamespace,
         array  $actions
-    ): FileGenerator
-    {
+    ): FileGenerator {
         $classFileGenerator = new FileGenerator();
         $reflection = new ClassGenerator(
             $className,

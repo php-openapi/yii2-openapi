@@ -212,9 +212,8 @@ class AttributeResolver
     protected function resolveProperty(
         PropertySchema $property,
         bool           $isRequired,
-                       $nullableValue = 'ARG_ABSENT'
-    ): void
-    {
+        $nullableValue = 'ARG_ABSENT'
+    ): void {
         if ($nullableValue === 'ARG_ABSENT') {
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
         }
@@ -373,8 +372,7 @@ class AttributeResolver
         string          $relatedSchemaName,
         string          $relatedTableName,
         ComponentSchema $refSchema
-    ): bool
-    {
+    ): bool {
         if (strtolower(Inflector::id2camel($propertyName, '_'))
             !== strtolower(Inflector::pluralize($relatedSchemaName))) {
             return false;

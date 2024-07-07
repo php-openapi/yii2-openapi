@@ -301,8 +301,7 @@ final class MigrationRecordBuilder
         bool         $raw = false,
         bool         $alterByXDbType = false,
         ?string      $position = null
-    ): ColumnToCode
-    {
+    ): ColumnToCode {
         return Yii::createObject(ColumnToCode::class, [
             $this->dbSchema,
             $tableAlias,

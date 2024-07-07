@@ -33,8 +33,7 @@ class NonDbRelation
         string  $name,
         ?string $className = null,
         ?string $method = null
-    )
-    {
+    ) {
         $this->name = $name;
         $this->className = $className;
         $this->method = $method;

@@ -129,8 +129,7 @@ class ColumnToCode
         bool         $raw = false,
         bool         $alterByXDbType = false,
         ?string      $position = null
-    )
-    {
+    ) {
         $this->dbSchema = $dbSchema;
         $this->tableAlias = $tableAlias;
         $this->column = $column;

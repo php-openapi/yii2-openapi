@@ -332,7 +332,7 @@ class Attribute extends BaseObject
     private function yiiAbstractTypeForDbSpecificType(string $dbType): string
     {
         if (is_string($this->xDbType) && !empty($this->xDbType) && trim($this->xDbType)) {
-            list(, $yiiAbstractDataType,) = PropertySchema::findMoreDetailOf($this->xDbType);
+            list(, $yiiAbstractDataType, ) = PropertySchema::findMoreDetailOf($this->xDbType);
             return $yiiAbstractDataType;
         } else {
             if (stripos($dbType, 'int') === 0) {

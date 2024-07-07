@@ -47,8 +47,7 @@ class Transformer extends BaseObject
         string  $namespace,
         string  $modelNamespace,
         bool    $singularResourceKey = false
-    )
-    {
+    ) {
         $this->dbModel = $dbModel;
         $this->namespace = $namespace;
         $this->modelNamespace = $modelNamespace;

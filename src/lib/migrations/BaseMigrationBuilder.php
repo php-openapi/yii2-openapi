@@ -490,8 +490,7 @@ abstract class BaseMigrationBuilder
     public static function isEnumValuesChanged(
         ColumnSchema $current,
         ColumnSchema $desired
-    ): bool
-    {
+    ): bool {
         if (static::isEnum($current) && static::isEnum($desired) &&
             $current->enumValues !== $desired->enumValues) {
             return true;
@@ -502,8 +501,7 @@ abstract class BaseMigrationBuilder
     public function isDefaultValueChanged(
         ColumnSchema $current,
         ColumnSchema $desired
-    ): bool
-    {
+    ): bool {
         // if the default value is object of \yii\db\Expression then default value is expression instead of constant. See https://dev.mysql.com/doc/refman/8.0/en/data-type-defaults.html
         // in such case instead of comparing two objects, we should compare expression
 
@@ -554,7 +552,7 @@ abstract class BaseMigrationBuilder
 
             return self::POS_AFTER . ' ' . $prevColName;
 
-            // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
+        // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
         } elseif ($key === 0) {
             return self::POS_FIRST;
         }
