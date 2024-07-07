@@ -516,6 +516,7 @@ components:
         numeric_col:
           type: string
           x-db-type: double precision
+          nullable: false
         json_col_def_n:
           type: string
           x-db-type: json

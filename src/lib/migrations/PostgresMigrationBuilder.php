@@ -62,16 +62,20 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
             // This action require several steps and can't be applied during single transaction
             return;
         }
-
+        $forUp = $forDown = false;
         if (!empty(array_intersect(['type', 'size'
                     , 'dbType', 'phpType'
                     , 'precision', 'scale', 'unsigned'
         ], $changed))) {
             $addUsing = $this->isNeedUsingExpression($current->dbType, $desired->dbType);
             $this->migration->addUpCode($this->recordBuilder->alterColumnType($tableName, $desired, $addUsing));
+            $forUp = $this->recordBuilder->isBuiltInType;
             $this->migration->addDownCode($this->recordBuilder->alterColumnTypeFromDb($tableName, $current, $addUsing));
+            $forDown = $this->recordBuilder->isBuiltInType;
         }
-        if (in_array('allowNull', $changed, true)) {
+        if (in_array('allowNull', $changed, true)
+            && ($forUp === false || $forDown === false)
+        ) {
             // TODO            if last up code contains `null()` string then do execute below statement, same for notNull() and same in down code
             if ($desired->allowNull === true) {
                 $this->migration->addUpCode($this->recordBuilder->dropColumnNotNull($tableName, $desired));
@@ -81,6 +85,9 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
                 $this->migration->addDownCode($this->recordBuilder->dropColumnNotNull($tableName, $current), true);
             }
         }
+
+        $this->recordBuilder->isBuiltInType = $forUp = $forDown = false;
+
         if (in_array('defaultValue', $changed, true)) {
             $upCode = $desired->defaultValue === null
                 ? $this->recordBuilder->dropColumnDefault($tableName, $desired)
@@ -97,9 +104,6 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         }
         if ($isChangeFromEnum) {
             $this->migration->addUpCode($this->recordBuilder->dropEnum($tableName, $current->name));
-        }
-
-        if ($isChangeFromEnum) {
             $this->migration
                 ->addDownCode($this->recordBuilder->createEnum($tableName, $current->name, $current->enumValues));
         }
