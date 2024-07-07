@@ -51,6 +51,12 @@ final class MigrationRecordBuilder
      */
     private $dbSchema;
 
+    /**
+     * @var bool
+     * Only required for PgSQL alter column for set null/set default related statement
+     */
+    public $isBuiltInType = false;
+
     public function __construct(Schema $dbSchema)
     {
         $this->dbSchema = $dbSchema;
@@ -134,6 +140,7 @@ final class MigrationRecordBuilder
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, false, false, true, true);
+            $this->isBuiltInType = $converter->isBuiltinType;
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -142,6 +149,7 @@ final class MigrationRecordBuilder
             );
         }
         $converter = $this->columnToCode($tableAlias, $column, false);
+        $this->isBuiltInType = $converter->isBuiltinType;
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getAlterExpression($addUsing));
     }
 
@@ -153,6 +161,7 @@ final class MigrationRecordBuilder
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
+            $this->isBuiltInType = $converter->isBuiltinType;
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -161,6 +170,7 @@ final class MigrationRecordBuilder
             );
         }
         $converter = $this->columnToCode($tableAlias, $column, true);
+        $this->isBuiltInType = $converter->isBuiltinType;
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getAlterExpression($addUsing));
     }
 
