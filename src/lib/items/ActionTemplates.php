@@ -22,7 +22,7 @@ class ActionTemplates
         $this->checkAccess(ACTION_ID, $model);
         return $model;
 PHP
-    ,
+            ,
         ],
         'create' => [
             'class' => '\yii\rest\CreateAction::class',
@@ -40,7 +40,7 @@ PHP
 
         return $model;
 PHP
-    ,
+            ,
         ],
         'delete' => [
             'class' => '\yii\rest\DeleteAction::class',
@@ -54,21 +54,21 @@ PHP
 
         \Yii::$app->response->setStatusCode(204);
 PHP
-    ,
+            ,
         ],
     ];
 
-    public static function hasTemplate(string $actionId):bool
+    public static function hasTemplate(string $actionId): bool
     {
         return isset(self::ACTIONS[$actionId]);
     }
 
-    public static function hasImplementation(string $actionId):bool
+    public static function hasImplementation(string $actionId): bool
     {
         return in_array($actionId, ['view', 'update', 'delete']);
     }
 
-    public static function getTemplate(string $actionId):?array
+    public static function getTemplate(string $actionId): ?array
     {
         return self::ACTIONS[$actionId] ?? null;
     }

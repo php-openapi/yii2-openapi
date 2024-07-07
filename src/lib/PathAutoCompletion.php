@@ -11,7 +11,6 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 use Throwable;
-use cebe\yii2openapi\lib\Config;
 use Yii;
 use yii\helpers\FileHelper;
 
@@ -27,7 +26,7 @@ class PathAutoCompletion
         $this->_config = $config;
     }
 
-    public function complete():array
+    public function complete(): array
     {
         return [
             'openApiPath' => $this->computePaths($this->_config),
@@ -42,7 +41,7 @@ class PathAutoCompletion
         ];
     }
 
-    private function completeAlias(string $alias):array
+    private function completeAlias(string $alias): array
     {
         $path = Yii::getAlias($alias, false);
         if (in_array($alias, ['@web', '@runtime', '@vendor', '@bower', '@npm'])) {
@@ -52,7 +51,7 @@ class PathAutoCompletion
             return [];
         }
         try {
-            $dirs =  FileHelper::findDirectories($path, ['except' => ['vendor/','runtime/','assets/','.git/','.svn/', '/web']]);
+            $dirs = FileHelper::findDirectories($path, ['except' => ['vendor/', 'runtime/', 'assets/', '.git/', '.svn/', '/web']]);
         } catch (Throwable $e) {
             // ignore errors with file permissions
             Yii::error($e);
@@ -76,7 +75,7 @@ class PathAutoCompletion
             return $list;
         }
         $list = array_merge(...array_map([$this, 'completeAlias'], array_keys(Yii::$aliases)));
-        Yii::$app->cache->set($key, $list, 3*24*60*60); // 3 days
+        Yii::$app->cache->set($key, $list, 3 * 24 * 60 * 60); // 3 days
         return $list;
     }
 
@@ -129,7 +128,7 @@ class PathAutoCompletion
                 $paths[] = $file;
             }
         }
-        Yii::$app->cache->set($key, $paths, 3*24*60*60); // 3 days
+        Yii::$app->cache->set($key, $paths, 3 * 24 * 60 * 60); // 3 days
         return $paths;
     }
 }

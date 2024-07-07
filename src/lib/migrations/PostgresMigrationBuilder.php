@@ -7,51 +7,55 @@
 
 namespace cebe\yii2openapi\lib\migrations;
 
+use cebe\yii2openapi\lib\ColumnToCode;
 use cebe\yii2openapi\lib\items\DbIndex;
+use yii\base\InvalidConfigException;
+use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
-use yii\helpers\VarDumper;
+use yii\db\ColumnSchemaBuilder;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 
 final class PostgresMigrationBuilder extends BaseMigrationBuilder
 {
     /**
      * @param array|ColumnSchema[] $columns
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function buildColumnsCreation(array $columns):void
+    protected function buildColumnsCreation(array $columns): void
     {
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
             if (static::isEnum($column)) {
                 $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $column->name, $column->enumValues))
-                                ->addDownCode($this->recordBuilder->dropEnum($tableName, $column->name), true);
+                    ->addDownCode($this->recordBuilder->dropEnum($tableName, $column->name), true);
             }
             $this->migration->addUpCode($this->recordBuilder->addColumn($tableName, $column))
-                            ->addDownCode($this->recordBuilder->dropColumn($tableName, $column->name));
+                ->addDownCode($this->recordBuilder->dropColumn($tableName, $column->name));
         }
     }
 
     /**
      * @param array|ColumnSchema[] $columns
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function buildColumnsDrop(array $columns):void
+    protected function buildColumnsDrop(array $columns): void
     {
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
             $this->migration->addDownCode($this->recordBuilder->addDbColumn($tableName, $column))
-                            ->addUpCode($this->recordBuilder->dropColumn($tableName, $column->name));
+                ->addUpCode($this->recordBuilder->dropColumn($tableName, $column->name));
             if (static::isEnum($column)) {
                 $this->migration->addDownCode($this->recordBuilder->createEnum($tableName, $column->name, $column->enumValues))
-                                ->addUpCode($this->recordBuilder->dropEnum($tableName, $column->name));
+                    ->addUpCode($this->recordBuilder->dropEnum($tableName, $column->name));
             }
         }
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed):void
+    protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed): void
     {
         $tableName = $this->model->getTableAlias();
         $isChangeToEnum = !static::isEnum($current) && static::isEnum($desired);
@@ -64,8 +68,8 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         }
 
         if (!empty(array_intersect(['type', 'size'
-                    , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
+            , 'dbType', 'phpType'
+            , 'precision', 'scale', 'unsigned'
         ], $changed))) {
             $addUsing = $this->isNeedUsingExpression($current->dbType, $desired->dbType);
             $this->migration->addUpCode($this->recordBuilder->alterColumnType($tableName, $desired, $addUsing));
@@ -107,7 +111,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         }
     }
 
-    protected function compareColumns(ColumnSchema $current, ColumnSchema $desired):array
+    protected function compareColumns(ColumnSchema $current, ColumnSchema $desired): array
     {
         $changedAttributes = [];
         $tableAlias = $this->model->getTableAlias();
@@ -126,9 +130,9 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesiredFromDbInContextOfDesired($desired, $desiredFromDb);
 
         foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
-                    , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
-        ] as $attr) {
+                     , 'dbType', 'phpType'
+                     , 'precision', 'scale', 'unsigned'
+                 ] as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
                     $changedAttributes[] = $attr;
@@ -142,7 +146,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         return $changedAttributes;
     }
 
-    protected function createEnumMigrations():void
+    protected function createEnumMigrations(): void
     {
         $tableAlias = $this->model->getTableAlias();
         $enums = $this->model->getEnumAttributes();
@@ -157,7 +161,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         }
     }
 
-    protected function isDbDefaultSize(ColumnSchema $current):bool
+    protected function isDbDefaultSize(ColumnSchema $current): bool
     {
         $defaults = ['char' => 1, 'string' => 255];
         return isset($defaults[$current->type]);
@@ -165,10 +169,10 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
 
     /**
      * @return array|DbIndex[]
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\db\Exception
+     * @throws NotSupportedException
+     * @throws Exception
      */
-    protected function findTableIndexes():array
+    protected function findTableIndexes(): array
     {
         static $sql = <<<'SQL'
 SELECT
@@ -217,7 +221,7 @@ SQL;
 
     public static function getColumnSchemaBuilderClass(): string
     {
-        return \yii\db\ColumnSchemaBuilder::class;
+        return ColumnSchemaBuilder::class;
     }
 
     public function modifyCurrent(ColumnSchema $current): void
@@ -234,7 +238,7 @@ SQL;
         if (in_array($desired->phpType, ['int', 'integer']) && $desired->defaultValue !== null) {
             $desired->defaultValue = (int)$desired->defaultValue;
         }
-        if ($decimalAttributes = \cebe\yii2openapi\lib\ColumnToCode::isDecimalByDbType($desired->dbType)) {
+        if ($decimalAttributes = ColumnToCode::isDecimalByDbType($desired->dbType)) {
             $desired->precision = $decimalAttributes['precision'];
             $desired->scale = $decimalAttributes['scale'];
         }

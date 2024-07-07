@@ -4,6 +4,7 @@ use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\AttributeRelation;
 use cebe\yii2openapi\lib\items\DbIndex;
 use cebe\yii2openapi\lib\items\DbModel;
+use yii\db\Expression;
 
 return [
     'user' => new DbModel([
@@ -23,10 +24,10 @@ return [
                 ->setSize(20)
                 ->setDefault('reader')
                 ->setFakerStub('$faker->randomElement([\'admin\', \'editor\', \'reader\'])'),
-            'flags' => (new Attribute('flags', ['phpType'=>'int', 'dbType'=>'integer']))->setDefault(0)->setFakerStub
+            'flags' => (new Attribute('flags', ['phpType' => 'int', 'dbType' => 'integer']))->setDefault(0)->setFakerStub
             ('$faker->numberBetween(0, 1000000)'),
             'created_at' => (new Attribute('created_at', ['phpType' => 'string', 'dbType' => 'datetime']))
-                ->setDefault(new \yii\db\Expression('(CURRENT_TIMESTAMP)'))->setFakerStub('$faker->dateTimeThisYear(\'now\', \'UTC\')->format(\'Y-m-d H:i:s\')'),
+                ->setDefault(new Expression('(CURRENT_TIMESTAMP)'))->setFakerStub('$faker->dateTimeThisYear(\'now\', \'UTC\')->format(\'Y-m-d H:i:s\')'),
         ],
         'relations' => [],
         'indexes' => [
@@ -75,7 +76,7 @@ return [
                 ->setDescription('Category of posts')
                 ->setFakerStub('$faker->randomElement(\app\models\Category::find()->select("id")->column())'),
             'created_at' => (new Attribute('created_at', ['phpType' => 'string', 'dbType' => 'date']))
-               ->setFakerStub('$faker->dateTimeThisCentury->format(\'Y-m-d\')'),
+                ->setFakerStub('$faker->dateTimeThisCentury->format(\'Y-m-d\')'),
             'created_by' => (new Attribute('created_by', ['phpType' => 'int', 'dbType' => 'integer']))
                 ->asReference('User')
                 ->setDescription('The User')
@@ -120,7 +121,7 @@ return [
                 ->setRequired()->setDefault([])->setFakerStub('["a" => "b"]'),
             'meta_data' => (new Attribute('meta_data', ['phpType' => 'array', 'dbType' => 'json', 'xDbType' => 'json']))
                 ->setDefault([])->setFakerStub('[]'),
-            'created_at' => (new Attribute('created_at',['phpType' => 'int', 'dbType' => 'integer']))
+            'created_at' => (new Attribute('created_at', ['phpType' => 'int', 'dbType' => 'integer']))
                 ->setRequired()->setFakerStub('$faker->unixTime'),
         ],
         'relations' => [

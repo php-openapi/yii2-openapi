@@ -1,76 +1,76 @@
 version: "3.5"
 services:
-    php:
-        image: yii2-openapi-php:${PHP_VERSION:-8.3}
-        build:
-            dockerfile: tests/docker/Dockerfile
-            context: .
-            args:
-              - BUILD_PHP_VERSION=${PHP_VERSION:-8.3}
-        extra_hosts: # https://stackoverflow.com/a/67158212/1106908
-            - "host.docker.internal:host-gateway"
-        volumes:
-            - ./tests/tmp/.composer:/root/.composer:rw
-            - .:/app
-        environment:
-            - TZ=UTC
-            - TIMEZONE=UTC
-            - DB_USER=dbuser
-            - DB_PASSWORD=dbpass
-            - IN_DOCKER=docker
-            - PHP_XDEBUG_ENABLED=1
-            - XDEBUG_CONFIG="remote_host=host.docker.internal"
-            - PHP_IDE_CONFIG="serverName=Docker"
-        depends_on:
-            - mysql
-            - postgres
-            - maria
-        tty: true
-    mysql:
-        image: mysql:8.4
-        ports:
-            - '13306:3306'
-        command: mysqld --mysql-native-password=ON
-        volumes:
-            - ./tests/tmp/mysql:/var/lib/mysql:rw
-        environment:
-            TZ: UTC
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            MYSQL_USER: dbuser
-            MYSQL_PASSWORD: dbpass
-            MYSQL_DATABASE: testdb
+  php:
+    image: yii2-openapi-php:${PHP_VERSION:-8.3}
+    build:
+      dockerfile: tests/docker/Dockerfile
+      context: .
+      args:
+        - BUILD_PHP_VERSION=${PHP_VERSION:-8.3}
+    extra_hosts: # https://stackoverflow.com/a/67158212/1106908
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./tests/tmp/.composer:/root/.composer:rw
+      - .:/app
+    environment:
+      - TZ=UTC
+      - TIMEZONE=UTC
+      - DB_USER=dbuser
+      - DB_PASSWORD=dbpass
+      - IN_DOCKER=docker
+      - PHP_XDEBUG_ENABLED=1
+      - XDEBUG_CONFIG="remote_host=host.docker.internal"
+      - PHP_IDE_CONFIG="serverName=Docker"
+    depends_on:
+      - mysql
+      - postgres
+      - maria
+    tty: true
+  mysql:
+    image: mysql:8.4
+    ports:
+      - '13306:3306'
+    command: mysqld --mysql-native-password=ON
+    volumes:
+      - ./tests/tmp/mysql:/var/lib/mysql:rw
+    environment:
+      TZ: UTC
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpass
+      MYSQL_DATABASE: testdb
 
-    maria:
-        image: mariadb:10.8
-        ports:
-            - '23306:3306'
-        volumes:
-            - ./tests/tmp/maria:/var/lib/mysql:rw
-        environment:
-            # TZ: UTC
-            # MARIADB_ALLOW_EMPTY_PASSWORD: 1
-            MARIADB_ROOT_PASSWORD: verysecret
-            MARIADB_USER: dbuser
-            MARIADB_PASSWORD: dbpass
-            MARIADB_DATABASE: testdb
-            # MYSQL_INITDB_SKIP_TZINFO: 1
-    postgres:
-        image: postgres:12
-        ports:
-            - '15432:5432'
-        volumes:
-            - ./tests/tmp/postgres:/var/lib/postgresql/data:rw
-        environment:
-            TZ: UTC
-            PGTZ: UTC
-            POSTGRES_USER: dbuser
-            POSTGRES_PASSWORD: dbpass
-            POSTGRES_DB: testdb
+  maria:
+    image: mariadb:10.8
+    ports:
+      - '23306:3306'
+    volumes:
+      - ./tests/tmp/maria:/var/lib/mysql:rw
+    environment:
+      # TZ: UTC
+      # MARIADB_ALLOW_EMPTY_PASSWORD: 1
+      MARIADB_ROOT_PASSWORD: verysecret
+      MARIADB_USER: dbuser
+      MARIADB_PASSWORD: dbpass
+      MARIADB_DATABASE: testdb
+      # MYSQL_INITDB_SKIP_TZINFO: 1
+  postgres:
+    image: postgres:12
+    ports:
+      - '15432:5432'
+    volumes:
+      - ./tests/tmp/postgres:/var/lib/postgresql/data:rw
+    environment:
+      TZ: UTC
+      PGTZ: UTC
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+      POSTGRES_DB: testdb
 
 networks:
-    default:
-        driver: bridge
-        ipam:
-          config:
-              - subnet: 172.14.0.0/24
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.14.0.0/24
 

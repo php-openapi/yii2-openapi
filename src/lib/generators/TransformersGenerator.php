@@ -9,27 +9,29 @@ namespace cebe\yii2openapi\lib\generators;
 
 use cebe\yii2openapi\lib\CodeFiles;
 use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\Transformer;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\gii\CodeFile;
 
 class TransformersGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|DbModel[]
      */
     protected $models;
 
     /**
      * @var CodeFiles $files
-    **/
+     **/
     protected $files;
 
     public function __construct(Config $config, array $models)
@@ -40,10 +42,10 @@ class TransformersGenerator
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\CodeFiles
-     * @throws \yii\base\InvalidConfigException
+     * @return CodeFiles
+     * @throws InvalidConfigException
      */
-    public function generate():CodeFiles
+    public function generate(): CodeFiles
     {
         if (!$this->config->generateControllers || !$this->config->useJsonApi) {
             return $this->files;
@@ -51,21 +53,21 @@ class TransformersGenerator
         $transformerPath = $this->config->getPathFromNamespace($this->config->transformerNamespace);
         foreach ($this->models as $model) {
             $transformer = Yii::createObject(Transformer::class, [
-               $model,
-               $this->config->transformerNamespace,
-               $this->config->modelNamespace,
-               $this->config->singularResourceKeys
-           ]);
+                $model,
+                $this->config->transformerNamespace,
+                $this->config->modelNamespace,
+                $this->config->singularResourceKeys
+            ]);
             $dirPath = $transformerPath . ($this->config->extendableTransformers ? '/base' : '');
             $ns = $this->config->transformerNamespace . ($this->config->extendableTransformers ? '\\base' : '');
             $this->files->add(new CodeFile(
                 Yii::getAlias("{$dirPath}/{$transformer->name}.php"),
                 $this->config->render('transformer.php', [
-                   'namespace' => $ns,
-                   'mainNamespace' => $this->config->transformerNamespace,
-                   'extendable' => $this->config->extendableTransformers,
-                   'transformer' => $transformer,
-               ])
+                    'namespace' => $ns,
+                    'mainNamespace' => $this->config->transformerNamespace,
+                    'extendable' => $this->config->extendableTransformers,
+                    'transformer' => $transformer,
+                ])
             ));
             if (!$this->config->extendableTransformers) {
                 continue;

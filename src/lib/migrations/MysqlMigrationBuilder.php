@@ -10,20 +10,20 @@ namespace cebe\yii2openapi\lib\migrations;
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
 use cebe\yii2openapi\lib\items\DbIndex;
+use SamIT\Yii2\MariaDb\ColumnSchemaBuilder;
+use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\IndexConstraint;
 use yii\db\Schema;
-use \Yii;
 use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
 
 final class MysqlMigrationBuilder extends BaseMigrationBuilder
 {
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed):void
+    protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed): void
     {
         $newColumn = clone $current;
         foreach ($changed as $attr) {
@@ -33,10 +33,10 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             $newColumn->dbType = 'enum'; // TODO this is concretely not correct
         }
         $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn))
-                        ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current));
+            ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current));
     }
 
-    protected function compareColumns(ColumnSchema $current, ColumnSchema $desired):array
+    protected function compareColumns(ColumnSchema $current, ColumnSchema $desired): array
     {
         $changedAttributes = [];
         $tableAlias = $this->model->getTableAlias();
@@ -55,9 +55,9 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesiredFromDbInContextOfDesired($desired, $desiredFromDb);
 
         foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
-                    , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
-        ] as $attr) {
+                     , 'dbType', 'phpType'
+                     , 'precision', 'scale', 'unsigned'
+                 ] as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
                     $changedAttributes[] = $attr;
@@ -71,12 +71,12 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         return $changedAttributes;
     }
 
-    protected function createEnumMigrations():void
+    protected function createEnumMigrations(): void
     {
         // execute via default
     }
 
-    protected function isDbDefaultSize(ColumnSchema $current):bool
+    protected function isDbDefaultSize(ColumnSchema $current): bool
     {
         $defaults = [
             Schema::TYPE_PK => 11,
@@ -97,7 +97,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     /**
      * @return array|DbIndex[]
      */
-    protected function findTableIndexes():array
+    protected function findTableIndexes(): array
     {
         $dbIndexes = [];
         try {
@@ -120,7 +120,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         if (ApiGenerator::isMysql()) {
             return \yii\db\mysql\ColumnSchemaBuilder::class;
         } elseif (ApiGenerator::isMariaDb()) {
-            return \SamIT\Yii2\MariaDb\ColumnSchemaBuilder::class;
+            return ColumnSchemaBuilder::class;
         }
     }
 

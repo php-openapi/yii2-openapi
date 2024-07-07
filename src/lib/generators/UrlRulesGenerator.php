@@ -7,20 +7,23 @@
 
 namespace cebe\yii2openapi\lib\generators;
 
-use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\CodeFiles;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\items\FractalAction;
+use cebe\yii2openapi\lib\items\RestAction;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\gii\CodeFile;
 
 class UrlRulesGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\RestAction[]|\cebe\yii2openapi\lib\items\FractalAction[]
+     * @var array|RestAction[]|FractalAction[]
      */
     protected $actions;
 
@@ -31,10 +34,10 @@ class UrlRulesGenerator
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\CodeFiles
-     * @throws \yii\base\InvalidConfigException
+     * @return CodeFiles
+     * @throws InvalidConfigException
      */
-    public function generate():CodeFiles
+    public function generate(): CodeFiles
     {
         if (!$this->config->generateUrls) {
             return new CodeFiles([]);

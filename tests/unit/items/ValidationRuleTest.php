@@ -12,10 +12,10 @@ class ValidationRuleTest extends TestCase
 
     /**
      * @dataProvider dataProvider
-     * @param \cebe\yii2openapi\lib\items\ValidationRule $rule
-     * @param string                                     $expected
+     * @param ValidationRule $rule
+     * @param string $expected
      */
-    public function testToString(ValidationRule $rule, string $expected):void
+    public function testToString(ValidationRule $rule, string $expected): void
     {
         $this->assertEquals($expected, (string)$rule);
     }
@@ -30,7 +30,7 @@ class ValidationRuleTest extends TestCase
         $this->assertEquals($result, "[['foo'], 'required'],\n[['foo', 'bar'], 'trim']");
     }
 
-    public function dataProvider():array
+    public function dataProvider(): array
     {
         return [
             [
@@ -69,7 +69,9 @@ class ValidationRuleTest extends TestCase
     ]]",
             ],
             [
-                new ValidationRule(['foo'], 'filter', ['filter' => function($v) {return strtolower($v);}]),
+                new ValidationRule(['foo'], 'filter', ['filter' => function ($v) {
+                    return strtolower($v);
+                }]),
                 '[[\'foo\'], \'filter\', \'filter\' => function($v) {return strtolower($v);}]',
             ],
         ];

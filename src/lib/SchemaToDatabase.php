@@ -7,10 +7,16 @@
 
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\helpers\StringHelper;
 use function count;
 
@@ -56,7 +62,7 @@ use function count;
 class SchemaToDatabase
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
@@ -66,15 +72,15 @@ class SchemaToDatabase
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\DbModel[]
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
+     * @return array|DbModel[]
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidDefinitionException
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function prepareModels():array
+    public function prepareModels(): array
     {
         $models = [];
         $openApi = $this->config->getOpenApi();
@@ -88,11 +94,11 @@ class SchemaToDatabase
             if ($junctions->isJunctionSchema($schemaName)) {
                 $schemaName = $junctions->trimPrefix($schemaName);
             }
-            /**@var \cebe\yii2openapi\lib\AttributeResolver $resolver */
+            /**@var AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
             $models[$schemaName] = $resolver->resolve();
         }
-        foreach ($models as  $model) {
+        foreach ($models as $model) {
             foreach ($model->many2many as $relation) {
                 if (isset($models[$relation->viaModelName])) {
                     $relation->hasViaModel = true;
@@ -108,14 +114,14 @@ class SchemaToDatabase
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\JunctionSchemas
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
+     * @return JunctionSchemas
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function findJunctionSchemas():JunctionSchemas
+    public function findJunctionSchemas(): JunctionSchemas
     {
         $junctions = [];
         $openApi = $this->config->getOpenApi();
@@ -195,7 +201,7 @@ class SchemaToDatabase
         return Yii::createObject(JunctionSchemas::class, [$junctions]);
     }
 
-    private function canGenerateModel(string $schemaName, ComponentSchema $schema):bool
+    private function canGenerateModel(string $schemaName, ComponentSchema $schema): bool
     {
         // only generate tables for schemas of type object and those who have defined properties
         if ($schema->isObjectSchema() && !$schema->hasProperties()) {

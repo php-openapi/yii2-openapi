@@ -7,10 +7,10 @@
 
 namespace cebe\yii2openapi\lib\items;
 
+use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 use yii\helpers\Inflector;
 use yii\helpers\VarDumper;
 use function reset;
-use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class AttributeRelation
 {
@@ -48,12 +48,13 @@ class AttributeRelation
     private $selfReference = false;
 
     public function __construct(
-        string $name,
+        string  $name,
         ?string $tableName = null,
         ?string $className = null,
         ?string $method = null,
-        array $link = []
-    ) {
+        array   $link = []
+    )
+    {
         $this->name = $name;
         $this->tableName = $tableName;
         $this->className = $className;
@@ -65,7 +66,7 @@ class AttributeRelation
      * @param string $name
      * @return AttributeRelation
      */
-    public function setName(string $name):AttributeRelation
+    public function setName(string $name): AttributeRelation
     {
         $this->name = $name;
         return $this;
@@ -75,7 +76,7 @@ class AttributeRelation
      * @param string $tableName
      * @return AttributeRelation
      */
-    public function setTableName(string $tableName):AttributeRelation
+    public function setTableName(string $tableName): AttributeRelation
     {
         $this->tableName = $tableName;
         return $this;
@@ -85,38 +86,38 @@ class AttributeRelation
      * @param string $className
      * @return AttributeRelation
      */
-    public function setClassName(string $className):AttributeRelation
+    public function setClassName(string $className): AttributeRelation
     {
         $this->className = $className;
         return $this;
     }
 
-    public function asSelfReference():AttributeRelation
+    public function asSelfReference(): AttributeRelation
     {
         $this->selfReference = true;
         return $this;
     }
 
-    public function asHasOne(array $link):AttributeRelation
+    public function asHasOne(array $link): AttributeRelation
     {
         $this->method = self::HAS_ONE;
         $this->link = $link;
         return $this;
     }
 
-    public function asHasMany(array $link):AttributeRelation
+    public function asHasMany(array $link): AttributeRelation
     {
         $this->method = self::HAS_MANY;
         $this->link = $link;
         return $this;
     }
 
-    public function isHasOne():bool
+    public function isHasOne(): bool
     {
         return $this->method === self::HAS_ONE;
     }
 
-    public function isSelfReferenced():bool
+    public function isSelfReferenced(): bool
     {
         return $this->selfReference;
     }
@@ -124,7 +125,7 @@ class AttributeRelation
     /**
      * @return string
      */
-    public function getName():string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -132,12 +133,12 @@ class AttributeRelation
     /**
      * @return string
      */
-    public function getTableName():string
+    public function getTableName(): string
     {
         return $this->tableName;
     }
 
-    public function getTableAlias():string
+    public function getTableAlias(): string
     {
         return "{{%$this->tableName}}";
     }
@@ -145,12 +146,12 @@ class AttributeRelation
     /**
      * @return string
      */
-    public function getClassName():string
+    public function getClassName(): string
     {
         return $this->className;
     }
 
-    public function getClassKey():string
+    public function getClassKey(): string
     {
         return Inflector::camel2id($this->getClassName());
     }
@@ -158,7 +159,7 @@ class AttributeRelation
     /**
      * @return string
      */
-    public function getMethod():string
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -166,27 +167,27 @@ class AttributeRelation
     /**
      * @return array
      */
-    public function getLink():array
+    public function getLink(): array
     {
         return $this->link;
     }
 
-    public function getCamelName():string
+    public function getCamelName(): string
     {
         return Inflector::camelize($this->name);
     }
 
-    public function getColumnName():string
+    public function getColumnName(): string
     {
         return reset($this->link);
     }
 
-    public function getForeignName():string
+    public function getForeignName(): string
     {
         return key($this->link);
     }
 
-    public function linkToString():string
+    public function linkToString(): string
     {
         return str_replace(
             [',', '=>', ', ]'],

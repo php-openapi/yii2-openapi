@@ -3,11 +3,9 @@
 namespace tests\unit;
 
 use cebe\yii2openapi\generator\ApiGenerator;
-use tests\TestCase;
 use tests\DbTestCase;
 use Yii;
 use yii\helpers\FileHelper;
-use yii\helpers\StringHelper;
 use function strpos;
 
 // class GeneratorTest extends TestCase
@@ -71,22 +69,22 @@ class GeneratorTest extends DbTestCase
             FileHelper::copyDirectory('/app/tests/specs/postgres_custom/migrations', '/app/tests/tmp/docker_app/migrations');
         }
 
-        $expectedFiles = array_map(function($file) use ($testFile) {
+        $expectedFiles = array_map(function ($file) use ($testFile) {
             return '@app' . substr($file, strlen($testFile) - 4);
         },
             FileHelper::findFiles(substr($testFile, 0, -4), ['recursive' => true]));
-        $actualFiles = array_map(function($file) {
+        $actualFiles = array_map(function ($file) {
             return '@app' . substr($file, strlen(Yii::getAlias('@app')));
         },
             FileHelper::findFiles(Yii::getAlias('@app'), ['recursive' => true]));
 
         // Skip database-specific migrations and json-api controllers
         $expectedFiles = array_filter($expectedFiles,
-            function($file) {
+            function ($file) {
                 return strpos($file, 'migrations_') === false && strpos($file, 'jsonapi') === false;
             });
         $actualFiles = array_filter($actualFiles,
-            function($file) {
+            function ($file) {
                 return strpos($file, 'migrations_') === false && strpos($file, 'jsonapi') === false;
             });
 

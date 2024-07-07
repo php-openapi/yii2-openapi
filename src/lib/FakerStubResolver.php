@@ -7,6 +7,7 @@
 
 /** @noinspection InterfacesAsConstructorDependenciesInspection */
 /** @noinspection PhpUndefinedFieldInspection */
+
 namespace cebe\yii2openapi\lib;
 
 use cebe\yii2openapi\lib\items\Attribute;
@@ -23,12 +24,12 @@ class FakerStubResolver
 {
     public const MAX_INT = 1000000;
     /**
-     * @var \cebe\yii2openapi\lib\items\Attribute
+     * @var Attribute
      */
     private $attribute;
 
     /**
-     * @var \cebe\yii2openapi\lib\openapi\PropertySchema
+     * @var PropertySchema
      */
     private $property;
 
@@ -42,7 +43,7 @@ class FakerStubResolver
         $this->config = $config;
     }
 
-    public function resolve():?string
+    public function resolve(): ?string
     {
         if ($this->property->xFaker === false) {
             $this->attribute->setFakerStub(null);
@@ -68,9 +69,9 @@ class FakerStubResolver
                 $config = new Config;
             }
             $mn = $config->modelNamespace;
-            return '$faker->randomElement(\\'.$mn
-                    . ($mn ? '\\' : '')
-                    . ucfirst($this->attribute->reference).'::find()->select("id")->column())';
+            return '$faker->randomElement(\\' . $mn
+                . ($mn ? '\\' : '')
+                . ucfirst($this->attribute->reference) . '::find()->select("id")->column())';
         }
 
         $limits = $this->attribute->limits;
@@ -92,7 +93,7 @@ class FakerStubResolver
         }
     }
 
-    private function fakeForString():?string
+    private function fakeForString(): ?string
     {
         $formats = [
             'date' => '$faker->dateTimeThisCentury->format(\'Y-m-d\')',
@@ -112,7 +113,7 @@ class FakerStubResolver
         }
         $enum = $this->property->getAttr('enum');
         if (!empty($enum) && is_array($enum)) {
-            $items = str_replace([PHP_EOL, '  ',',]'], ['', '', ']'], VarDumper::export($enum));
+            $items = str_replace([PHP_EOL, '  ', ',]'], ['', '', ']'], VarDumper::export($enum));
             return '$faker->randomElement(' . $items . ')';
         }
         if ($this->attribute->columnName === 'title'
@@ -157,7 +158,7 @@ class FakerStubResolver
             '~(url|site|website|href)~i' => '$faker->url',
             '~(username|login)~i' => '$faker->userName',
         ];
-        $size = $this->attribute->size > 0 ? $this->attribute->size: null;
+        $size = $this->attribute->size > 0 ? $this->attribute->size : null;
         foreach ($patterns as $pattern => $fake) {
             if (preg_match($pattern, $this->attribute->columnName)) {
                 if ($size) {
@@ -174,12 +175,12 @@ class FakerStubResolver
             if ($size < 5) {
                 $method = 'word';
             }
-            return 'substr($faker->'.$method.'(' . $size . '), 0, ' . $size . ')';
+            return 'substr($faker->' . $method . '(' . $size . '), 0, ' . $size . ')';
         }
         return '$faker->sentence';
     }
 
-    private function fakeForInt(?int $min, ?int $max):?string
+    private function fakeForInt(?int $min, ?int $max): ?string
     {
         $fakerVariable = 'faker';
         if (preg_match('~_?id$~', $this->attribute->columnName)) {
@@ -190,7 +191,7 @@ class FakerStubResolver
         }
 
         if ($min !== null) {
-            return "\${$fakerVariable}->numberBetween($min, ".self::MAX_INT.")";
+            return "\${$fakerVariable}->numberBetween($min, " . self::MAX_INT . ")";
         }
 
         if ($max !== null) {
@@ -208,10 +209,10 @@ class FakerStubResolver
                 return $fake;
             }
         }
-        return "\${$fakerVariable}->numberBetween(0, ".self::MAX_INT.")";
+        return "\${$fakerVariable}->numberBetween(0, " . self::MAX_INT . ")";
     }
 
-    private function fakeForFloat(?int $min, ?int $max):?string
+    private function fakeForFloat(?int $min, ?int $max): ?string
     {
         if ($min !== null && $max !== null) {
             return "\$faker->randomFloat(null, $min, $max)";
@@ -225,7 +226,7 @@ class FakerStubResolver
         return '$faker->randomFloat()';
     }
 
-    private function fakeForArray():string
+    private function fakeForArray(): string
     {
         if ($this->attribute->required) {
             return '["a" => "b"]';

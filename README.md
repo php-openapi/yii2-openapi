@@ -14,16 +14,17 @@ Base on [Gii, the Yii Framework Code Generator](https://www.yiiframework.com/ext
 
 A code generator for OpenAPI and Yii Framework based PHP API application.
 
-Input: [OpenAPI 3.0 YAML or JSON](https://github.com/OAI/OpenAPI-Specification#the-openapi-specification) (via [cebe/php-openapi](https://github.com/php-openapi/php-openapi))
+Input: [OpenAPI 3.0 YAML or JSON](https://github.com/OAI/OpenAPI-Specification#the-openapi-specification) (
+via [cebe/php-openapi](https://github.com/php-openapi/php-openapi))
 
 Output: Yii Framework Application with Controllers, Models, database schema
-
 
 ## Features
 
 Currently available features:
 
-- Generate Path mappings, **Controllers** and Actions **for API Endpoints**. CRUD Endpoints are ready-to-use, other Endpoints are generated as abstract functions that need to be implemented
+- Generate Path mappings, **Controllers** and Actions **for API Endpoints**. CRUD Endpoints are ready-to-use, other
+  Endpoints are generated as abstract functions that need to be implemented
 - Generate **Models** and validation based on OpenAPI Schema
 - Generate **Database Schema** from OpenAPI Schema
 - Generates **Database Migrations** for schema changes
@@ -32,7 +33,6 @@ Currently available features:
 ## Requirements
 
 - PHP 7.1 or higher (works fine with PHP 8)
-
 
 ## Install
 
@@ -76,12 +76,15 @@ return $config;
 
 To use the web generator, open `index.php?r=gii` and select the `REST API Generator`.
 
-On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml` should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
+On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml`
+should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see
+also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
 
-Run `./yii gii/api --help` for all options. Example: Disable generation of migrations files `./yii gii/api --generateMigrations=0`
+Run `./yii gii/api --help` for all options. Example: Disable generation of migrations
+files `./yii gii/api --generateMigrations=0`
 
-See [Petstore example](https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.0/petstore.yaml) for example OpenAPI spec.
-
+See [Petstore example](https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.0/petstore.yaml) for example
+OpenAPI spec.
 
 ## OpenAPI extensions
 
@@ -145,7 +148,7 @@ You can generate non-db model based on \yii\base\Model without migrations by set
 
 ### `x-pk`
 
-Explicitly specify primary key name for table, if it is different from "id" 
+Explicitly specify primary key name for table, if it is different from "id"
 
 ```yaml
     Post:
@@ -160,29 +163,33 @@ Explicitly specify primary key name for table, if it is different from "id"
 
 ### `x-db-type`
 
-Explicitly specify the database type for a column. (MUST contain only real DB type! (`json`, `jsonb`, `uuid`, `varchar` etc.)).
+Explicitly specify the database type for a column. (MUST contain only real DB type! (`json`, `jsonb`, `uuid`, `varchar`
+etc.)).
 If `x-db-type` is set to `false`, property will be processed as virtual;
 It will be added in model as public property, but skipped for migrations generation.
 
 Example values of `x-db-type` are:
 
- - `false` (boolean false)
- - as string and its value can be like:
-     - text
-     - text[]
-     - INTEGER PRIMARY KEY AUTO_INCREMENT
-     - decimal(12,4)
-     - json
-     - varchar
-     - VARCHAR
-     - SMALLINT UNSIGNED ZEROFILL
-     - MEDIUMINT(10) UNSIGNED ZEROFILL COMMENT "comment" (note the double quotes here)
+- `false` (boolean false)
+- as string and its value can be like:
+    - text
+    - text[]
+    - INTEGER PRIMARY KEY AUTO_INCREMENT
+    - decimal(12,4)
+    - json
+    - varchar
+    - VARCHAR
+    - SMALLINT UNSIGNED ZEROFILL
+    - MEDIUMINT(10) UNSIGNED ZEROFILL COMMENT "comment" (note the double quotes here)
 
 Such values are not allowed:
-   - `int null default null after low_price` (null and default will be handled by `nullable` and `default` keys respectively)
-   - MEDIUMINT(10) UNSIGNED ZEROFILL NULL DEFAULT '7' COMMENT 'comment' AFTER `seti`, ADD INDEX `t` (`w`)
 
-If `enum` and `x-db-type` both are provided then for database column schema (migrations), only `x-db-type` will be considered ignoring `enum`.
+- `int null default null after low_price` (null and default will be handled by `nullable` and `default` keys
+  respectively)
+- MEDIUMINT(10) UNSIGNED ZEROFILL NULL DEFAULT '7' COMMENT 'comment' AFTER `seti`, ADD INDEX `t` (`w`)
+
+If `enum` and `x-db-type` both are provided then for database column schema (migrations), only `x-db-type` will be
+considered ignoring `enum`.
 
 ### `x-indexes`
 
@@ -283,11 +290,13 @@ Allow to set foreign key constraint in migrations for ON DELETE event of row in 
 
 ### `x-fk-on-update`
 
-Allow to set foreign key constraint in migrations for ON UPDATE event of row in database table. For example, see above section for `x-fk-on-delete`.
+Allow to set foreign key constraint in migrations for ON UPDATE event of row in database table. For example, see above
+section for `x-fk-on-delete`.
 
 ### `x-fk-column-name`
 
-Provide custom database table column name in case of relationship column. This will not reflect in models relations, faker etc. Example:
+Provide custom database table column name in case of relationship column. This will not reflect in models relations,
+faker etc. Example:
 
 ```yaml
   components:
@@ -315,15 +324,15 @@ There are two ways for define many-to-many relations:
 
 ### Simple many-to-many without junction model
 
-   - property name for many-to-many relation should be equal lower-cased, pluralized related schema name
-     
-   - referenced schema should contains mirrored reference to current schema
-     
-   - migration for junction table can be generated automatically - table name should be [pluralized, lower-cased
- schema_name1]2[pluralized, lower-cased schema name2], in alphabetical order;
- For example, for schemas Post and Tag - table should be posts2tags, for schemas Post and Attachement - table should
+- property name for many-to-many relation should be equal lower-cased, pluralized related schema name
+
+- referenced schema should contains mirrored reference to current schema
+
+- migration for junction table can be generated automatically - table name should be [pluralized, lower-cased
+  schema_name1]2[pluralized, lower-cased schema name2], in alphabetical order;
+  For example, for schemas Post and Tag - table should be posts2tags, for schemas Post and Attachement - table should
   be attachments2posts
-  
+
 ```
 Post:
   properties:
@@ -341,16 +350,16 @@ Tag:
       items:
         $ref: '#/components/schemas/Post'
 ```
-  
+
 ### Many-to-many with junction model
 
-This way allowed creating multiple many-to-many relations between to models 
+This way allowed creating multiple many-to-many relations between to models
 
 - define junction schema with all necessary attributes. There are only one important requirement - the junction
- schema name
- must be started with prefix 'junction_' (This prefix will be used internally only and
- will be trimmed before table and model generation)
- 
+  schema name
+  must be started with prefix 'junction_' (This prefix will be used internally only and
+  will be trimmed before table and model generation)
+
 ```
 # Model TeamMembers with table team_members will be generated with columns team_id, user_id and role
 junction_TeamMembers:
@@ -361,8 +370,9 @@ junction_TeamMembers:
    role:
      type: string
 ```
+
 - Both many-to-many related schemas must have properties with reference to "junction_*" schema. These properties will be
- used as relation names 
+  used as relation names
 
 ```
 Team:
@@ -381,9 +391,8 @@ User:
       items:
         $ref: '#/components/schemas/junction_TeamMembers'
 ```
-  
- - see both examples here [tests/specs/many2many.yaml](tests/specs/many2many.yaml)
- 
+
+- see both examples here [tests/specs/many2many.yaml](tests/specs/many2many.yaml)
 
 ## Handling of `NOT NULL` constraints
 
@@ -434,6 +443,7 @@ e.g. attribute = 'my_property'.
 ```
 
 ## Handling of `enum` (#enum)
+
 It works on all 3 DB: MySQL, MariaDb and PgSQL.
 
  ```yaml
@@ -446,7 +456,9 @@ It works on all 3 DB: MySQL, MariaDb and PgSQL.
           - three
 ```
 
-Note: Changes in enum values are not very simple. For Mysql and Mariadb, migrations will be generated but in many cases custom modification in it are required. For Pgsql migrations for change in enum values will not be generated. It should be handled manually.
+Note: Changes in enum values are not very simple. For Mysql and Mariadb, migrations will be generated but in many cases
+custom modification in it are required. For Pgsql migrations for change in enum values will not be generated. It should
+be handled manually.
 
 It will be ignored for database column schema (migrations) if `x-db-type` is provided.
 
@@ -456,30 +468,36 @@ precision-default = 10
 scale-default = 2
 
 - You can define attribute like "numeric(precision,scale)":
+
  ```yaml
   test_table:
     properties:
       my_property:
         x-db-type: decimal(12,4)
 ```
+
 DB-Result = decimal(12,4)
 
 - You can define attribute like "numeric(precision)" with default scale-default = 2:
+
  ```yaml
   test_table:
     properties:
       my_property:
         x-db-type: decimal(12)
 ```
+
 DB-Result = decimal(12,2)
 
 - You can define attribute like "numeric" with precision-default = 10 and scale-default = 2:
+
  ```yaml
   test_table:
     properties:
       my_property:
         x-db-type: decimal
 ```
+
 DB-Result = decimal(10,2)
 
 ## Handling of `timestamp` database column data type
@@ -494,7 +512,8 @@ created_at:
     readOnly: true
 ```
 
-then database type selected will be `timestamp`. This is by design. If `datetime` data type is needed, use `x-db-type` as
+then database type selected will be `timestamp`. This is by design. If `datetime` data type is needed, use `x-db-type`
+as
 
 ```yaml
 created_at:
@@ -511,10 +530,14 @@ When generating code from an OpenAPI description there are many possible ways to
 Thus there are some assumptions and limitations that are currently applied to make this work.
 Here is a (possibly incomplete) list:
 
-- The current implementation works best with OpenAPI description that follows the [JSON:API](https://jsonapi.org/) guidelines.
-  - The request and response format/schema is currently not extracted from OpenAPI schema and may need to be adjusted manually if it does not follow JSON:API
-- column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by DB/Yii; so remove it from validation `rules()`
-  - other fields can currently be used as primary keys using the `x-pk` OpenAPI extension (see below) but it may not be work correctly in all cases, please report bugs if you find them.
+- The current implementation works best with OpenAPI description that follows the [JSON:API](https://jsonapi.org/)
+  guidelines.
+    - The request and response format/schema is currently not extracted from OpenAPI schema and may need to be adjusted
+      manually if it does not follow JSON:API
+- column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by
+  DB/Yii; so remove it from validation `rules()`
+    - other fields can currently be used as primary keys using the `x-pk` OpenAPI extension (see below) but it may not
+      be work correctly in all cases, please report bugs if you find them.
 
 Other things to keep in mind:
 
@@ -524,7 +547,8 @@ When adding new fields in the API models, new migrations will be generated to ad
 For a project that is already in production, it should be considered to adjust the generated migration to add default
 values for existing data records.
 
-One case where this is important is the addition of a new column with `NOT NULL` contraint, which does not provide a default value.
+One case where this is important is the addition of a new column with `NOT NULL` contraint, which does not provide a
+default value.
 Such a migration will fail when the table is not empty:
 
 ```php
@@ -533,7 +557,8 @@ $this->addColumn('{{%company}}', 'name', $this->string(128)->notNull());
 
 Fails on a PostgreSQL database with
 
-> add column name string(128) NOT NULL to table {{%company}} ...Exception: SQLSTATE[23502]: Not null violation: 7 ERROR:  column "name" contains null values
+> add column name string(128) NOT NULL to table {{%company}} ...Exception: SQLSTATE[23502]: Not null violation: 7 ERROR:
+> column "name" contains null values
 
 The solution would be to create the column, allowing NULL, set the value to a default and add the null constraint later.
 
@@ -553,11 +578,9 @@ Generated files:
 
 ![Gii Generated Files](doc/screenshot-files.png)
 
-
 # Development
 
 To contribute or play around, steps to set up this project up locally are in [CONTRIBUTING.md](./CONTRIBUTING.md).
-
 
 # Support
 

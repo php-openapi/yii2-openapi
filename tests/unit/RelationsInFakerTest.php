@@ -2,18 +2,11 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\generator\ApiGenerator;
 use tests\DbTestCase;
 use Yii;
-use yii\db\mysql\Schema as MySqlSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\helpers\FileHelper;
-use yii\helpers\VarDumper;
 use yii\helpers\StringHelper;
-use yii\validators\DateValidator;
 use function array_filter;
-use function getenv;
-use function strpos;
 
 class RelationsInFakerTest extends DbTestCase
 {
@@ -25,7 +18,7 @@ class RelationsInFakerTest extends DbTestCase
 
         $this->runGenerator($testFile, 'pgsql');
 
-        $fakers = FileHelper::findFiles(\Yii::getAlias('@app/models/fakers'), [
+        $fakers = FileHelper::findFiles(Yii::getAlias('@app/models/fakers'), [
             'only' => ['*Faker.php'],
             'except' => ['BaseModelFaker.php'],
         ]);
@@ -67,7 +60,7 @@ class RelationsInFakerTest extends DbTestCase
     public static function sortModels(array $fakers, string $fakerNamespace = 'app\\models\\fakers\\')
     {
         $modelsDependencies = [];
-        foreach($fakers as $fakerFile) {
+        foreach ($fakers as $fakerFile) {
             $className = $fakerNamespace . StringHelper::basename($fakerFile, '.php');
             $faker = new $className;
 

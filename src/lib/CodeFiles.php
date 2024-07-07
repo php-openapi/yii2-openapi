@@ -13,33 +13,33 @@ use function array_merge;
 class CodeFiles
 {
     /**
-     * @var array|\yii\gii\CodeFile[]
+     * @var array|CodeFile[]
      */
     private $files;
 
     /**
-     * @param array|\yii\gii\CodeFile[] $files
+     * @param array|CodeFile[] $files
      */
     public function __construct(array $files = [])
     {
         $this->files = $files;
     }
 
-    public function add(CodeFile $file):void
+    public function add(CodeFile $file): void
     {
         $this->files[] = $file;
     }
 
 
-    public function merge(CodeFiles $files):void
+    public function merge(CodeFiles $files): void
     {
         $this->files = array_merge($this->files, $files->all());
     }
 
     /**
-     * @return array|\yii\gii\CodeFile[]
+     * @return array|CodeFile[]
      */
-    public function all():array
+    public function all(): array
     {
         return $this->files;
     }

@@ -7,6 +7,9 @@
 
 namespace cebe\yii2openapi\lib\generators;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Reference;
@@ -22,7 +25,7 @@ use yii\helpers\Inflector;
 class RestActionGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
@@ -35,12 +38,12 @@ class RestActionGenerator
 
     /**
      * @return array|RestAction[]
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    public function generate():array
+    public function generate(): array
     {
         $actions = [];
         foreach ($this->config->getOpenApi()->paths as $path => $pathItem) {
@@ -59,13 +62,13 @@ class RestActionGenerator
     }
 
     /**
-     * @param string                      $path
-     * @param \cebe\openapi\spec\PathItem $pathItem
+     * @param string $path
+     * @param PathItem $pathItem
      * @return array|RestAction[]
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    protected function resolvePath(string $path, PathItem $pathItem):array
+    protected function resolvePath(string $path, PathItem $pathItem): array
     {
         $actions = [];
 
@@ -77,14 +80,14 @@ class RestActionGenerator
     }
 
     /**
-     * @param string                                $method
-     * @param \cebe\openapi\spec\Operation          $operation
-     * @param \cebe\yii2openapi\lib\items\RouteData $routeData
-     * @return \cebe\yii2openapi\lib\items\RestAction|object
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @param string $method
+     * @param Operation $operation
+     * @param RouteData $routeData
+     * @return RestAction|object
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    protected function prepareAction(string $method, Operation $operation, RouteData $routeData):BaseObject
+    protected function prepareAction(string $method, Operation $operation, RouteData $routeData): BaseObject
     {
         $actionType = $this->resolveActionType($routeData, $method);
         $modelClass = ResponseSchema::guessModelClass($operation, $actionType);
@@ -129,7 +132,7 @@ class RestActionGenerator
         ]);
     }
 
-    protected function resolveActionType(RouteData $routeData, string $method):string
+    protected function resolveActionType(RouteData $routeData, string $method): string
     {
         $actionTypes = [
             'get' => $routeData->resolveGetActionType(),

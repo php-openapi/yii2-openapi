@@ -30,7 +30,7 @@ return [
         'nonDbRelations' => [
             'topDoctors' => new NonDbRelation('topDoctors', 'Doctor', 'hasMany'),
         ]
-        ]),
+    ]),
     'personWatch' => new DbModel([
         'pkName' => 'id',
         'name' => 'PersonWatch',

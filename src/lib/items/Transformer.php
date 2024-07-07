@@ -15,18 +15,18 @@ use function array_merge;
 use function array_unique;
 
 /**
- * @property-read string                                                 $name
- * @property-read array                                                  $defaultRelations
- * @property-read string                                                 $modelFQN
- * @property-read string                                                 $fQN
- * @property-read array|\cebe\yii2openapi\lib\items\AttributeRelation[]  $relations
- * @property-read \cebe\yii2openapi\lib\items\ManyToManyRelation[]|array $many2Many
- * @property-read \cebe\yii2openapi\lib\items\NonDbRelation[]|array $nonDbRelations
- * @property-read array                                                  $availableRelations
+ * @property-read string $name
+ * @property-read array $defaultRelations
+ * @property-read string $modelFQN
+ * @property-read string $fQN
+ * @property-read array|AttributeRelation[] $relations
+ * @property-read ManyToManyRelation[]|array $many2Many
+ * @property-read NonDbRelation[]|array $nonDbRelations
+ * @property-read array $availableRelations
  */
 class Transformer extends BaseObject
 {
-    /**@var \cebe\yii2openapi\lib\items\DbModel**/
+    /**@var DbModel* */
     public $dbModel;
     /**
      * @var bool
@@ -44,10 +44,11 @@ class Transformer extends BaseObject
 
     public function __construct(
         DbModel $dbModel,
-        string $namespace,
-        string $modelNamespace,
-        bool $singularResourceKey = false
-    ) {
+        string  $namespace,
+        string  $modelNamespace,
+        bool    $singularResourceKey = false
+    )
+    {
         $this->dbModel = $dbModel;
         $this->namespace = $namespace;
         $this->modelNamespace = $modelNamespace;
@@ -57,17 +58,17 @@ class Transformer extends BaseObject
 
     public function getName(): string
     {
-        return $this->dbModel->getClassName().'Transformer';
+        return $this->dbModel->getClassName() . 'Transformer';
     }
 
     public function getFQN(): string
     {
-        return $this->namespace.'\\'.$this->getName();
+        return $this->namespace . '\\' . $this->getName();
     }
 
     public function getModelFQN(): string
     {
-        return $this->modelNamespace.'\\'.$this->dbModel->getClassName();
+        return $this->modelNamespace . '\\' . $this->dbModel->getClassName();
     }
 
     public function shouldIncludeRelations(): bool
@@ -81,36 +82,38 @@ class Transformer extends BaseObject
             return $rel->getClassName() !== $this->dbModel->getClassName();
         });
         $relations = array_map(static function (AttributeRelation $relation) {
-            return Inflector::singularize($relation->getClassName()).'Transformer';
+            return Inflector::singularize($relation->getClassName()) . 'Transformer';
         }, $dbRelations);
 
         $relationsMany = array_map(static function (ManyToManyRelation $relation) {
-            return Inflector::singularize($relation->getRelatedClassName()).'Transformer';
+            return Inflector::singularize($relation->getRelatedClassName()) . 'Transformer';
         }, $this->dbModel->many2many);
 
         $relationsNonDb = array_map(static function (NonDbRelation $relation) {
-            return Inflector::singularize($relation->getClassName()).'Transformer';
+            return Inflector::singularize($relation->getClassName()) . 'Transformer';
         }, $this->dbModel->nonDbRelations);
 
         return array_unique(array_merge($relations, $relationsMany, $relationsNonDb));
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\AttributeRelation[]
+     * @return array|AttributeRelation[]
      */
     public function getRelations(): array
     {
         return $this->dbModel->relations;
     }
+
     /**
-     * @return array|\cebe\yii2openapi\lib\items\NonDbRelation[]
+     * @return array|NonDbRelation[]
      */
     public function getNonDbRelations(): array
     {
         return $this->dbModel->nonDbRelations;
     }
+
     /**
-     * @return array|\cebe\yii2openapi\lib\items\ManyToManyRelation[]
+     * @return array|ManyToManyRelation[]
      */
     public function getMany2Many(): array
     {
@@ -141,7 +144,7 @@ class Transformer extends BaseObject
 
     public function makeResourceKey(string $value): string
     {
-        $value = $this->singularResourceKey ? Inflector::singularize($value): Inflector::pluralize($value);
+        $value = $this->singularResourceKey ? Inflector::singularize($value) : Inflector::pluralize($value);
         return strtolower(Inflector::camel2id($value, '_'));
     }
 }

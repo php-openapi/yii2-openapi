@@ -1,4 +1,5 @@
 <?php
+
 use yii\db\Migration;
 use yii\db\Schema;
 
@@ -135,6 +136,6 @@ class m100000_000000_mysql extends Migration
     private function dropTableIfExists(string $table)
     {
         $this->db->createCommand('DROP TABLE IF EXISTS ' . $this->db->quoteTableName($table))
-                 ->execute();
+            ->execute();
     }
 }

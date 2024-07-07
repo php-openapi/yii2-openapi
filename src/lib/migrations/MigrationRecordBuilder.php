@@ -10,6 +10,7 @@ namespace cebe\yii2openapi\lib\migrations;
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\ColumnSchema;
 use yii\db\Schema;
 use yii\helpers\VarDumper;
@@ -47,7 +48,7 @@ final class MigrationRecordBuilder
     public const ALTER_COLUMN_RAW_PGSQL = MigrationRecordBuilder::INDENT . "\$this->db->createCommand('ALTER TABLE %s ALTER COLUMN \"%s\" SET DATA TYPE %s')->execute();";
 
     /**
-     * @var \yii\db\Schema
+     * @var Schema
      */
     private $dbSchema;
 
@@ -57,18 +58,18 @@ final class MigrationRecordBuilder
     }
 
     /**
-     * @param string                     $tableAlias
-     * @param array|\yii\db\ColumnSchema $columns
+     * @param string $tableAlias
+     * @param array|ColumnSchema $columns
      * @return string
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function createTable(string $tableAlias, array $columns):string
+    public function createTable(string $tableAlias, array $columns): string
     {
         $codeColumns = [];
         foreach ($columns as $columnName => $cebeDbColumnSchema) {
             if (is_string($cebeDbColumnSchema->xDbType) && !empty($cebeDbColumnSchema->xDbType)) {
                 $name = static::quote($columnName);
-                $codeColumns[] = $name.' '.$this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
+                $codeColumns[] = $name . ' ' . $this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
             } else {
                 $codeColumns[$columnName] = $this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
             }
@@ -80,9 +81,9 @@ final class MigrationRecordBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function addColumn(string $tableAlias, ColumnSchema $column, ?string $position = null):string
+    public function addColumn(string $tableAlias, ColumnSchema $column, ?string $position = null): string
     {
         // $converter = $this->columnToCode($column, false, false, $position);
         if (is_string($column->xDbType) && !empty($column->xDbType)) {
@@ -96,9 +97,9 @@ final class MigrationRecordBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function addDbColumn(string $tableAlias, ColumnSchema $column, ?string $position = null):string
+    public function addDbColumn(string $tableAlias, ColumnSchema $column, ?string $position = null): string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, false, false, $position);
@@ -110,9 +111,9 @@ final class MigrationRecordBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function alterColumn(string $tableAlias, ColumnSchema $column):string
+    public function alterColumn(string $tableAlias, ColumnSchema $column): string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
@@ -128,9 +129,9 @@ final class MigrationRecordBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function alterColumnType(string $tableAlias, ColumnSchema $column, bool $addUsing = false):string
+    public function alterColumnType(string $tableAlias, ColumnSchema $column, bool $addUsing = false): string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, false, false, true, true);
@@ -147,9 +148,9 @@ final class MigrationRecordBuilder
 
     /**
      * This method is only used in Pgsql
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function alterColumnTypeFromDb(string $tableAlias, ColumnSchema $column, bool $addUsing = false) :string
+    public function alterColumnTypeFromDb(string $tableAlias, ColumnSchema $column, bool $addUsing = false): string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
@@ -165,51 +166,51 @@ final class MigrationRecordBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function setColumnDefault(string $tableAlias, ColumnSchema $column):string
+    public function setColumnDefault(string $tableAlias, ColumnSchema $column): string
     {
         $default = $this->columnToCode($tableAlias, $column, false, true)->getDefaultValue();
         if ($default === null) {
             return '';
         }
-        return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"SET DEFAULT '.$default.'"');
+        return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"SET DEFAULT ' . $default . '"');
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function setColumnDefaultFromDb(string $tableAlias, ColumnSchema $column):string
+    public function setColumnDefaultFromDb(string $tableAlias, ColumnSchema $column): string
     {
         $default = $this->columnToCode($tableAlias, $column, true, true)->getDefaultValue();
         if ($default === null) {
             return '';
         }
-        return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"SET DEFAULT '.$default.'"');
+        return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"SET DEFAULT ' . $default . '"');
     }
 
-    public function dropColumnDefault(string $tableAlias, ColumnSchema $column):string
+    public function dropColumnDefault(string $tableAlias, ColumnSchema $column): string
     {
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"DROP DEFAULT"');
     }
 
-    public function setColumnNotNull(string $tableAlias, ColumnSchema $column):string
+    public function setColumnNotNull(string $tableAlias, ColumnSchema $column): string
     {
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"SET NOT NULL"');
     }
 
-    public function dropColumnNotNull(string $tableAlias, ColumnSchema $column):string
+    public function dropColumnNotNull(string $tableAlias, ColumnSchema $column): string
     {
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"DROP NOT NULL"');
     }
 
-    public function createEnum(string $tableAlias, string $columnName, array $values):string
+    public function createEnum(string $tableAlias, string $columnName, array $values): string
     {
         $rawTableName = $this->dbSchema->getRawTableName($tableAlias);
         return sprintf(self::ADD_ENUM, $rawTableName, $columnName, ColumnToCode::enumToString($values));
     }
 
-    public function addFk(string $fkName, string $tableAlias, string $fkCol, string $refTable, string $refCol, ?string $onDelete = null, ?string $onUpdate = null):string
+    public function addFk(string $fkName, string $tableAlias, string $fkCol, string $refTable, string $refCol, ?string $onDelete = null, ?string $onUpdate = null): string
     {
         if ($onUpdate === null && $onDelete === null) {
             return sprintf(self::ADD_FK, $fkName, $tableAlias, $fkCol, $refTable, $refCol);
@@ -229,78 +230,79 @@ final class MigrationRecordBuilder
         }
     }
 
-    public function addUniqueIndex(string $tableAlias, string $indexName, array $columns):string
+    public function addUniqueIndex(string $tableAlias, string $indexName, array $columns): string
     {
         return sprintf(
             self::ADD_UNIQUE,
             $indexName,
             $tableAlias,
-            count($columns) === 1 ? "'{$columns[0]}'" : '["'.implode('", "', $columns).'"]'
+            count($columns) === 1 ? "'{$columns[0]}'" : '["' . implode('", "', $columns) . '"]'
         );
     }
 
-    public function addIndex(string $tableAlias, string $indexName, array $columns, ?string $using = null):string
+    public function addIndex(string $tableAlias, string $indexName, array $columns, ?string $using = null): string
     {
-        $indexType = $using === null ? 'false' : "'".ColumnToCode::escapeQuotes($using)."'";
+        $indexType = $using === null ? 'false' : "'" . ColumnToCode::escapeQuotes($using) . "'";
         return sprintf(
             self::ADD_INDEX,
             $indexName,
             $tableAlias,
-            count($columns) === 1 ? "'{$columns[0]}'" : '["'.implode('", "', $columns).'"]',
+            count($columns) === 1 ? "'{$columns[0]}'" : '["' . implode('", "', $columns) . '"]',
             $indexType
         );
     }
 
-    public function addPrimaryKey(string $tableAlias, array $columns, string $pkName= null):string
+    public function addPrimaryKey(string $tableAlias, array $columns, string $pkName = null): string
     {
-        $pkName = $pkName ?? ('pk_'. implode('_', $columns));
+        $pkName = $pkName ?? ('pk_' . implode('_', $columns));
         return sprintf(self::ADD_PK, $pkName, $tableAlias, implode(',', $columns));
     }
 
-    public function dropPrimaryKey(string $tableAlias, array $columns, string $pkName = null):string
+    public function dropPrimaryKey(string $tableAlias, array $columns, string $pkName = null): string
     {
-        $pkName = $pkName ?? ('pk_'. implode('_', $columns));
+        $pkName = $pkName ?? ('pk_' . implode('_', $columns));
         return sprintf(self::DROP_PK, $pkName, $tableAlias);
     }
 
-    public function dropTable(string $tableAlias):string
+    public function dropTable(string $tableAlias): string
     {
         return sprintf(self::DROP_TABLE, $tableAlias);
     }
 
-    public function dropEnum(string $tableAlias, string $columnName):string
+    public function dropEnum(string $tableAlias, string $columnName): string
     {
         $rawTableName = $this->dbSchema->getRawTableName($tableAlias);
         return sprintf(self::DROP_ENUM, $rawTableName, $columnName);
     }
 
-    public function dropFk(string $fkName, string $tableAlias):string
+    public function dropFk(string $fkName, string $tableAlias): string
     {
         return sprintf(self::DROP_FK, $fkName, $tableAlias);
     }
 
-    public function dropColumn(string $tableAlias, string $columnName):string
+    public function dropColumn(string $tableAlias, string $columnName): string
     {
         return sprintf(self::DROP_COLUMN, $tableAlias, $columnName);
     }
 
-    public function dropIndex(string $tableAlias, string $indexName):string
+    public function dropIndex(string $tableAlias, string $indexName): string
     {
         return sprintf(self::DROP_INDEX, $indexName, $tableAlias);
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     private function columnToCode(
-        string $tableAlias,
+        string       $tableAlias,
         ColumnSchema $column,
-        bool $fromDb = false,
-        bool $alter = false,
-        bool $raw = false,
-        bool $alterByXDbType = false,
-        ?string $position = null
-    ): ColumnToCode {
+        bool         $fromDb = false,
+        bool         $alter = false,
+        bool         $raw = false,
+        bool         $alterByXDbType = false,
+        ?string      $position = null
+    ): ColumnToCode
+    {
         return Yii::createObject(ColumnToCode::class, [
             $this->dbSchema,
             $tableAlias,
@@ -317,7 +319,7 @@ final class MigrationRecordBuilder
     public static function quote(string $columnName): string
     {
         if (ApiGenerator::isPostgres()) {
-            return '"'.$columnName.'"';
+            return '"' . $columnName . '"';
         }
         return $columnName;
     }
@@ -327,22 +329,22 @@ final class MigrationRecordBuilder
      */
     public static function makeString(array $codeColumns): string
     {
-        $finalStr = ''.PHP_EOL;
+        $finalStr = '' . PHP_EOL;
         foreach ($codeColumns as $key => $column) {
             if (is_string($key)) {
                 if (substr($column, 0, 5) === '$this') {
-                    $finalStr .= VarDumper::export($key).' => '.$column.','.PHP_EOL;
+                    $finalStr .= VarDumper::export($key) . ' => ' . $column . ',' . PHP_EOL;
                 } else {
-                    $finalStr .= VarDumper::export($key).' => '.VarDumper::export($column).','.PHP_EOL;
+                    $finalStr .= VarDumper::export($key) . ' => ' . VarDumper::export($column) . ',' . PHP_EOL;
                 }
             } else {
-                $finalStr .= VarDumper::export($key).' => '.VarDumper::export($column).','.PHP_EOL;
+                $finalStr .= VarDumper::export($key) . ' => ' . VarDumper::export($column) . ',' . PHP_EOL;
             }
         }
 
-        $codeColumns = str_replace([PHP_EOL], [PHP_EOL . self::INDENT.'    '], $finalStr);
+        $codeColumns = str_replace([PHP_EOL], [PHP_EOL . self::INDENT . '    '], $finalStr);
         $codeColumns = trim($codeColumns);
-        $codeColumns = '['.PHP_EOL.self::INDENT.'    '.$codeColumns.PHP_EOL . self::INDENT.']';
+        $codeColumns = '[' . PHP_EOL . self::INDENT . '    ' . $codeColumns . PHP_EOL . self::INDENT . ']';
         return $codeColumns;
     }
 }

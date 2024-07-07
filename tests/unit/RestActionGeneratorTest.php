@@ -2,6 +2,9 @@
 
 namespace tests\unit;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use cebe\yii2openapi\lib\Config;
@@ -9,6 +12,7 @@ use cebe\yii2openapi\lib\generators\RestActionGenerator;
 use cebe\yii2openapi\lib\items\RestAction;
 use tests\TestCase;
 use Yii;
+use yii\base\InvalidConfigException;
 
 class RestActionGeneratorTest extends TestCase
 {
@@ -18,12 +22,12 @@ class RestActionGeneratorTest extends TestCase
      * @param string $schemaFile
      * @param string $modelNs
      * @param        $expected
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    public function testGenerate(string $schemaFile, string $modelNs, $expected):void
+    public function testGenerate(string $schemaFile, string $modelNs, $expected): void
     {
         $config = new Config([
             'openApiPath' => $schemaFile,
@@ -40,14 +44,14 @@ class RestActionGeneratorTest extends TestCase
      * @dataProvider dataProviderWithNamingMap
      * @param string $schemaFile
      * @param string $modelNs
-     * @param array  $namingMap
+     * @param array $namingMap
      * @param        $expected
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    public function testGenerateWithNamingMap(string $schemaFile, string $modelNs, array $namingMap, $expected):void
+    public function testGenerateWithNamingMap(string $schemaFile, string $modelNs, array $namingMap, $expected): void
     {
         $config = new Config([
             'openApiPath' => $schemaFile,
@@ -65,14 +69,14 @@ class RestActionGeneratorTest extends TestCase
      * @dataProvider dataProviderWithUrlPrefixes
      * @param string $schemaFile
      * @param string $modelNs
-     * @param array  $urlPrefixes
+     * @param array $urlPrefixes
      * @param        $expected
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidConfigException
      */
-    public function testGenerateWithUrlPrefixes(string $schemaFile, string $modelNs, array $urlPrefixes, $expected):void
+    public function testGenerateWithUrlPrefixes(string $schemaFile, string $modelNs, array $urlPrefixes, $expected): void
     {
         $config = new Config([
             'openApiPath' => $schemaFile,
@@ -86,7 +90,7 @@ class RestActionGeneratorTest extends TestCase
         }
     }
 
-    public function dataProvider():array
+    public function dataProvider(): array
     {
         return [
             [
@@ -330,7 +334,7 @@ class RestActionGeneratorTest extends TestCase
         ];
     }
 
-    public function dataProviderWithUrlPrefixes():array
+    public function dataProviderWithUrlPrefixes(): array
     {
         return [
             [
@@ -457,7 +461,7 @@ class RestActionGeneratorTest extends TestCase
         ];
     }
 
-    public function dataProviderWithNamingMap():array
+    public function dataProviderWithNamingMap(): array
     {
         return [
             [

@@ -7,6 +7,9 @@
 
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use Closure;
@@ -154,12 +157,12 @@ class Config extends BaseObject
     private $openApi;
 
     /**
-     * @return \cebe\openapi\spec\OpenApi
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @return OpenApi
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      */
-    public function getOpenApi():OpenApi
+    public function getOpenApi(): OpenApi
     {
         if ($this->openApi === null) {
             $file = Yii::getAlias($this->openApiPath);
@@ -172,12 +175,12 @@ class Config extends BaseObject
         return $this->openApi;
     }
 
-    public function getPathFromNamespace(string $namespace):string
+    public function getPathFromNamespace(string $namespace): string
     {
         return Yii::getAlias('@' . str_replace('\\', '/', ltrim($namespace, '\\')));
     }
 
-    public function setFileRenderer(Closure $renderCallback):void
+    public function setFileRenderer(Closure $renderCallback): void
     {
         $this->fileRenderer = $renderCallback;
     }
@@ -187,11 +190,11 @@ class Config extends BaseObject
      * Note that the code template will be used as a PHP file.
      * @param string $template the code template file. This must be specified as a file path
      * relative to [[templatePath]].
-     * @param array  $params list of parameters to be passed to the template file.
+     * @param array $params list of parameters to be passed to the template file.
      * @return string the generated code
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function render(string $template, array $params = []):string
+    public function render(string $template, array $params = []): string
     {
         if (!$this->fileRenderer) {
             throw new InvalidConfigException('Renderer is not configured');

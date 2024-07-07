@@ -7,29 +7,29 @@
 
 namespace cebe\yii2openapi\lib\openapi;
 
-use yii\db\ColumnSchema;
-use cebe\yii2openapi\generator\ApiGenerator;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
-use cebe\yii2openapi\lib\items\Attribute;
-use yii\base\NotSupportedException;
 use BadMethodCallException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use Throwable;
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\NotSupportedException;
+use yii\db\ColumnSchema;
+use yii\db\mysql\Schema as MySqlSchema;
+use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\db\Schema as YiiDbSchema;
 use yii\helpers\Inflector;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function is_int;
+use function preg_match;
 use function strpos;
-use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class PropertySchema
 {
@@ -54,7 +54,7 @@ class PropertySchema
     public $xFaker;
 
     /**
-     * @var \cebe\openapi\SpecObjectInterface
+     * @var SpecObjectInterface
      */
     private $property;
 
@@ -73,7 +73,7 @@ class PropertySchema
     /** @var string $refPointer */
     private $refPointer;
 
-    /** @var \cebe\yii2openapi\lib\openapi\ComponentSchema $refSchema */
+    /** @var ComponentSchema $refSchema */
     private $refSchema;
 
     /**
@@ -82,16 +82,16 @@ class PropertySchema
     private $isPk;
 
     /**
-     * @var \cebe\yii2openapi\lib\openapi\ComponentSchema
+     * @var ComponentSchema
      */
     private $schema;
 
     /**
-     * @param \cebe\openapi\SpecObjectInterface             $property
-     * @param string                                        $name
-     * @param \cebe\yii2openapi\lib\openapi\ComponentSchema $schema
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @param SpecObjectInterface $property
+     * @param string $name
+     * @param ComponentSchema $schema
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
     public function __construct(SpecObjectInterface $property, string $name, ComponentSchema $schema)
     {
@@ -159,16 +159,16 @@ class PropertySchema
     /**
      * @return bool
      */
-    public function isNonDbReference():bool
+    public function isNonDbReference(): bool
     {
         return $this->isNonDbReference;
     }
 
     /**
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
-    private function initReference():void
+    private function initReference(): void
     {
         $this->isReference = true;
         $this->refPointer = $this->property->getJsonReference()->getJsonPointer()->getPointer();
@@ -185,10 +185,10 @@ class PropertySchema
     }
 
     /**
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
      */
-    private function initItemsReference():void
+    private function initItemsReference(): void
     {
         $this->isItemsReference = true;
         $items = $this->property->items ?? null;
@@ -207,22 +207,22 @@ class PropertySchema
         }
     }
 
-    public function setName(string $name):void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName():string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function isPrimaryKey():bool
+    public function isPrimaryKey(): bool
     {
         return $this->isPk;
     }
 
-    public function getProperty():SpecObjectInterface
+    public function getProperty(): SpecObjectInterface
     {
         return $this->property;
     }
@@ -232,7 +232,7 @@ class PropertySchema
         return $this->refPointer ?? '';
     }
 
-    public function getRefSchema():ComponentSchema
+    public function getRefSchema(): ComponentSchema
     {
         if (!$this->isReference && !$this->isItemsReference) {
             throw new BadMethodCallException('Schema is not reference');
@@ -241,17 +241,17 @@ class PropertySchema
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getTargetProperty():?PropertySchema
+    public function getTargetProperty(): ?PropertySchema
     {
         return $this->getRefSchema()->getProperty($this->getRefSchema()->getPkName());
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getSelfTargetProperty():?PropertySchema
+    public function getSelfTargetProperty(): ?PropertySchema
     {
         if (!$this->isRefPointerToSelf()) {
             return null;
@@ -264,33 +264,33 @@ class PropertySchema
         return $this->getRefSchema()->getProperty($propName);
     }
 
-    public function isRefPointerToSchema():bool
+    public function isRefPointerToSchema(): bool
     {
         return $this->refPointer && strpos($this->refPointer, self::REFERENCE_PATH) === 0;
     }
 
-    public function isRefPointerToSelf():bool
+    public function isRefPointerToSelf(): bool
     {
         return $this->isRefPointerToSchema()
             && strpos($this->refPointer, '/' . $this->schema->getName() . '/') !== false
             && strpos($this->refPointer, '/properties/') !== false;
     }
 
-    public function getRefSchemaName():string
+    public function getRefSchemaName(): string
     {
         if (!$this->isReference && !$this->isItemsReference) {
             throw new BadMethodCallException('Property should be a reference or contains items with reference');
         }
         $pattern = strpos($this->refPointer, '/properties/') !== false ?
-            '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)/properties/(?<propName>.+)$~'
-            : '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)$~';
-        if (!\preg_match($pattern, $this->refPointer, $matches)) {
+            '~^' . self::REFERENCE_PATH . '(?<schemaName>.+)/properties/(?<propName>.+)$~'
+            : '~^' . self::REFERENCE_PATH . '(?<schemaName>.+)$~';
+        if (!preg_match($pattern, $this->refPointer, $matches)) {
             throw new InvalidDefinitionException('Invalid schema reference');
         }
         return $matches['schemaName'];
     }
 
-    public function getRefClassName():string
+    public function getRefClassName(): string
     {
         return Inflector::id2camel($this->getRefSchemaName(), '_');
     }
@@ -300,28 +300,28 @@ class PropertySchema
         return $this->property->$attrName ?? $default;
     }
 
-    public function hasAttr(string $attrName):bool
+    public function hasAttr(string $attrName): bool
     {
         return isset($this->property->$attrName);
     }
 
-    public function isReference():bool
+    public function isReference(): bool
     {
         return $this->isReference;
     }
 
-    public function hasItems():bool
+    public function hasItems(): bool
     {
         return !$this->isReference && isset($this->property->items, $this->property->type)
             && $this->property->type === 'array';
     }
 
-    public function hasRefItems():bool
+    public function hasRefItems(): bool
     {
         return $this->isItemsReference;
     }
 
-    public function hasEnum():bool
+    public function hasEnum(): bool
     {
         if ($this->isReference) {
             throw new BadMethodCallException('Not supported for referenced property');
@@ -329,13 +329,13 @@ class PropertySchema
         return isset($this->property->enum) && is_array($this->property->enum);
     }
 
-    public function isVirtual():bool
+    public function isVirtual(): bool
     {
         return isset($this->property->{CustomSpecAttr::DB_TYPE})
             && $this->property->{CustomSpecAttr::DB_TYPE} === false;
     }
 
-    public function guessMinMax():array
+    public function guessMinMax(): array
     {
         $min = $this->getAttr('minimum');
         $max = $this->getAttr('maximum');
@@ -362,7 +362,7 @@ class PropertySchema
         return [$min, $max];
     }
 
-    public function getMaxLength():?int
+    public function getMaxLength(): ?int
     {
         $ml = $this->getAttr('maxLength');
 
@@ -378,17 +378,17 @@ class PropertySchema
         return $ml;
     }
 
-    public function getMinLength():?int
+    public function getMinLength(): ?int
     {
         return $this->getAttr('minLength');
     }
 
-    public function isReadonly():bool
+    public function isReadonly(): bool
     {
         return $this->getAttr('readOnly', false);
     }
 
-    public function guessPhpType():string
+    public function guessPhpType(): string
     {
         $customDbType = isset($this->property->{CustomSpecAttr::DB_TYPE})
             ? strtolower($this->property->{CustomSpecAttr::DB_TYPE}) : null;
@@ -417,7 +417,7 @@ class PropertySchema
         }
     }
 
-    public function guessDbType($forReference = false):string
+    public function guessDbType($forReference = false): string
     {
         if ($forReference) {
             $format = $this->getAttr('format');
@@ -554,7 +554,7 @@ class PropertySchema
 
         preg_match('/\w+/', $xDbType, $matches);
         if (!isset($matches[0])) {
-            throw new \yii\base\InvalidConfigException('Abnormal x-db-type: "'.$xDbType.'" detected');
+            throw new InvalidConfigException('Abnormal x-db-type: "' . $xDbType . '" detected');
         }
         $firstWordOfRealJustDbType = strtolower($matches[0]);
 
@@ -562,7 +562,7 @@ class PropertySchema
             $mysqlSchema = new MySqlSchema;
 
             if (!array_key_exists($firstWordOfRealJustDbType, $mysqlSchema->typeMap)) {
-                throw new InvalidDefinitionException('"x-db-type: '.$firstWordOfRealJustDbType.'" is incorrect. "'.$firstWordOfRealJustDbType.'" is not a real data type in MySQL or not implemented in Yii MySQL. See allowed data types list in `\yii\db\mysql\Schema::$typeMap`');
+                throw new InvalidDefinitionException('"x-db-type: ' . $firstWordOfRealJustDbType . '" is incorrect. "' . $firstWordOfRealJustDbType . '" is not a real data type in MySQL or not implemented in Yii MySQL. See allowed data types list in `\yii\db\mysql\Schema::$typeMap`');
             }
 
             $yiiAbstractDataType = $mysqlSchema->typeMap[$firstWordOfRealJustDbType];
@@ -570,7 +570,7 @@ class PropertySchema
             $mariadbSchema = new MariaDbSchema;
 
             if (!array_key_exists($firstWordOfRealJustDbType, $mariadbSchema->typeMap)) {
-                throw new InvalidDefinitionException('"x-db-type: '.$firstWordOfRealJustDbType.'" is incorrect. "'.$firstWordOfRealJustDbType.'" is not a real data type in MariaDb or not implemented in Yii MariaDB. See allowed data types list in `\SamIT\Yii2\MariaDb\Schema::$typeMap`');
+                throw new InvalidDefinitionException('"x-db-type: ' . $firstWordOfRealJustDbType . '" is incorrect. "' . $firstWordOfRealJustDbType . '" is not a real data type in MariaDb or not implemented in Yii MariaDB. See allowed data types list in `\SamIT\Yii2\MariaDb\Schema::$typeMap`');
             }
             $yiiAbstractDataType = $mariadbSchema->typeMap[$firstWordOfRealJustDbType];
         } elseif (ApiGenerator::isPostgres()) {
@@ -578,18 +578,18 @@ class PropertySchema
             if (!array_key_exists($firstWordOfRealJustDbType, $pgsqlSchema->typeMap)) {
                 preg_match('/\w+\ \w+/', $xDbType, $doublePrecisionDataType);
                 if (!isset($doublePrecisionDataType[0])) {
-                    throw new InvalidDefinitionException('"x-db-type: '.$firstWordOfRealJustDbType.'" is incorrect. "'.$firstWordOfRealJustDbType.'" is not a real data type in PostgreSQL or not implemented in Yii PostgreSQL. See allowed data types list in `\yii\db\pgsql\Schema::$typeMap`');
+                    throw new InvalidDefinitionException('"x-db-type: ' . $firstWordOfRealJustDbType . '" is incorrect. "' . $firstWordOfRealJustDbType . '" is not a real data type in PostgreSQL or not implemented in Yii PostgreSQL. See allowed data types list in `\yii\db\pgsql\Schema::$typeMap`');
                 }
                 $doublePrecisionDataType[0] = strtolower($doublePrecisionDataType[0]);
                 if (!array_key_exists($doublePrecisionDataType[0], $pgsqlSchema->typeMap)) {
-                    throw new InvalidDefinitionException('"x-db-type: '.$doublePrecisionDataType[0].'" is incorrect. "'.$doublePrecisionDataType[0].'" is not a real data type in PostgreSQL or not implemented in Yii PostgreSQL. See allowed data types list in `\yii\db\pgsql\Schema::$typeMap`');
+                    throw new InvalidDefinitionException('"x-db-type: ' . $doublePrecisionDataType[0] . '" is incorrect. "' . $doublePrecisionDataType[0] . '" is not a real data type in PostgreSQL or not implemented in Yii PostgreSQL. See allowed data types list in `\yii\db\pgsql\Schema::$typeMap`');
                 }
                 $yiiAbstractDataType = $pgsqlSchema->typeMap[$doublePrecisionDataType[0]];
             } else {
                 $yiiAbstractDataType = $pgsqlSchema->typeMap[$firstWordOfRealJustDbType];
             }
         } else {
-            throw new NotSupportedException('"x-db-type" for database '.get_class(Yii::$app->db->schema).' is not implemented. It is only implemented for PostgreSQL, MySQL and MariaDB.');
+            throw new NotSupportedException('"x-db-type" for database ' . get_class(Yii::$app->db->schema) . ' is not implemented. It is only implemented for PostgreSQL, MySQL and MariaDB.');
         }
 
         $phpType = static::getColumnPhpType(new ColumnSchema(['type' => $yiiAbstractDataType]));
@@ -607,7 +607,7 @@ class PropertySchema
     /**
      * This method is copied + enhanced from protected method `getColumnPhpType()` of \yii\db\Schema class
      * Extracts the PHP type from abstract DB type.
-     * @param \yii\db\ColumnSchema $column the column schema information
+     * @param ColumnSchema $column the column schema information
      * @return string PHP type name
      */
     public static function getColumnPhpType(ColumnSchema $column): string

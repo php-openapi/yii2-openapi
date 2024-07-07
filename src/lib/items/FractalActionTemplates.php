@@ -16,6 +16,7 @@ use insolita\fractal\actions\UpdateAction;
 use insolita\fractal\actions\UpdateRelationshipAction;
 use insolita\fractal\actions\ViewAction;
 use insolita\fractal\actions\ViewRelationshipAction;
+use Throwable;
 use Yii;
 use function dirname;
 use function file_exists;
@@ -25,7 +26,7 @@ class FractalActionTemplates
 {
 
     /**
-     * @var \cebe\yii2openapi\lib\items\FractalAction
+     * @var FractalAction
      */
     private $action;
 
@@ -36,34 +37,34 @@ class FractalActionTemplates
 
     public function hasTemplate(): bool
     {
-        $method = $this->action->templateId.'Template';
+        $method = $this->action->templateId . 'Template';
         return method_exists($this, $method);
     }
 
     public function hasImplementation(): bool
     {
-        $template = dirname(__DIR__)."/action_templates/{$this->action->templateId}.php";
+        $template = dirname(__DIR__) . "/action_templates/{$this->action->templateId}.php";
         return file_exists($template);
     }
 
     public function getTemplate(): ?string
     {
-        $method = $this->action->templateId.'Template';
-        return method_exists($this, $method) ? $this->$method(): null;
+        $method = $this->action->templateId . 'Template';
+        return method_exists($this, $method) ? $this->$method() : null;
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function getImplementation(): ?string
     {
-        $template = dirname(__DIR__)."/action_templates/{$this->action->templateId}.php";
-        return file_exists($template) ? Yii::$app->view->renderPhpFile($template, ['action'=>$this->action]): null;
+        $template = dirname(__DIR__) . "/action_templates/{$this->action->templateId}.php";
+        return file_exists($template) ? Yii::$app->view->renderPhpFile($template, ['action' => $this->action]) : null;
     }
 
-    protected function viewResourceTemplate():string
+    protected function viewResourceTemplate(): string
     {
-        $className = '\\'.ViewAction::class.'::class';
+        $className = '\\' . ViewAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -75,9 +76,10 @@ class FractalActionTemplates
             ]
 PHP;
     }
-    protected function createCollectionTemplate():string
+
+    protected function createCollectionTemplate(): string
     {
-        $className = '\\'.CreateAction::class.'::class';
+        $className = '\\' . CreateAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -91,10 +93,11 @@ PHP;
             ]
 PHP;
     }
-    protected function updateResourceTemplate():string
+
+    protected function updateResourceTemplate(): string
     {
         $resourceKey = $this->action->getResourceKey();
-        $className = '\\'.UpdateAction::class.'::class';
+        $className = '\\' . UpdateAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -108,9 +111,10 @@ PHP;
             ]
 PHP;
     }
-    protected function deleteResourceTemplate():string
+
+    protected function deleteResourceTemplate(): string
     {
-        $className = '\\'.DeleteAction::class.'::class';
+        $className = '\\' . DeleteAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -120,10 +124,11 @@ PHP;
           ]
 PHP;
     }
-    protected function viewResourceForTemplate():string
+
+    protected function viewResourceForTemplate(): string
     {
         $resourceKey = $this->action->getResourceKey();
-        $className =  '\\'.ViewAction::class.'::class';
+        $className = '\\' . ViewAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -137,10 +142,11 @@ PHP;
             ]
 PHP;
     }
-    protected function createCollectionForTemplate():string
+
+    protected function createCollectionForTemplate(): string
     {
         $resourceKey = $this->action->getResourceKey();
-        $className =  '\\'.CreateAction::class.'::class';
+        $className = '\\' . CreateAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -156,10 +162,11 @@ PHP;
             ]
 PHP;
     }
-    protected function updateResourceForTemplate():string
+
+    protected function updateResourceForTemplate(): string
     {
         $resourceKey = $this->action->getResourceKey();
-        $className =  '\\'.UpdateAction::class.'::class';
+        $className = '\\' . UpdateAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -174,9 +181,10 @@ PHP;
             ]
 PHP;
     }
-    protected function deleteResourceForTemplate():string
+
+    protected function deleteResourceForTemplate(): string
     {
-        $className = '\\'.DeleteAction::class.'::class';
+        $className = '\\' . DeleteAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -189,9 +197,9 @@ PHP;
 PHP;
     }
 
-    protected function listCollectionTemplate():string
+    protected function listCollectionTemplate(): string
     {
-        $className = '\\'.ListAction::class.'::class';
+        $className = '\\' . ListAction::class . '::class';
         $resourceKey = $this->action->getResourceKey();
         return <<<"PHP"
 '{$this->action->id}' => [
@@ -205,9 +213,10 @@ PHP;
             ]
 PHP;
     }
-    protected function listCollectionForTemplate():string
+
+    protected function listCollectionForTemplate(): string
     {
-        $className = '\\'.ListAction::class.'::class';
+        $className = '\\' . ListAction::class . '::class';
         $resourceKey = $this->action->getResourceKey();
         return <<<"PHP"
 '{$this->action->id}' => [
@@ -226,7 +235,7 @@ PHP;
 
     protected function listRelationshipTemplate(): string
     {
-        $className = '\\'.ViewRelationshipAction::class.'::class';
+        $className = '\\' . ViewRelationshipAction::class . '::class';
         $resourceKey = $this->action->getResourceKey();
         return <<<"PHP"
 '{$this->action->id}' => [
@@ -243,7 +252,7 @@ PHP;
     //Same as listRelationship template, but for hasOne relation
     protected function viewRelationshipTemplate(): string
     {
-        $className = '\\'.ViewRelationshipAction::class.'::class';
+        $className = '\\' . ViewRelationshipAction::class . '::class';
         $resourceKey = $this->action->getResourceKey();
         return <<<"PHP"
 '{$this->action->id}' => [
@@ -259,7 +268,7 @@ PHP;
 
     protected function createRelationshipTemplate(): string
     {
-        $className = '\\'.CreateRelationshipAction::class.'::class';
+        $className = '\\' . CreateRelationshipAction::class . '::class';
         $resourceKey = $this->action->getResourceKey();
         return <<<"PHP"
 '{$this->action->id}' => [
@@ -276,7 +285,7 @@ PHP;
 
     protected function updateRelationshipTemplate(): string
     {
-        $className = '\\'.UpdateRelationshipAction::class.'::class';
+        $className = '\\' . UpdateRelationshipAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},
@@ -291,7 +300,7 @@ PHP;
 
     protected function deleteRelationshipTemplate(): string
     {
-        $className = '\\'.DeleteRelationshipAction::class.'::class';
+        $className = '\\' . DeleteRelationshipAction::class . '::class';
         return <<<"PHP"
 '{$this->action->id}' => [
                 'class' => {$className},

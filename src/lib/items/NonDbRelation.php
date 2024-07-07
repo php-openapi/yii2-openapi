@@ -30,10 +30,11 @@ class NonDbRelation
     private $method;
 
     public function __construct(
-        string $name,
+        string  $name,
         ?string $className = null,
         ?string $method = null
-    ) {
+    )
+    {
         $this->name = $name;
         $this->className = $className;
         $this->method = $method;
@@ -43,7 +44,7 @@ class NonDbRelation
      * @param string $name
      * @return NonDbRelation
      */
-    public function setName(string $name):NonDbRelation
+    public function setName(string $name): NonDbRelation
     {
         $this->name = $name;
         return $this;
@@ -53,7 +54,7 @@ class NonDbRelation
      * @param string $className
      * @return NonDbRelation
      */
-    public function setClassName(string $className):NonDbRelation
+    public function setClassName(string $className): NonDbRelation
     {
         $this->className = $className;
         return $this;
@@ -63,7 +64,7 @@ class NonDbRelation
      * @param string $method
      * @return NonDbRelation
      */
-    public function setMethod(string $method):NonDbRelation
+    public function setMethod(string $method): NonDbRelation
     {
         $this->method = $method;
         return $this;
@@ -72,7 +73,7 @@ class NonDbRelation
     /**
      * @return string
      */
-    public function getName():string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -80,17 +81,17 @@ class NonDbRelation
     /**
      * @return string
      */
-    public function getClassName():?string
+    public function getClassName(): ?string
     {
         return $this->className;
     }
 
-    public function getCamelName():string
+    public function getCamelName(): string
     {
         return Inflector::camelize($this->name);
     }
 
-    public function getClassKey():string
+    public function getClassKey(): string
     {
         return Inflector::camel2id($this->getClassName());
     }
@@ -98,12 +99,12 @@ class NonDbRelation
     /**
      * @return string
      */
-    public function getMethod():?string
+    public function getMethod(): ?string
     {
         return $this->method;
     }
 
-    public function isHasOne():bool
+    public function isHasOne(): bool
     {
         return $this->method === self::HAS_ONE;
     }

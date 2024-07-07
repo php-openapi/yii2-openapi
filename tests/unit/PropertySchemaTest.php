@@ -4,8 +4,8 @@ namespace tests\unit;
 
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
 use tests\DbTestCase;
 use Yii;
 
@@ -151,7 +151,7 @@ class PropertySchemaTest extends DbTestCase
         self::assertEquals($fkChildProperty, $fkProperty);
     }
 
-    private function getSchema():ComponentSchema
+    private function getSchema(): ComponentSchema
     {
         $schemaFile = Yii::getAlias("@specs/blog.yaml");
         $openApi = Reader::readFromYamlFile($schemaFile, OpenApi::class, false);

@@ -9,13 +9,18 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\items\DbIndex;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ManyToManyRelation;
 use cebe\yii2openapi\lib\items\MigrationModel;
+use Exception;
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\Connection;
 use yii\db\Expression;
+use yii\db\TableSchema;
 
 abstract class BaseMigrationBuilder
 {
@@ -23,17 +28,17 @@ abstract class BaseMigrationBuilder
     public const POS_AFTER = 'AFTER';
 
     /**
-     * @var \yii\db\Connection
+     * @var Connection
      */
     protected $db;
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var DbModel
      */
     protected $model;
 
     /**
-     * @var \yii\db\TableSchema|null
+     * @var TableSchema|null
      */
     protected $tableSchema;
 
@@ -43,21 +48,21 @@ abstract class BaseMigrationBuilder
     protected $migration;
 
     /**
-     * @var \yii\db\ColumnSchema[]
+     * @var ColumnSchema[]
      */
     protected $newColumns;
 
     /**
-     * @var \cebe\yii2openapi\lib\migrations\MigrationRecordBuilder
+     * @var MigrationRecordBuilder
      */
     protected $recordBuilder;
 
     /**
      * MigrationBuilder constructor.
-     * @param \yii\db\Connection                  $db
-     * @param \cebe\yii2openapi\lib\items\DbModel $model
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\base\NotSupportedException
+     * @param Connection $db
+     * @param DbModel $model
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function __construct(Connection $db, DbModel $model)
     {
@@ -68,17 +73,17 @@ abstract class BaseMigrationBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function build():MigrationModel
+    public function build(): MigrationModel
     {
         return $this->tableSchema === null ? $this->buildFresh() : $this->buildSecondary();
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function buildJunction(ManyToManyRelation $relation):MigrationModel
+    public function buildJunction(ManyToManyRelation $relation): MigrationModel
     {
         $this->tableSchema = $this->db->getTableSchema($relation->getViaTableAlias(), true);
         if ($this->tableSchema !== null) {
@@ -88,9 +93,9 @@ abstract class BaseMigrationBuilder
         $builder = $this->recordBuilder;
         $tableAlias = $relation->getViaTableAlias();
         $this->migration->addUpCode($builder->createTable($tableAlias, $relation->columnSchema))
-                        ->addDownCode($builder->dropTable($tableAlias));
+            ->addDownCode($builder->dropTable($tableAlias));
         $this->migration->addUpCode($builder->addPrimaryKey($tableAlias, array_keys($relation->columnSchema)))
-                        ->addDownCode($builder->dropPrimaryKey($tableAlias, array_keys($relation->columnSchema)));
+            ->addDownCode($builder->dropPrimaryKey($tableAlias, array_keys($relation->columnSchema)));
         foreach ($relation->getRelations() as $rel) {
             $fkCol = $rel->getColumnName();
             $refCol = $rel->getForeignName();
@@ -109,9 +114,9 @@ abstract class BaseMigrationBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function buildFresh():MigrationModel
+    public function buildFresh(): MigrationModel
     {
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, true, null, []]);
         $this->newColumns = $this->model->attributesToColumnSchema();
@@ -122,7 +127,7 @@ abstract class BaseMigrationBuilder
         $tableName = $this->model->getTableAlias();
 
         $this->migration->addUpCode($builder->createTable($tableName, $this->newColumns))
-                        ->addDownCode($builder->dropTable($tableName));
+            ->addDownCode($builder->dropTable($tableName));
         $nonAutoincrementPk = false;
         foreach ($this->newColumns as $col) {
             if ($col->isPrimaryKey && !$col->autoIncrement) {
@@ -139,14 +144,14 @@ abstract class BaseMigrationBuilder
         $this->createEnumMigrations();
         if (!empty($this->model->junctionCols) && !isset($this->model->attributes[$this->model->pkName])) {
             $this->migration->addUpCode($builder->addPrimaryKey($tableName, $this->model->junctionCols))
-                            ->addDownCode($builder->dropPrimaryKey($tableName, $this->model->junctionCols));
+                ->addDownCode($builder->dropPrimaryKey($tableName, $this->model->junctionCols));
         }
 
         foreach ($this->model->indexes as $index) {
             $upCode = $index->isUnique ? $builder->addUniqueIndex($tableName, $index->name, $index->columns)
                 : $builder->addIndex($tableName, $index->name, $index->columns, $index->type);
             $this->migration->addUpCode($upCode)
-                            ->addDownCode($builder->dropIndex($tableName, $index->name));
+                ->addDownCode($builder->dropIndex($tableName, $index->name));
         }
 
         foreach ($this->model->getHasOneRelations() as $relation) {
@@ -155,7 +160,7 @@ abstract class BaseMigrationBuilder
             $refTable = $relation->getTableAlias();
             $fkName = $this->foreignKeyName($this->model->tableName, $fkCol, $relation->getTableName(), $refCol);
             $this->migration->addUpCode($builder->addFk($fkName, $tableName, $fkCol, $refTable, $refCol, $relation->onDeleteFkConstraint, $relation->onUpdateFkConstraint))
-                            ->addDownCode($builder->dropFk($fkName, $tableName));
+                ->addDownCode($builder->dropFk($fkName, $tableName));
             if ($relation->getTableName() !== $this->model->tableName) {
                 $this->migration->dependencies[] = $refTable;
             }
@@ -165,9 +170,9 @@ abstract class BaseMigrationBuilder
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function buildSecondary(?ManyToManyRelation $relation = null):MigrationModel
+    public function buildSecondary(?ManyToManyRelation $relation = null): MigrationModel
     {
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, false, $relation, []]);
         $this->newColumns = $relation->columnSchema ?? $this->model->attributesToColumnSchema();
@@ -195,7 +200,7 @@ abstract class BaseMigrationBuilder
                 $builder = $this->recordBuilder;
                 $tableName = $this->model->getTableAlias();
                 $this->migration->addUpCode($builder->dropPrimaryKey($tableName, $this->model->junctionCols))
-                                ->addDownCode($builder->addPrimaryKey($tableName, $this->model->junctionCols));
+                    ->addDownCode($builder->addPrimaryKey($tableName, $this->model->junctionCols));
             }
         }
         $this->buildColumnsDrop($columnsForDrop);
@@ -225,9 +230,9 @@ abstract class BaseMigrationBuilder
 
     /**
      * @param array|ColumnSchema[] $columns
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function buildColumnsCreation(array $columns):void
+    protected function buildColumnsCreation(array $columns): void
     {
         $tableName = $this->model->getTableAlias();
 
@@ -237,59 +242,59 @@ abstract class BaseMigrationBuilder
             $position = $this->findPosition($column);
 
             $this->migration->addUpCode($this->recordBuilder->addColumn($tableName, $column, $position))
-                            ->addDownCode($this->recordBuilder->dropColumn($tableName, $column->name));
+                ->addDownCode($this->recordBuilder->dropColumn($tableName, $column->name));
         }
     }
 
     /**
      * @param array|ColumnSchema[] $columns
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function buildColumnsDrop(array $columns):void
+    protected function buildColumnsDrop(array $columns): void
     {
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
             if ($column->isPrimaryKey && !$column->autoIncrement) {
                 $pkName = 'pk_' . $this->model->tableName . '_' . $column->name;
                 $this->migration->addDownCode($this->recordBuilder->addPrimaryKey($tableName, [$column->name], $pkName))
-                                ->addUpCode($this->recordBuilder->dropPrimaryKey($tableName, [$column->name], $pkName));
+                    ->addUpCode($this->recordBuilder->dropPrimaryKey($tableName, [$column->name], $pkName));
             }
             $position = $this->findPosition($column, true);
             $this->migration->addDownCode($this->recordBuilder->addDbColumn($tableName, $column, $position))
-                            ->addUpCode($this->recordBuilder->dropColumn($tableName, $column->name));
+                ->addUpCode($this->recordBuilder->dropColumn($tableName, $column->name));
         }
     }
 
-    abstract protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed):void;
+    abstract protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed): void;
 
-    abstract protected function compareColumns(ColumnSchema $current, ColumnSchema $desired):array;
+    abstract protected function compareColumns(ColumnSchema $current, ColumnSchema $desired): array;
 
-    abstract protected function createEnumMigrations():void;
+    abstract protected function createEnumMigrations(): void;
 
-    abstract protected function isDbDefaultSize(ColumnSchema $current):bool;
+    abstract protected function isDbDefaultSize(ColumnSchema $current): bool;
 
     abstract public static function getColumnSchemaBuilderClass(): string;
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\DbIndex[]
+     * @return array|DbIndex[]
      */
-    abstract protected function findTableIndexes():array;
+    abstract protected function findTableIndexes(): array;
 
-    protected function buildIndexChanges():void
+    protected function buildIndexChanges(): void
     {
         $haveIndexes = $this->findTableIndexes();
         $wantIndexes = $this->model->indexes;
         $wantIndexNames = array_column($wantIndexes, 'name');
         $haveIndexNames = array_column($haveIndexes, 'name');
         $tableName = $this->model->getTableAlias();
-        /**@var \cebe\yii2openapi\lib\items\DbIndex[] $forDrop */
+        /**@var DbIndex[] $forDrop */
         $forDrop = array_map(
             function ($idx) use ($haveIndexes) {
                 return $haveIndexes[$idx];
             },
             array_diff($haveIndexNames, $wantIndexNames)
         );
-        /**@var \cebe\yii2openapi\lib\items\DbIndex[] $forCreate */
+        /**@var DbIndex[] $forCreate */
         $forCreate = array_map(
             function ($idx) use ($wantIndexes) {
                 return $wantIndexes[$idx];
@@ -308,18 +313,18 @@ abstract class BaseMigrationBuilder
                 ? $this->recordBuilder->addUniqueIndex($tableName, $index->name, $index->columns)
                 : $this->recordBuilder->addIndex($tableName, $index->name, $index->columns, $index->type);
             $this->migration->addUpCode($this->recordBuilder->dropIndex($tableName, $index->name))
-                            ->addDownCode($downCode);
+                ->addDownCode($downCode);
         }
         foreach ($forCreate as $index) {
             $upCode = $index->isUnique
                 ? $this->recordBuilder->addUniqueIndex($tableName, $index->name, $index->columns)
                 : $this->recordBuilder->addIndex($tableName, $index->name, $index->columns, $index->type);
             $this->migration->addDownCode($this->recordBuilder->dropIndex($tableName, $index->name))
-                            ->addUpCode($upCode);
+                ->addUpCode($upCode);
         }
     }
 
-    protected function buildRelations():void
+    protected function buildRelations(): void
     {
         $tableAlias = $this->model->getTableAlias();
         $existedRelations = [];
@@ -354,7 +359,7 @@ abstract class BaseMigrationBuilder
         }
     }
 
-    protected function buildRelationsForJunction(ManyToManyRelation $relation):void
+    protected function buildRelationsForJunction(ManyToManyRelation $relation): void
     {
         $tableAlias = $relation->viaTableAlias;
         $existedRelations = [];
@@ -388,14 +393,14 @@ abstract class BaseMigrationBuilder
         }
     }
 
-    protected function foreignKeyName(string $table, string $column, string $foreignTable, string $foreignColumn):string
+    protected function foreignKeyName(string $table, string $column, string $foreignTable, string $foreignColumn): string
     {
         $table = $this->normalizeTableName($table);
         $foreignTable = $this->normalizeTableName($foreignTable);
         return substr("fk_{$table}_{$column}_{$foreignTable}_$foreignColumn", 0, 63);
     }
 
-    protected function normalizeTableName(string $tableName):string
+    protected function normalizeTableName(string $tableName): string
     {
         if (preg_match('~^{{%?(.*)}}$~', $tableName, $m)) {
             return $m[1];
@@ -403,12 +408,12 @@ abstract class BaseMigrationBuilder
         return $tableName;
     }
 
-    protected function unPrefixTableName(string $tableName):string
+    protected function unPrefixTableName(string $tableName): string
     {
         return str_replace($this->db->tablePrefix, '', $tableName);
     }
 
-    protected function isNeedUsingExpression(string $fromDbType, string $toDbType):bool
+    protected function isNeedUsingExpression(string $fromDbType, string $toDbType): bool
     {
         if ($fromDbType === $toDbType) {
             return false;
@@ -417,20 +422,20 @@ abstract class BaseMigrationBuilder
     }
 
     // temporary save new/changed/desired column to temporary table. If saved we can fetch it from DB and then it can be used to compare with current column
-    public function tmpSaveNewCol(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): \yii\db\ColumnSchema
+    public function tmpSaveNewCol(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): ColumnSchema
     {
         $tmpTableName = 'tmp_table_';
         $tmpEnumName = function (string $columnName): string {
-            return '"tmp_enum_'.$columnName.'_"';
+            return '"tmp_enum_' . $columnName . '_"';
         };
         $rawTableName = $this->db->schema->getRawTableName($tableAlias);
         $innerEnumTypeName = "\"enum_{$tmpTableName}_{$columnSchema->name}\"";
 
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS '.$tmpTableName)->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS ' . $tmpTableName)->execute();
 
         if (is_string($columnSchema->xDbType) && !empty($columnSchema->xDbType)) {
             $name = MigrationRecordBuilder::quote($columnSchema->name);
-            $column = [$name.' '.$this->newColStr($tmpTableName, $columnSchema)];
+            $column = [$name . ' ' . $this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
                 $column = strtr($column, [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
             }
@@ -448,7 +453,7 @@ abstract class BaseMigrationBuilder
                 return "'$aValue'";
             }, $allEnumValues);
             Yii::$app->db->createCommand(
-                'CREATE TYPE '.$tmpEnumName($columnSchema->name).' AS ENUM('.implode(', ', $allEnumValues).')'
+                'CREATE TYPE ' . $tmpEnumName($columnSchema->name) . ' AS ENUM(' . implode(', ', $allEnumValues) . ')'
             )->execute();
         }
 
@@ -459,13 +464,13 @@ abstract class BaseMigrationBuilder
         Yii::$app->db->createCommand()->dropTable($tmpTableName)->execute();
 
         if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {// drop enum
-            Yii::$app->db->createCommand('DROP TYPE '.$tmpEnumName($columnSchema->name))->execute();
-            if ('"'.$table->columns[$columnSchema->name]->dbType.'"' !== $tmpEnumName($columnSchema->name)) {
-                throw new \Exception('Unknown error related to PgSQL enum '.$table->columns[$columnSchema->name]->dbType);
+            Yii::$app->db->createCommand('DROP TYPE ' . $tmpEnumName($columnSchema->name))->execute();
+            if ('"' . $table->columns[$columnSchema->name]->dbType . '"' !== $tmpEnumName($columnSchema->name)) {
+                throw new Exception('Unknown error related to PgSQL enum ' . $table->columns[$columnSchema->name]->dbType);
             }
             // reset back column enum name to original as we are comparing with current
             // e.g. we get different enum type name such as `enum_status` and `tmp_enum_status_` even there is no change, so below statement fix this issue
-            $table->columns[$columnSchema->name]->dbType = 'enum_'.$rawTableName.'_'.$columnSchema->name;
+            $table->columns[$columnSchema->name]->dbType = 'enum_' . $rawTableName . '_' . $columnSchema->name;
         }
 
         return $table->columns[$columnSchema->name];
@@ -473,19 +478,20 @@ abstract class BaseMigrationBuilder
 
     public function newColStr(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): string
     {
-        $ctc = new ColumnToCode(\Yii::$app->db->schema, $tableAlias, $columnSchema, false, false, true);
+        $ctc = new ColumnToCode(Yii::$app->db->schema, $tableAlias, $columnSchema, false, false, true);
         return ColumnToCode::undoEscapeQuotes($ctc->getCode());
     }
 
-    public static function isEnum(\yii\db\ColumnSchema $columnSchema): bool
+    public static function isEnum(ColumnSchema $columnSchema): bool
     {
         return !empty($columnSchema->enumValues) && is_array($columnSchema->enumValues) && empty($columnSchema->xDbType);
     }
 
     public static function isEnumValuesChanged(
-        \yii\db\ColumnSchema $current,
-        \yii\db\ColumnSchema $desired
-    ): bool {
+        ColumnSchema $current,
+        ColumnSchema $desired
+    ): bool
+    {
         if (static::isEnum($current) && static::isEnum($desired) &&
             $current->enumValues !== $desired->enumValues) {
             return true;
@@ -496,7 +502,8 @@ abstract class BaseMigrationBuilder
     public function isDefaultValueChanged(
         ColumnSchema $current,
         ColumnSchema $desired
-    ): bool {
+    ): bool
+    {
         // if the default value is object of \yii\db\Expression then default value is expression instead of constant. See https://dev.mysql.com/doc/refman/8.0/en/data-type-defaults.html
         // in such case instead of comparing two objects, we should compare expression
 
@@ -526,9 +533,9 @@ abstract class BaseMigrationBuilder
 
         $key = array_search($column->name, $columnNames);
         if ($key > 0) {
-            $prevColName = $columnNames[$key-1];
+            $prevColName = $columnNames[$key - 1];
 
-            if (!isset($columnNames[$key+1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
+            if (!isset($columnNames[$key + 1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
                 return null;
             }
 
@@ -547,7 +554,7 @@ abstract class BaseMigrationBuilder
 
             return self::POS_AFTER . ' ' . $prevColName;
 
-        // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
+            // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
         } elseif ($key === 0) {
             return self::POS_FIRST;
         }

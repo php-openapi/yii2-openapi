@@ -7,25 +7,19 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-use yii\helpers\VarDumper;
-use \Yii;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
-use cebe\yii2openapi\generator\ApiGenerator;
-use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
-use yii\base\BaseObject;
 use cebe\yii2openapi\db\ColumnSchema;
+use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
+use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
+use yii\db\Expression;
 use yii\helpers\Inflector;
-use yii\helpers\StringHelper;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
-use yii\base\NotSupportedException;
 use function is_array;
 use function strtolower;
 
 /**
  * @property-write mixed $default
- * @property-write bool  $isPrimary
+ * @property-write bool $isPrimary
  * @property-read string $formattedDescription
  * @property-read null|int $maxLength
  * @property-read null|int $minLength
@@ -136,19 +130,19 @@ class Attribute extends BaseObject
         parent::__construct($config);
     }
 
-    public function setPhpType(string $phpType):Attribute
+    public function setPhpType(string $phpType): Attribute
     {
         $this->phpType = $phpType;
         return $this;
     }
 
-    public function setDbType(string $dbType):Attribute
+    public function setDbType(string $dbType): Attribute
     {
         $this->dbType = $dbType;
         return $this;
     }
 
-    public function setXDbType($xDbType):Attribute
+    public function setXDbType($xDbType): Attribute
     {
         $this->xDbType = $xDbType;
         return $this;
@@ -158,54 +152,54 @@ class Attribute extends BaseObject
     {
         // first priority is given to `default` and then to `x-db-default-expression`
         if ($xDbDefaultExpression !== null && $this->defaultValue === null) {
-            $this->defaultValue = new \yii\db\Expression('('.$xDbDefaultExpression.')');
+            $this->defaultValue = new Expression('(' . $xDbDefaultExpression . ')');
         }
         return $this;
     }
 
-    public function setNullable($nullable):Attribute
+    public function setNullable($nullable): Attribute
     {
         $this->nullable = $nullable;
         return $this;
     }
 
-    public function setDescription(string $description):Attribute
+    public function setDescription(string $description): Attribute
     {
         $this->description = $description;
         return $this;
     }
 
-    public function setReadOnly(bool $readOnly = true):Attribute
+    public function setReadOnly(bool $readOnly = true): Attribute
     {
         $this->readOnly = $readOnly;
         return $this;
     }
 
-    public function setRequired(bool $required = true):Attribute
+    public function setRequired(bool $required = true): Attribute
     {
         $this->required = $required;
         return $this;
     }
 
-    public function setSize(?int $size):Attribute
+    public function setSize(?int $size): Attribute
     {
         $this->size = $size;
         return $this;
     }
 
-    public function setDefault($value):Attribute
+    public function setDefault($value): Attribute
     {
         $this->defaultValue = $value;
         return $this;
     }
 
-    public function setEnumValues(array $values):Attribute
+    public function setEnumValues(array $values): Attribute
     {
         $this->enumValues = $values;
         return $this;
     }
 
-    public function setForeignKeyColumnName(?string $name):Attribute
+    public function setForeignKeyColumnName(?string $name): Attribute
     {
         if ($name) {
             $this->fkColName = $name;
@@ -216,22 +210,22 @@ class Attribute extends BaseObject
     /**
      * @param int|float|null $min
      * @param int|float|null $max
-     * @param int|null       $minLength
+     * @param int|null $minLength
      * @return $this
      */
-    public function setLimits($min, $max, ?int $minLength):Attribute
+    public function setLimits($min, $max, ?int $minLength): Attribute
     {
         $this->limits = ['min' => $min, 'max' => $max, 'minLength' => $minLength];
         return $this;
     }
 
-    public function setFakerStub(?string $fakerStub):Attribute
+    public function setFakerStub(?string $fakerStub): Attribute
     {
         $this->fakerStub = $fakerStub;
         return $this;
     }
 
-    public function setIsPrimary(bool $isPrimary = true):Attribute
+    public function setIsPrimary(bool $isPrimary = true): Attribute
     {
         $this->primary = $isPrimary;
         return $this;
@@ -244,7 +238,7 @@ class Attribute extends BaseObject
     }
 
 
-    public function asReference(string $relatedClass):Attribute
+    public function asReference(string $relatedClass): Attribute
     {
         $this->reference = $relatedClass;
         $this->columnName = $this->fkColName ?
@@ -253,60 +247,60 @@ class Attribute extends BaseObject
         return $this;
     }
 
-    public function asNonDbReference(string $relatedClass):Attribute
+    public function asNonDbReference(string $relatedClass): Attribute
     {
         $this->reference = $relatedClass;
         $this->columnName = $this->propertyName;
         return $this;
     }
 
-    public function isReadOnly():bool
+    public function isReadOnly(): bool
     {
         return $this->readOnly;
     }
 
-    public function isReference():bool
+    public function isReference(): bool
     {
         return $this->reference !== null;
     }
 
-    public function isRequired():bool
+    public function isRequired(): bool
     {
         return $this->required;
     }
 
-    public function isVirtual():bool
+    public function isVirtual(): bool
     {
         return $this->isVirtual;
     }
 
-    public function camelName():string
+    public function camelName(): string
     {
         return Inflector::camelize($this->propertyName);
     }
 
-    public function getMaxLength():?int
+    public function getMaxLength(): ?int
     {
         return $this->size;
     }
 
-    public function getMinLength():?int
+    public function getMinLength(): ?int
     {
         return $this->limits['minLength'];
     }
 
-    public function getFormattedDescription():string
+    public function getFormattedDescription(): string
     {
-        $comment = $this->columnName.' '.$this->description;
+        $comment = $this->columnName . ' ' . $this->description;
         $type = $this->phpType;
-        return $type.' $'.str_replace("\n", "\n * ", rtrim($comment));
+        return $type . ' $' . str_replace("\n", "\n * ", rtrim($comment));
     }
 
-    public function toColumnSchema():ColumnSchema
+    public function toColumnSchema(): ColumnSchema
     {
         $column = new ColumnSchema([
             'name' => $this->columnName,
-            'phpType'=> $this->phpType,
+            'phpType' => $this->phpType,
             'dbType' => strtolower($this->dbType),
             'type' => $this->yiiAbstractTypeForDbSpecificType($this->dbType),
             'allowNull' => $this->allowNull(),
@@ -333,12 +327,12 @@ class Attribute extends BaseObject
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     private function yiiAbstractTypeForDbSpecificType(string $dbType): string
     {
         if (is_string($this->xDbType) && !empty($this->xDbType) && trim($this->xDbType)) {
-            list(, $yiiAbstractDataType, ) = PropertySchema::findMoreDetailOf($this->xDbType);
+            list(, $yiiAbstractDataType,) = PropertySchema::findMoreDetailOf($this->xDbType);
             return $yiiAbstractDataType;
         } else {
             if (stripos($dbType, 'int') === 0) {
@@ -374,7 +368,7 @@ class Attribute extends BaseObject
 
     public function handleDecimal(ColumnSchema $columnSchema): void
     {
-        if ($decimalAttributes = \cebe\yii2openapi\lib\ColumnToCode::isDecimalByDbType($columnSchema->dbType)) {
+        if ($decimalAttributes = ColumnToCode::isDecimalByDbType($columnSchema->dbType)) {
             $columnSchema->precision = $decimalAttributes['precision'];
             $columnSchema->scale = $decimalAttributes['scale'];
             $columnSchema->dbType = $decimalAttributes['dbType'];

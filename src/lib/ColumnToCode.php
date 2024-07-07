@@ -7,18 +7,15 @@
 
 namespace cebe\yii2openapi\lib;
 
-use yii\db\ArrayExpression;
-use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
 use cebe\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use yii\db\ArrayExpression;
 use yii\db\ColumnSchema;
 use yii\db\ColumnSchemaBuilder;
 use yii\db\Expression;
 use yii\db\JsonExpression;
-use yii\db\mysql\Schema as MySqlSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\db\Schema;
 use yii\helpers\Json;
-use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 use function in_array;
 use function is_string;
@@ -45,12 +42,12 @@ class ColumnToCode
     ];
 
     /**
-     * @var \yii\db\ColumnSchema
+     * @var ColumnSchema
      */
     private $column;
 
     /**
-     * @var \yii\db\Schema
+     * @var Schema
      */
     private $dbSchema;
 
@@ -116,23 +113,24 @@ class ColumnToCode
 
     /**
      * ColumnToCode constructor.
-     * @param \yii\db\Schema       $dbSchema
-     * @param \yii\db\ColumnSchema $column
-     * @param bool                 $fromDb (if from database we prefer column type for usage, from schema - dbType)
-     * @param bool                 $alter (flag for resolve quotes that is different for create and alter)
-     * @param bool                 $raw see @property $raw above for docs
-     * @param bool                 $alterByXDbType see @alterByXDbType $raw above for docs
+     * @param Schema $dbSchema
+     * @param ColumnSchema $column
+     * @param bool $fromDb (if from database we prefer column type for usage, from schema - dbType)
+     * @param bool $alter (flag for resolve quotes that is different for create and alter)
+     * @param bool $raw see @property $raw above for docs
+     * @param bool $alterByXDbType see @alterByXDbType $raw above for docs
      */
     public function __construct(
-        Schema $dbSchema,
-        string $tableAlias,
+        Schema       $dbSchema,
+        string       $tableAlias,
         ColumnSchema $column,
-        bool $fromDb = false,
-        bool $alter = false,
-        bool $raw = false,
-        bool $alterByXDbType = false,
-        ?string $position = null
-    ) {
+        bool         $fromDb = false,
+        bool         $alter = false,
+        bool         $raw = false,
+        bool         $alterByXDbType = false,
+        ?string      $position = null
+    )
+    {
         $this->dbSchema = $dbSchema;
         $this->tableAlias = $tableAlias;
         $this->column = $column;
@@ -150,7 +148,7 @@ class ColumnToCode
         $this->resolve();
     }
 
-    public function getCode(bool $quoted = false):string
+    public function getCode(bool $quoted = false): string
     {
         if ($this->isPk) {
             return '$this->' . $this->fluentParts['type'];
@@ -184,12 +182,12 @@ class ColumnToCode
         return $quoted ? VarDumper::export($code) : $code;
     }
 
-    public function getAlterExpression(bool $addUsingExpression = false):string
+    public function getAlterExpression(bool $addUsingExpression = false): string
     {
         if ($this->isEnum() && ApiGenerator::isPostgres()) {
             $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $enumTypeName = 'enum_'.$rawTableName.'_'.$this->column->name;
-            return "'" . sprintf('"'.$enumTypeName.'" USING "%1$s"::"'.$enumTypeName.'"', $this->column->name) . "'";
+            $enumTypeName = 'enum_' . $rawTableName . '_' . $this->column->name;
+            return "'" . sprintf('"' . $enumTypeName . '" USING "%1$s"::"' . $enumTypeName . '"', $this->column->name) . "'";
         }
         if ($this->column->dbType === 'tsvector') {
             return "'" . $this->rawParts['type'] . "'";
@@ -198,8 +196,8 @@ class ColumnToCode
             return "'" . $this->rawParts['type'] .
                 ($this->alterByXDbType ?
                     '' :
-                    " ".$this->rawParts['nullable'])
-                .' USING "'.$this->column->name.'"::'.$this->typeWithoutSize($this->rawParts['type'])."'";
+                    " " . $this->rawParts['nullable'])
+                . ' USING "' . $this->column->name . '"::' . $this->typeWithoutSize($this->rawParts['type']) . "'";
         }
 
         if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
@@ -207,21 +205,21 @@ class ColumnToCode
         }
 
         return $this->isBuiltinType
-            ? '$this->' . $this->fluentParts['type'].'->'.$this->fluentParts['nullable']
-            : "'" . $this->rawParts['type'] . " ".$this->rawParts['nullable']."'";
+            ? '$this->' . $this->fluentParts['type'] . '->' . $this->fluentParts['nullable']
+            : "'" . $this->rawParts['type'] . " " . $this->rawParts['nullable'] . "'";
     }
 
-    public function getDefaultValue():?string
+    public function getDefaultValue(): ?string
     {
         return $this->rawParts['default'];
     }
 
-    public function isJson():bool
+    public function isJson(): bool
     {
         return in_array(strtolower($this->column->dbType), ['json', 'jsonb'], true);
     }
 
-    public function isEnum():bool
+    public function isEnum(): bool
     {
         return BaseMigrationBuilder::isEnum($this->column);
     }
@@ -276,17 +274,17 @@ class ColumnToCode
         ];
     }
 
-    public static function escapeQuotes(string $str):string
+    public static function escapeQuotes(string $str): string
     {
         return str_replace(["'", '"', '$'], ["\\'", "\\'", '\$'], $str);
     }
 
-    public static function undoEscapeQuotes(string $str):string
+    public static function undoEscapeQuotes(string $str): string
     {
         return str_replace(["\\'", "\\'", '\$'], ["'", '"', '$'], $str);
     }
 
-    public static function wrapQuotes(string $str, string $quotes = "'", bool $escape = true):string
+    public static function wrapQuotes(string $str, string $quotes = "'", bool $escape = true): string
     {
         if ($escape && strpos($str, $quotes) !== false) {
             return $quotes . self::escapeQuotes($str) . $quotes;
@@ -294,20 +292,20 @@ class ColumnToCode
         return $quotes . $str . $quotes;
     }
 
-    public static function enumToString(array $enum):string
+    public static function enumToString(array $enum): string
     {
-        $items = implode(", ", array_map(self::class.'::wrapQuotes', $enum));
+        $items = implode(", ", array_map(self::class . '::wrapQuotes', $enum));
         return self::escapeQuotes($items);
     }
 
-    public static function mysqlEnumToString(array $enum):string
+    public static function mysqlEnumToString(array $enum): string
     {
         return implode(', ', array_map(function ($aEnumValue) {
             return self::wrapQuotes($aEnumValue, '"');
         }, $enum));
     }
 
-    private function defaultValueJson(array $value):string
+    private function defaultValueJson(array $value): string
     {
         if ($this->alter === true) {
             return "'" . str_replace('"', '\"', Json::encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT)) . "'";
@@ -315,12 +313,12 @@ class ColumnToCode
         return "'" . Json::encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT) . "'";
     }
 
-    private function defaultValueArray(array $value):string
+    private function defaultValueArray(array $value): string
     {
         return "'{" . trim(Json::encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT), '[]') . "}'";
     }
 
-    private function resolve():void
+    private function resolve(): void
     {
         $dbType = $this->typeWithoutSize(strtolower($this->column->dbType));
         $type = $this->column->type;
@@ -395,17 +393,17 @@ class ColumnToCode
         }
     }
 
-    private function resolveEnumType():void
+    private function resolveEnumType(): void
     {
         if (ApiGenerator::isPostgres()) {
             $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            $this->rawParts['type'] = '"enum_' . $rawTableName . '_' . $this->column->name . '"';
             return;
         }
         $this->rawParts['type'] = 'enum(' . self::mysqlEnumToString($this->column->enumValues) . ')';
     }
 
-    private function resolveDefaultValue():void
+    private function resolveDefaultValue(): void
     {
         if (!$this->isDefaultAllowed()) {
             return;
@@ -463,10 +461,10 @@ class ColumnToCode
         }
     }
 
-    private function isDefaultAllowed():bool
+    private function isDefaultAllowed(): bool
     {
         // default expression with parenthases is allowed
-        if ($this->column->defaultValue instanceof \yii\db\Expression) {
+        if ($this->column->defaultValue instanceof Expression) {
             return true;
         }
 
@@ -490,7 +488,7 @@ class ColumnToCode
         }
     }
 
-    private function typeWithoutSize(string $type):string
+    private function typeWithoutSize(string $type): string
     {
         return preg_replace('~(.*)(\(\d+\))~', '$1', $type);
     }
@@ -501,10 +499,10 @@ class ColumnToCode
             if ($this->position === BaseMigrationBuilder::POS_FIRST) {
                 $this->fluentParts['position'] = 'first()';
                 $this->rawParts['position'] = BaseMigrationBuilder::POS_FIRST;
-            } elseif ($this->position !== null && strpos($this->position, BaseMigrationBuilder::POS_AFTER.' ') !== false) {
-                $previousColumn = str_replace(BaseMigrationBuilder::POS_AFTER.' ', '', $this->position);
-                $this->fluentParts['position'] = 'after(\''.$previousColumn.'\')';
-                $this->rawParts['position'] = BaseMigrationBuilder::POS_AFTER.' '.$previousColumn;
+            } elseif ($this->position !== null && strpos($this->position, BaseMigrationBuilder::POS_AFTER . ' ') !== false) {
+                $previousColumn = str_replace(BaseMigrationBuilder::POS_AFTER . ' ', '', $this->position);
+                $this->fluentParts['position'] = 'after(\'' . $previousColumn . '\')';
+                $this->rawParts['position'] = BaseMigrationBuilder::POS_AFTER . ' ' . $previousColumn;
             }
         }
     }

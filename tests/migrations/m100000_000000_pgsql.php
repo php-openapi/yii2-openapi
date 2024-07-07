@@ -1,4 +1,5 @@
 <?php
+
 use yii\db\Expression;
 use yii\db\Migration;
 use yii\db\Schema;
@@ -92,8 +93,8 @@ class m100000_000000_pgsql extends Migration
             ]);
 
         $rawTableName = $this->db->schema->getRawTableName('{{%v3_pgcustom}}');
-        $enumTypeName = 'enum_'.$rawTableName.'_status';
-        $this->execute('CREATE TYPE "'.$enumTypeName.'" AS ENUM(\'active\', \'draft\')');
+        $enumTypeName = 'enum_' . $rawTableName . '_status';
+        $this->execute('CREATE TYPE "' . $enumTypeName . '" AS ENUM(\'active\', \'draft\')');
         $this->createTable('{{%v3_pgcustom}}',
             [
                 'id' => $this->bigPrimaryKey(),
@@ -102,7 +103,7 @@ class m100000_000000_pgsql extends Migration
                 'json2' => $this->json()->null()->defaultValue(null),
                 'json3' => $this->json()->defaultValue(Json::encode(['foo' => 'bar', 'bar' => 'baz'])),
                 'json4' => "json DEFAULT '" . new Expression(Json::encode(['ffo' => 'bar'])) . "'",
-                'status' => '"'.$enumTypeName.'"',
+                'status' => '"' . $enumTypeName . '"',
                 'status_x' => 'varchar(10)',
                 'search' => 'tsvector'
             ]);
@@ -142,7 +143,7 @@ class m100000_000000_pgsql extends Migration
         $this->dropTable('{{%v2_categories}}');
         $this->dropTable('{{%v3_pgcustom}}');
         $rawTableName = $this->db->schema->getRawTableName('{{%v3_pgcustom}}');
-        $this->execute('DROP TYPE "enum_'.$rawTableName.'_status"');
+        $this->execute('DROP TYPE "enum_' . $rawTableName . '_status"');
         $this->dropTable('{{%default_sizes}}');
     }
 }

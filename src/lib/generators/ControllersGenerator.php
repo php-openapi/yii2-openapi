@@ -17,6 +17,7 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\gii\CodeFile;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
@@ -24,12 +25,12 @@ use yii\helpers\Inflector;
 class ControllersGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\RestAction[]|\cebe\yii2openapi\lib\items\FractalAction[]
+     * @var array|RestAction[]|FractalAction[]
      */
     protected $controllers;
 
@@ -43,9 +44,9 @@ class ControllersGenerator
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function generate():CodeFiles
+    public function generate(): CodeFiles
     {
         if (!$this->config->generateControllers) {
             return new CodeFiles([]);
@@ -59,7 +60,7 @@ class ControllersGenerator
             $controllerPath = $path;
             /**
              * @var RestAction|FractalAction $action
-            **/
+             **/
             $action = $actions[0];
             if ($action->prefix && !empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
@@ -99,8 +100,9 @@ class ControllersGenerator
     protected function makeCustomController(
         string $className,
         string $controllerNamespace,
-        array $actions
-    ):FileGenerator {
+        array  $actions
+    ): FileGenerator
+    {
         $classFileGenerator = new FileGenerator();
         $reflection = new ClassGenerator(
             $className,
