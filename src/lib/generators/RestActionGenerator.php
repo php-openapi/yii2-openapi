@@ -109,9 +109,10 @@ class RestActionGenerator
         } else {
             $controllerId = $routeData->controller;
         }
+        $action = ucfirst($routeData->action);
         return Yii::createObject(RestAction::class, [
             [
-                'id' => trim("$actionType{$routeData->action}", '-'),
+                'id' => trim("$actionType$action", '-'),
                 'controllerId' => $controllerId,
                 'urlPath' => $routeData->path,
                 'requestMethod' => strtoupper($method),

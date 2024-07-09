@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'openApiPath' => '@specs/issue_fix/172_schemayaml_requestbody_has_no_effect/index.yaml',
-    'generateUrls' => false,
+    'openApiPath' => '@specs/issue_fix/144_methods_naming_for_non_crud_actions/index.yaml',
+    'generateUrls' => true,
     'generateModels' => false,
     'excludeModels' => [
         'Error',
@@ -11,4 +11,3 @@ return [
     'generateMigrations' => false,
     'generateModelFaker' => false, // `generateModels` must be `true` in order to use `generateModelFaker` as `true`
 ];
-

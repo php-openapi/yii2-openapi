@@ -360,4 +360,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/cebe/yii2-openapi/issues/144
+    public function test144MethodsNamingForNonCrudActions()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/144_methods_naming_for_non_crud_actions/index.php");
+        $this->runGenerator($testFile);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/maria"), [
+//            'recursive' => true,
+//        ]);
+//        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
