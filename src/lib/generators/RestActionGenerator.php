@@ -109,10 +109,10 @@ class RestActionGenerator
         } else {
             $controllerId = $routeData->controller;
         }
-        $action = ucfirst($routeData->action);
+        $action = Inflector::camel2id($routeData->action);
         return Yii::createObject(RestAction::class, [
             [
-                'id' => trim("$actionType$action", '-'),
+                'id' => trim("$actionType-$action", '-'),
                 'controllerId' => $controllerId,
                 'urlPath' => $routeData->path,
                 'requestMethod' => strtoupper($method),

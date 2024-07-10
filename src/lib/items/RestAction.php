@@ -72,9 +72,9 @@ final class RestAction extends BaseObject
     {
         if ($this->prefix && !empty($this->prefixSettings)) {
             $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
+            return trim($prefix, '/') . '/' . $this->controllerId . '/' . $this->id;
         }
-        return $this->controllerId.'/'.$this->id;
+        return $this->controllerId . '/' . $this->id;
     }
 
     public function getOptionsRoute():string
