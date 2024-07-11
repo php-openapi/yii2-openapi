@@ -11,6 +11,7 @@ use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Reference;
 use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\items\RestAction;
 use cebe\yii2openapi\lib\items\RouteData;
 use cebe\yii2openapi\lib\openapi\ResponseSchema;
@@ -44,6 +45,11 @@ class RestActionGenerator
     {
         $actions = [];
         foreach ($this->config->getOpenApi()->paths as $path => $pathItem) {
+            $customRoute = null;
+            if (isset($pathItem->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
+                $customRoute = $pathItem->{CustomSpecAttr::ROUTE};
+            }
+
             if ($path[0] !== '/') {
                 throw new InvalidConfigException('Path must begin with /');
             }
@@ -53,7 +59,7 @@ class RestActionGenerator
             if ($pathItem instanceof Reference) {
                 $pathItem = $pathItem->resolve();
             }
-            $actions[] = $this->resolvePath($path, $pathItem);
+            $actions[] = $this->resolvePath(!empty($customRoute) ? '/' . $customRoute : $path, $pathItem);
         }
         return array_merge(...$actions);
     }

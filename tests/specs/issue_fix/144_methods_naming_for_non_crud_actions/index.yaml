@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info:
-  title: 'Custom action name'
+  title: 'Custom route for path'
   version: 1.0.0
 
 tags:
@@ -40,6 +40,23 @@ paths:
   /payments/invoice-payment:
     get:
       operationId: opnid
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+
+  /a1/b1:
+    x-route: 'abc/xyz'
+    get:
+      operationId: opnid5
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+    post:
+      operationId: opnid23
       summary: List
       description: Lists
       responses:

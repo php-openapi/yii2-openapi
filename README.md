@@ -309,6 +309,11 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+### `x-route`
+
+https://github.com/cebe/yii2-openapi/issues/144
+TODO
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:

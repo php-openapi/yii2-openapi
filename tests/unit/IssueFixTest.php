@@ -366,12 +366,12 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/144_methods_naming_for_non_crud_actions/index.php");
         $this->runGenerator($testFile);
-//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-//            'recursive' => true,
-//        ]);
-//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/maria"), [
-//            'recursive' => true,
-//        ]);
-//        $this->checkFiles($actualFiles, $expectedFiles);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/144_methods_naming_for_non_crud_actions/app"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
