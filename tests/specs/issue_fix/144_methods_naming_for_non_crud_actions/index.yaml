@@ -20,6 +20,7 @@ paths:
         schema:
           type: integer
     post:
+      x-route: 'payments/invoice'
       summary: Pay Invoice
       description: Pay for Invoice with given invoice number
       requestBody:
@@ -47,8 +48,8 @@ paths:
           description: The Response
 
   /a1/b1:
-    x-route: 'abc/xyz'
     get:
+      x-route: 'abc/xyz'
       operationId: opnid5
       summary: List
       description: Lists
@@ -56,7 +57,18 @@ paths:
         '200':
           description: The Response
     post:
+      x-route: 'abc/xyz'
       operationId: opnid23
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+
+  /aa2/bb2:
+#    x-route: 'payment/xyz2'
+    get:
+      operationId: opnid7
       summary: List
       description: Lists
       responses:

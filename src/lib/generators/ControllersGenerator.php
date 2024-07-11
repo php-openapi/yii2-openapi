@@ -129,12 +129,14 @@ PHP;
             $params = array_map(static function ($param) {
                 return ['name' => $param];
             }, $action->getParamNames());
-            $reflection->addMethod(
-                $action->actionMethodName,
-                $params,
-                AbstractMemberGenerator::FLAG_PUBLIC,
-                '//TODO implement ' . $action->actionMethodName
-            );
+            if (!$reflection->hasMethod($action->actionMethodName)) {
+                $reflection->addMethod(
+                    $action->actionMethodName,
+                    $params,
+                    AbstractMemberGenerator::FLAG_PUBLIC,
+                    '//TODO implement ' . $action->actionMethodName
+                );
+            }
         }
         $classFileGenerator->setClasses([$reflection]);
         return $classFileGenerator;

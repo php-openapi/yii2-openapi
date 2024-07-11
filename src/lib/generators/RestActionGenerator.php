@@ -45,10 +45,6 @@ class RestActionGenerator
     {
         $actions = [];
         foreach ($this->config->getOpenApi()->paths as $path => $pathItem) {
-            $customRoute = null;
-            if (isset($pathItem->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
-                $customRoute = $pathItem->{CustomSpecAttr::ROUTE};
-            }
 
             if ($path[0] !== '/') {
                 throw new InvalidConfigException('Path must begin with /');
@@ -59,7 +55,7 @@ class RestActionGenerator
             if ($pathItem instanceof Reference) {
                 $pathItem = $pathItem->resolve();
             }
-            $actions[] = $this->resolvePath(!empty($customRoute) ? '/' . $customRoute : $path, $pathItem);
+            $actions[] = $this->resolvePath($path, $pathItem);
         }
         return array_merge(...$actions);
     }
@@ -77,7 +73,11 @@ class RestActionGenerator
 
         $routeData = Yii::createObject(RouteData::class, [$pathItem, $path, $this->config->urlPrefixes]);
         foreach ($pathItem->getOperations() as $method => $operation) {
-            $actions[] = $this->prepareAction($method, $operation, $routeData);
+            $customRoute = null;
+            if (isset($operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
+                $customRoute = $operation->{CustomSpecAttr::ROUTE};
+            }
+            $actions[] = $this->prepareAction($method, $operation, $routeData, $customRoute);
         }
         return $actions;
     }
@@ -90,7 +90,7 @@ class RestActionGenerator
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
      * @throws \yii\base\InvalidConfigException
      */
-    protected function prepareAction(string $method, Operation $operation, RouteData $routeData):BaseObject
+    protected function prepareAction(string $method, Operation $operation, RouteData $routeData, $customRoute):BaseObject
     {
         $actionType = $this->resolveActionType($routeData, $method);
         $modelClass = ResponseSchema::guessModelClass($operation, $actionType);
@@ -112,10 +112,16 @@ class RestActionGenerator
             $controllerId = isset($this->config->controllerModelMap[$modelClass])
                 ? Inflector::camel2id($this->config->controllerModelMap[$modelClass])
                 : Inflector::camel2id($modelClass);
+        } elseif (!empty($customRoute)) {
+            $controllerId = explode('/', $customRoute)[0];
         } else {
             $controllerId = $routeData->controller;
         }
         $action = Inflector::camel2id($routeData->action);
+        if (!empty($customRoute)) {
+            $actionType = '';
+            $action = explode('/', $customRoute)[1];
+        }
         return Yii::createObject(RestAction::class, [
             [
                 'id' => trim("$actionType-$action", '-'),

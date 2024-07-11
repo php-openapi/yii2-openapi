@@ -166,6 +166,7 @@ final class RouteData extends BaseObject
 
     public function __construct(PathItem $pathItem, string $path, array $urlPrefixes = [], $config = [])
     {
+        // TODO url rules config php file should have path but not the x-route
         $this->path = $this->unprefixedPath = $path;
         $this->parts = explode('/', trim($path, '/'));
         $this->pathItem = $pathItem;
