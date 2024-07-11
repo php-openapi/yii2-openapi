@@ -90,7 +90,7 @@ class RestActionGenerator
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
      * @throws \yii\base\InvalidConfigException
      */
-    protected function prepareAction(string $method, Operation $operation, RouteData $routeData, $customRoute):BaseObject
+    protected function prepareAction(string $method, Operation $operation, RouteData $routeData, $customRoute = null):BaseObject
     {
         $actionType = $this->resolveActionType($routeData, $method);
         $modelClass = ResponseSchema::guessModelClass($operation, $actionType);
