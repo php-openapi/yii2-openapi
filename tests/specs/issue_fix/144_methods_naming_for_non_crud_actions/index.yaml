@@ -11,6 +11,49 @@ tags:
       description: Find out more
       url: https://developer.adiuta.com/book/payments
 paths:
+  /fruit/mango:
+    get:
+      x-route: fruits/mango
+      operationId: opnid9
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+
+  /fruits/mango:
+    get:
+      operationId: opnid8
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+    post:
+      operationId: opnid9
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+  /animal/goat:
+    get:
+      operationId: opnid8
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+    post:
+      operationId: opnid9
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
   /payments/invoice/{invoice}:
     parameters:
       - name: invoice
@@ -66,8 +109,8 @@ paths:
           description: The Response
 
   /aa2/bb2:
-#    x-route: 'payment/xyz2'
     get:
+      x-route: 'payments/xyz2'
       operationId: opnid7
       summary: List
       description: Lists
