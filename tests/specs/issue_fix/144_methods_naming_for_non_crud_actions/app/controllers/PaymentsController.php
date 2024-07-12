@@ -10,9 +10,14 @@ class PaymentsController extends \app\controllers\base\PaymentsController
         //TODO implement checkAccess
     }
 
-    public function actionCreateInvoice($invoice)
+    public function actionInvoice($invoice)
     {
-        //TODO implement actionCreateInvoice
+        //TODO implement actionInvoice
+    }
+
+    public function actionXyz2()
+    {
+        //TODO implement actionXyz2
     }
 
 

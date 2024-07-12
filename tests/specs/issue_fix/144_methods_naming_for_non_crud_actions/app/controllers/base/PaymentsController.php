@@ -27,6 +27,8 @@ abstract class PaymentsController extends \yii\rest\Controller
      */
     abstract public function checkAccess($action, $model = null, $params = []);
 
-    abstract public function actionCreateInvoice($invoice);
+    abstract public function actionInvoice($invoice);
+
+    abstract public function actionXyz2();
 
 }

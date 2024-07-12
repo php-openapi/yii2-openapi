@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-class AbcController extends \app\controllers\base\AbcController
+class FruitsController extends \app\controllers\base\FruitsController
 {
 
     public function checkAccess($action, $model = null, $params = [])
@@ -10,9 +10,9 @@ class AbcController extends \app\controllers\base\AbcController
         //TODO implement checkAccess
     }
 
-    public function actionXyz()
+    public function actionMango()
     {
-        //TODO implement actionXyz
+        //TODO implement actionMango
     }
 
 

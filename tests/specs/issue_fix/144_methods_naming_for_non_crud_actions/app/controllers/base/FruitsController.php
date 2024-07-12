@@ -2,7 +2,7 @@
 
 namespace app\controllers\base;
 
-abstract class AbcController extends \yii\rest\Controller
+abstract class FruitsController extends \yii\rest\Controller
 {
     public function actions()
     {
@@ -27,8 +27,6 @@ abstract class AbcController extends \yii\rest\Controller
      */
     abstract public function checkAccess($action, $model = null, $params = []);
 
-    abstract public function actionXyz();
-
-    abstract public function actionXyz();
+    abstract public function actionMango();
 
 }

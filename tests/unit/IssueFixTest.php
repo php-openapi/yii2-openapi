@@ -372,6 +372,6 @@ class IssueFixTest extends DbTestCase
         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/144_methods_naming_for_non_crud_actions/app"), [
             'recursive' => true,
         ]);
-//        $this->checkFiles($actualFiles, $expectedFiles); // TODO
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
