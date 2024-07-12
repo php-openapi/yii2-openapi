@@ -45,7 +45,6 @@ class RestActionGenerator
     {
         $actions = [];
         foreach ($this->config->getOpenApi()->paths as $path => $pathItem) {
-
             if ($path[0] !== '/') {
                 throw new InvalidConfigException('Path must begin with /');
             }
