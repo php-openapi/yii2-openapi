@@ -311,8 +311,64 @@ Provide custom database table column name in case of relationship column. This w
 
 ### `x-route`
 
-https://github.com/cebe/yii2-openapi/issues/144
-TODO
+To customize route (controller ID/action ID) for a path, use custom key `x-route` with value `<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
+directly under the `paths` key of OpenAPI spec. Example:
+
+```yaml
+paths:
+  /payments/invoice/{invoice}:
+    parameters:
+      - name: invoice
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    post:
+      x-route: 'payments/invoice'
+      summary: Pay Invoice
+      description: Pay for Invoice with given invoice number
+      requestBody:
+        description: Record new payment for an invoice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      responses:
+        '200':
+          description: Successfully paid the invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+```
+
+It won't generate `actionCreateInvoice` in `PaymentsController.php` file, but will generate `actionInvoice` instead in
+same file.
+
+Also, if same action is needed for HTTP GET and POST then use same value for `x-route`. Example:
+
+```yaml
+paths:
+  /a1/b1:
+    get:
+      x-route: 'abc/xyz'
+      operationId: opnid1
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+    post:
+      x-route: 'abc/xyz'
+      operationId: opnid2
+      summary: create
+      description: create
+      responses:
+        '200':
+          description: The Response
+```
 
 ## Many-to-Many relation definition
 
