@@ -347,6 +347,12 @@ paths:
 It won't generate `actionCreateInvoice` in `PaymentsController.php` file, but will generate `actionInvoice` instead in
 same file.
 
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'POST payments/invoice/<invoice:\d+>' => 'payments/invoice',
+    'payments/invoice/<invoice:\d+>' => 'payments/options',
+```
+
 Also, if same action is needed for HTTP GET and POST then use same value for `x-route`. Example:
 
 ```yaml
@@ -368,6 +374,13 @@ paths:
       responses:
         '200':
           description: The Response
+```
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'GET a1/b1' => 'abc/xyz',
+    'POST a1/b1' => 'abc/xyz',    
+    'a1/b1' => 'abc/options',
 ```
 
 ## Many-to-Many relation definition
