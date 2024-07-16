@@ -59,6 +59,7 @@ class RestActionGenerator
         return array_merge(...$actions);
     }
 
+    private $allCustomRoutes = [];
     /**
      * @param string                      $path
      * @param \cebe\openapi\spec\PathItem $pathItem
@@ -76,7 +77,19 @@ class RestActionGenerator
             if (isset($operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
                 $customRoute = $operation->{CustomSpecAttr::ROUTE};
             }
-            $actions[] = $this->prepareAction($method, $operation, $routeData, $customRoute);
+            if ($customRoute === null) {
+                $actions[] = $this->prepareAction($method, $operation, $routeData, $customRoute);
+            } else {
+                // TODO rename
+                $actionHere = $this->prepareAction($method, $operation, $routeData, $customRoute);
+                $actionHere->isOriginalForCustomRoute = true;
+                if (!in_array($customRoute, $this->allCustomRoutes)) {
+                    $actionHere->isOriginalForCustomRoute = false;
+                    $actionHere->isDuplicate = true;
+                    $this->allCustomRoutes[] = $customRoute;
+                }
+                $actions[] = $actionHere;
+            }
         }
         return $actions;
     }

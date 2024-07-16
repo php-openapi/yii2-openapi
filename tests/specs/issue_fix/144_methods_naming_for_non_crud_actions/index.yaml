@@ -14,7 +14,7 @@ paths:
   /fruit/mango:
     get:
       x-route: fruits/mango
-      operationId: opnid9
+      operationId: opnid91
       summary: Lorem ipsum
       description: Lorem ipsum description
       responses:
@@ -24,7 +24,7 @@ paths:
 
   /fruits/mango:
     get:
-      operationId: opnid8
+      operationId: opnid81
       summary: Lorem ipsum
       description: Lorem ipsum description
       responses:
@@ -47,7 +47,7 @@ paths:
         '200':
           description: The Response
     post:
-      operationId: opnid9
+      operationId: opnid92
       summary: Lorem ipsum
       description: Lorem ipsum description
       responses:

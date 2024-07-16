@@ -68,6 +68,19 @@ final class RestAction extends BaseObject
      */
     public $responseWrapper;
 
+    /**
+     * @var bool
+     * @see $isDuplicate
+     */
+    public $isOriginalForCustomRoute = false;
+    /**
+     * @var bool
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * Generate only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}`.
+     * @see $isOriginalForCustomRoute
+     */
+    public $isDuplicate = false;
+
     public function getRoute():string
     {
         if ($this->prefix && !empty($this->prefixSettings)) {

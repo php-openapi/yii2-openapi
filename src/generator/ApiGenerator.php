@@ -7,6 +7,7 @@
 
 namespace cebe\yii2openapi\generator;
 
+use cebe\yii2openapi\lib\items\RestAction;
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
@@ -473,6 +474,7 @@ class ApiGenerator extends Generator
         $urlRulesGenerator = Yii::createObject(UrlRulesGenerator::class, [$config, $actions]);
         $files = $urlRulesGenerator->generate();
 
+        $actions = static::removeDuplicateActions($actions);
         $controllersGenerator = Yii::createObject(ControllersGenerator::class, [$config, $actions]);
         $files->merge($controllersGenerator->generate());
 
@@ -520,5 +522,30 @@ class ApiGenerator extends Generator
     public static function isMariaDb():bool
     {
         return strpos(Yii::$app->db->schema->getServerVersion(), 'MariaDB') !== false;
+    }
+
+    /**
+     * @param RestAction[] $actions
+     * @return RestAction[]
+     * https://github.com/cebe/yii2-openapi/issues/84
+     */
+    public static function removeDuplicateActions(array $actions): array
+    {
+        $actions = array_filter($actions, function (RestAction $action) {
+            if ($action->isDuplicate) {
+                return false;
+            }
+            return true;
+        });
+
+        $actions = array_map(function (RestAction $action) {
+            if ($action->isOriginalForCustomRoute) {
+                $action->idParam = null;
+                $action->params = [];
+            }
+            return $action;
+        }, $actions);
+
+        return $actions;
     }
 }

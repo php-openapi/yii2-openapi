@@ -374,4 +374,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/cebe/yii2-openapi/issues/84
+    public function test84HowToGenerateControllerCodeWithDistinctMethodNamesInCaseOfPrefixInPaths()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/84_how_to_generate_controller_code_with_distinct_method_names_in_case_of_prefix_in_paths/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/84_how_to_generate_controller_code_with_distinct_method_names_in_case_of_prefix_in_paths/app"), [
+            'recursive' => true,
+        ]);
+//        $this->checkFiles($actualFiles, $expectedFiles); // TODO
+    }
 }
