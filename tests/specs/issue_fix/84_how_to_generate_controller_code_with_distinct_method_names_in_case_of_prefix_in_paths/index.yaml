@@ -37,6 +37,28 @@ paths:
         '200':
           description: The Response
 
+  /calendar/domains/{id}/{id2}:
+    parameters:
+      - name: id
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+      - name: id2
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    get:
+      x-route: calendar/domains
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
 
 
 components:

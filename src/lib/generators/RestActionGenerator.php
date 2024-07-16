@@ -81,11 +81,14 @@ class RestActionGenerator
             // TODO rename
             $actionHere = $this->prepareAction($method, $operation, $routeData, $customRoute);
             if ($customRoute !== null) {
-                if (in_array($customRoute, $this->allCustomRoutes)) {
+                if (in_array($customRoute, array_keys($this->allCustomRoutes))) {
                     $actionHere->isDuplicate = true;
+                    if ($actionHere->params !== $this->allCustomRoutes[$customRoute]) {
+                        $this->allCustomRoutes[$customRoute]->isOriginalForCustomRoute = true;
+                    }
                 } else {
                     $actionHere->isDuplicate = false;
-                    $this->allCustomRoutes[] = $customRoute;
+                    $this->allCustomRoutes[$customRoute] = $actionHere;
                 }
             }
             $actions[] = $actionHere;
