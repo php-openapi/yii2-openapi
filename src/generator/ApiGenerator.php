@@ -7,10 +7,6 @@
 
 namespace cebe\yii2openapi\generator;
 
-use cebe\yii2openapi\lib\items\RestAction;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use cebe\yii2openapi\lib\Config;
@@ -21,9 +17,13 @@ use cebe\yii2openapi\lib\generators\ModelsGenerator;
 use cebe\yii2openapi\lib\generators\RestActionGenerator;
 use cebe\yii2openapi\lib\generators\TransformersGenerator;
 use cebe\yii2openapi\lib\generators\UrlRulesGenerator;
+use cebe\yii2openapi\lib\items\FractalAction;
+use cebe\yii2openapi\lib\items\RestAction;
 use cebe\yii2openapi\lib\PathAutoCompletion;
 use cebe\yii2openapi\lib\SchemaToDatabase;
 use Yii;
+use yii\db\mysql\Schema as MySqlSchema;
+use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\gii\CodeFile;
 use yii\gii\Generator;
 use yii\helpers\Html;
@@ -525,21 +525,23 @@ class ApiGenerator extends Generator
     }
 
     /**
-     * @param RestAction[] $actions
-     * @return RestAction[]
+     * @param RestAction[]|FractalAction[] $actions
+     * @return RestAction[]|FractalAction[]
      * https://github.com/cebe/yii2-openapi/issues/84
      */
     public static function removeDuplicateActions(array $actions): array
     {
-        $actions = array_filter($actions, function (RestAction $action) {
-            if ($action->isDuplicate) {
+        $actions = array_filter($actions, function ($action) {
+            /** @var $action RestAction|FractalAction */
+            if ($action instanceof RestAction && $action->isDuplicate) {
                 return false;
             }
             return true;
         });
 
-        $actions = array_map(function (RestAction $action) {
-            if ($action->isOriginalForCustomRoute) {
+        $actions = array_map(function ($action) {
+            /** @var $action RestAction|FractalAction */
+            if ($action instanceof RestAction && $action->isOriginalForCustomRoute) {
                 $action->idParam = null;
                 $action->params = [];
             }

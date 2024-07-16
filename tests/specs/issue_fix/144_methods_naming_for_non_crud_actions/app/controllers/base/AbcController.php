@@ -29,6 +29,4 @@ abstract class AbcController extends \yii\rest\Controller
 
     abstract public function actionXyz();
 
-    abstract public function actionXyz();
-
 }

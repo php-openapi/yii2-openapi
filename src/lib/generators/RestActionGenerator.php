@@ -77,19 +77,18 @@ class RestActionGenerator
             if (isset($operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
                 $customRoute = $operation->{CustomSpecAttr::ROUTE};
             }
-            if ($customRoute === null) {
-                $actions[] = $this->prepareAction($method, $operation, $routeData, $customRoute);
-            } else {
-                // TODO rename
-                $actionHere = $this->prepareAction($method, $operation, $routeData, $customRoute);
-                $actionHere->isOriginalForCustomRoute = true;
-                if (!in_array($customRoute, $this->allCustomRoutes)) {
-                    $actionHere->isOriginalForCustomRoute = false;
+
+            // TODO rename
+            $actionHere = $this->prepareAction($method, $operation, $routeData, $customRoute);
+            if ($customRoute !== null) {
+                if (in_array($customRoute, $this->allCustomRoutes)) {
                     $actionHere->isDuplicate = true;
+                } else {
+                    $actionHere->isDuplicate = false;
                     $this->allCustomRoutes[] = $customRoute;
                 }
-                $actions[] = $actionHere;
             }
+            $actions[] = $actionHere;
         }
         return $actions;
     }
