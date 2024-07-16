@@ -382,6 +382,7 @@ Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
     'POST a1/b1' => 'abc/xyz',    
     'a1/b1' => 'abc/options',
 ```
+`x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).
 
 ## Many-to-Many relation definition
 

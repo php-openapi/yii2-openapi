@@ -474,7 +474,7 @@ class ApiGenerator extends Generator
         $urlRulesGenerator = Yii::createObject(UrlRulesGenerator::class, [$config, $actions]);
         $files = $urlRulesGenerator->generate();
 
-        $actions = static::removeDuplicateActions($actions);
+        $actions = static::removeDuplicateActions($actions); // in case of non-crud actions having custom route `x-route` set
         $controllersGenerator = Yii::createObject(ControllersGenerator::class, [$config, $actions]);
         $files->merge($controllersGenerator->generate());
 

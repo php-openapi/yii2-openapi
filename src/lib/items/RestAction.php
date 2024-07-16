@@ -71,13 +71,19 @@ final class RestAction extends BaseObject
     /**
      * @var bool
      * @see $isDuplicate
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * see `x-route` in README.md
+     * Used for generating only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * This is used to flag first of one or more duplicates
      */
     public $isOriginalForCustomRoute = false;
+
     /**
      * @var bool
      * https://github.com/cebe/yii2-openapi/issues/84
-     * Generate only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}`.
+     * Generate only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
      * @see $isOriginalForCustomRoute
+     * see `x-route` in README.md
      */
     public $isDuplicate = false;
 
