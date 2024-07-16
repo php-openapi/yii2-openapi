@@ -386,6 +386,6 @@ class IssueFixTest extends DbTestCase
         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/84_how_to_generate_controller_code_with_distinct_method_names_in_case_of_prefix_in_paths/app"), [
             'recursive' => true,
         ]);
-//        $this->checkFiles($actualFiles, $expectedFiles); // TODO
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
