@@ -3,7 +3,7 @@
 /**
  * Table for Editcolumn
  */
-class m200000_000003_change_table_editcolumns extends \yii\db\Migration
+class m200000_000001_change_table_editcolumns extends \yii\db\Migration
 {
     public function safeUp()
     {
