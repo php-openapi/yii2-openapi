@@ -152,7 +152,7 @@ class MigrationsGenerator
     protected function sortMigrationsByDeps():array
     {
         $this->sorted = [];
-        if ($this->shouldSortMigrations($this->migrations)) {
+        if ($this->shouldSortMigrationsForDropTables($this->migrations)) {
             ksort($this->migrations);
         }
         foreach ($this->migrations as $migration) {
@@ -189,7 +189,7 @@ class MigrationsGenerator
      * Are tables to drop are internally dependent? If yes then don't sort (ksort)
      * @param $migrations array (tableAlias => MigrationModel)[]
      */
-    public function shouldSortMigrations(array $migrations): bool
+    public function shouldSortMigrationsForDropTables(array $migrations): bool
     {
         $tables = array_keys($migrations);
 
