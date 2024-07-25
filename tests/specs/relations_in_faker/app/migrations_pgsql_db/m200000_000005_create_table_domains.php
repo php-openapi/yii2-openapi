@@ -3,7 +3,7 @@
 /**
  * Table for Domain
  */
-class m200000_000001_create_table_domains extends \yii\db\Migration
+class m200000_000005_create_table_domains extends \yii\db\Migration
 {
     public function safeUp()
     {
