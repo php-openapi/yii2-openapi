@@ -3,7 +3,7 @@
 /**
  * Table for PostsAttaches
  */
-class m200000_000006_create_table_posts_attaches extends \yii\db\Migration
+class m200000_000005_create_table_posts_attaches extends \yii\db\Migration
 {
     public function up()
     {

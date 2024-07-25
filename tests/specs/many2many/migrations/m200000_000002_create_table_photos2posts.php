@@ -3,7 +3,7 @@
 /**
  * Table for Photos2Posts
  */
-class m200000_000004_create_table_photos2posts extends \yii\db\Migration
+class m200000_000002_create_table_photos2posts extends \yii\db\Migration
 {
     public function up()
     {

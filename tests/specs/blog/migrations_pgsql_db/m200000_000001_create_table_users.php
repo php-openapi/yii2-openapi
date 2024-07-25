@@ -3,9 +3,9 @@
 /**
  * Table for User
  */
-class m200000_000000_create_table_users extends \yii\db\Migration
+class m200000_000001_create_table_users extends \yii\db\Migration
 {
-    public function up()
+    public function safeUp()
     {
         $this->createTable('{{%users}}', [
             'id' => $this->primaryKey(),
@@ -21,7 +21,7 @@ class m200000_000000_create_table_users extends \yii\db\Migration
         $this->createIndex('users_role_flags_index', '{{%users}}', ["role", "flags"], false);
     }
 
-    public function down()
+    public function safeDown()
     {
         $this->dropIndex('users_role_flags_index', '{{%users}}');
         $this->dropIndex('users_email_key', '{{%users}}');
