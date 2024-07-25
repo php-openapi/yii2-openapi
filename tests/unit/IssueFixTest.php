@@ -239,32 +239,10 @@ class IssueFixTest extends DbTestCase
         $this->checkFiles($actualFiles, $expectedFiles);
     }
 
-    // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
-    // https://github.com/cebe/yii2-openapi/issues/132
     // https://github.com/php-openapi/yii2-openapi/pull/4#discussion_r1688225258
     public function testCreateMigrationForDropTable132IndependentTablesDropSort()
     {
         $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/case_independent_tables_drop_sort/index.php");
-        $this->createTablesForCreateMigrationForDropTable132();
-        $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 4);
-
-        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-           'recursive' => true,
-        ]);
-        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/case_independent_tables_drop_sort/mysql"), [
-           'recursive' => true,
-        ]);
-        $this->checkFiles($actualFiles, $expectedFiles);
-
-        $this->deleteTablesForCreateMigrationForDropTable132();
-    }
-
-    // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
-    // https://github.com/cebe/yii2-openapi/issues/132
-    public function testCreateMigrationForDropTable132()
-    {
-        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
 
         Yii::$app->db->createCommand()->createTable('{{%upks}}', [
             'id' => 'upk',
@@ -280,7 +258,29 @@ class IssueFixTest extends DbTestCase
         ])->execute();
 
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 3);
+        $this->runActualMigrations('mysql', 4);
+
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/case_independent_tables_drop_sort/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+    }
+
+    // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
+    // https://github.com/cebe/yii2-openapi/issues/132
+    public function testCreateMigrationForDropTable132()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        $this->createTablesForCreateMigrationForDropTable132();
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 8);
 
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
            'recursive' => true,
@@ -290,9 +290,7 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
 
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+        $this->deleteTablesForCreateMigrationForDropTable132();
     }
 
     private function createTablesForCreateMigrationForDropTable132()
