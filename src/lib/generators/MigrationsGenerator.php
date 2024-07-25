@@ -152,6 +152,9 @@ class MigrationsGenerator
     protected function sortMigrationsByDeps():array
     {
         $this->sorted = [];
+        if ($this->shouldSortMigrations($this->migrations)) {
+            ksort($this->migrations);
+        }
         foreach ($this->migrations as $migration) {
             //echo "adding {$migration->tableAlias}\n";
             $this->sortByDependencyRecurse($migration);
@@ -180,5 +183,31 @@ class MigrationsGenerator
         } elseif ($this->sorted[$migration->tableAlias] === false) {
             throw new Exception("A circular dependency is detected for table '{$migration->tableAlias}'.");
         }
+    }
+
+    /**
+     * Are tables to drop are internally dependent? If yes then don't sort (ksort)
+     * @param $migrations array (tableAlias => MigrationModel)[]
+     */
+    public function shouldSortMigrations(array $migrations): bool
+    {
+        $tables = array_keys($migrations);
+
+        foreach ($this->models as $dbModel) {
+            /** @var DbModel $dbModel */
+            if ($dbModel->drop) {
+                $ts = Yii::$app->db->getTableSchema('{{%'.$dbModel->tableName.'}}', true);
+                if ($ts) {
+                    foreach ($ts->foreignKeys as $fk) {
+                        $fkTableName = str_replace(Yii::$app->db->tablePrefix, '{{%', $fk[0]);
+                        $fkTableName .= '}}';
+                        if (in_array($fkTableName, $tables)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 }
