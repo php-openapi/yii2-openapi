@@ -3,7 +3,7 @@
 /**
  * Table for Pristine
  */
-class m200000_000000_create_table_pristines extends \yii\db\Migration
+class m200000_000003_create_table_pristines extends \yii\db\Migration
 {
     public function safeUp()
     {
