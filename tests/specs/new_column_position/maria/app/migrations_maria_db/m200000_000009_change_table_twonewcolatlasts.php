@@ -3,7 +3,7 @@
 /**
  * Table for Twonewcolatlast
  */
-class m200000_000008_change_table_twonewcolatlasts extends \yii\db\Migration
+class m200000_000009_change_table_twonewcolatlasts extends \yii\db\Migration
 {
     public function up()
     {

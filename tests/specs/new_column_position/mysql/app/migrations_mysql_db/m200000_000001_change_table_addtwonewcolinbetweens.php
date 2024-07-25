@@ -3,7 +3,7 @@
 /**
  * Table for Addtwonewcolinbetweens
  */
-class m200000_000006_change_table_addtwonewcolinbetweens extends \yii\db\Migration
+class m200000_000001_change_table_addtwonewcolinbetweens extends \yii\db\Migration
 {
     public function up()
     {

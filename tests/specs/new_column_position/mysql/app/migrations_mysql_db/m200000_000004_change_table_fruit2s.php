@@ -3,7 +3,7 @@
 /**
  * Table for Fruit2
  */
-class m200000_000001_change_table_fruit2s extends \yii\db\Migration
+class m200000_000004_change_table_fruit2s extends \yii\db\Migration
 {
     public function up()
     {
