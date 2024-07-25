@@ -309,6 +309,24 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+
+### `x-deleted-schemas`
+
+This is root level key used to generate "drop table" migration for the deleted component schema. If a component schema (DB model) is removed from OpenAPI spec then its following entities should be also deleted from the code:
+
+ - DB table (migrations)
+ - model
+ - faker
+
+So to generate appropriate migration for the removed schema, explicitly setting schema name or schema name + custom table name is required in this key. Only then the migrations will be generated. It should be set as:
+
+```yaml
+x-deleted-schemas:
+  - Fruit # Example: table name is evaluated to `itt_fruits`, if `itt_` is prefix set in DB config
+  - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
+```
+
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:
