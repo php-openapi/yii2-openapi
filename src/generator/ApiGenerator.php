@@ -541,7 +541,7 @@ class ApiGenerator extends Generator
 
         $actions = array_map(function ($action) {
             /** @var $action RestAction|FractalAction */
-            if ($action instanceof RestAction && $action->isOriginalForCustomRoute) {
+            if ($action instanceof RestAction && $action->zeroParams) {
                 $action->idParam = null;
                 $action->params = [];
             }

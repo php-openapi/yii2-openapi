@@ -82,8 +82,8 @@ class RestActionGenerator
             if ($customRoute !== null) {
                 if (in_array($customRoute, array_keys($this->allCustomRoutes))) {
                     $action->isDuplicate = true;
-                    if ($action->params !== $this->allCustomRoutes[$customRoute]) {
-                        $this->allCustomRoutes[$customRoute]->isOriginalForCustomRoute = true;
+                    if ($action->params !== $this->allCustomRoutes[$customRoute]->params) {
+                        $this->allCustomRoutes[$customRoute]->zeroParams = true;
                     }
                 } else {
                     $action->isDuplicate = false;
