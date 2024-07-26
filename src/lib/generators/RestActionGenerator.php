@@ -78,7 +78,6 @@ class RestActionGenerator
                 $customRoute = $operation->{CustomSpecAttr::ROUTE};
             }
 
-            // TODO rename
             $action = $this->prepareAction($method, $operation, $routeData, $customRoute);
             if ($customRoute !== null) {
                 if (in_array($customRoute, array_keys($this->allCustomRoutes))) {
