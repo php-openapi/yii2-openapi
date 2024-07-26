@@ -1,0 +1,99 @@
+openapi: 3.0.3
+
+info:
+  title: 'Custom route for path'
+  version: 1.0.0
+
+tags:
+  - name: Payments
+    description: Pay or receive payments for your products from different channels
+    externalDocs:
+      description: Find out more
+      url: https://developer.adiuta.com/book/payments
+paths:
+  /calendar/domains:
+    get:
+      x-route: calendar/domains
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+
+  /calendar/domains/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    get:
+      x-route: calendar/domains
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+  /calendar/domains/{id}/{id2}:
+    parameters:
+      - name: id
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+      - name: id2
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    get:
+      x-route: calendar/domains
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+
+
+components:
+  schemas:
+    Payments:
+      required:
+        - reference
+        - amount
+        - currency
+      properties:
+        invoice_number:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        currency:
+          type: string
+
+    Success:
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

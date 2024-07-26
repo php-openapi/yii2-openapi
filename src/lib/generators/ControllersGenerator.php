@@ -129,6 +129,7 @@ PHP;
             $params = array_map(static function ($param) {
                 return ['name' => $param];
             }, $action->getParamNames());
+
             $reflection->addMethod(
                 $action->actionMethodName,
                 $params,

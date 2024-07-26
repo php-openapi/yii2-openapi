@@ -1,0 +1,156 @@
+openapi: 3.0.3
+
+info:
+  title: 'Custom route for path'
+  version: 1.0.0
+
+tags:
+  - name: Payments
+    description: Pay or receive payments for your products from different channels
+    externalDocs:
+      description: Find out more
+      url: https://developer.adiuta.com/book/payments
+paths:
+  /fruit/mango:
+    get:
+      x-route: fruits/mango
+      operationId: opnid91
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+
+  /fruits/mango:
+    get:
+      operationId: opnid81
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+    post:
+      operationId: opnid9
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+  /animal/goat:
+    get:
+      operationId: opnid8
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+    post:
+      operationId: opnid92
+      summary: Lorem ipsum
+      description: Lorem ipsum description
+      responses:
+        '200':
+          description: The Response
+
+  /payments/invoice/{invoice}:
+    parameters:
+      - name: invoice
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    post:
+      x-route: 'payments/invoice'
+      summary: Pay Invoice
+      description: Pay for Invoice with given invoice number
+      requestBody:
+        description: Record new payment for an invoice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      responses:
+        '200':
+          description: Successfully paid the invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+
+  /payments/invoice-payment:
+    get:
+      operationId: opnid
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+
+  /a1/b1:
+    get:
+      x-route: 'abc/xyz'
+      operationId: opnid5
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+    post:
+      x-route: 'abc/xyz'
+      operationId: opnid23
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+
+  /aa2/bb2:
+    get:
+      x-route: 'payments/xyz2'
+      operationId: opnid7
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+
+components:
+  schemas:
+    Payments:
+      required:
+        - reference
+        - amount
+        - currency
+      properties:
+        invoice_number:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        currency:
+          type: string
+
+    Success:
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

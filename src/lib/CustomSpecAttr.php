@@ -40,4 +40,9 @@ class CustomSpecAttr
      * Foreign key column name. See README for usage docs
      */
     public const FK_COLUMN_NAME = 'x-fk-column-name';
+
+    /**
+     * Custom route (controller ID/action ID) instead of auto-generated. See README for usage docs. https://github.com/cebe/yii2-openapi/issues/144
+     */
+    public const ROUTE = 'x-route';
 }
