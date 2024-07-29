@@ -60,7 +60,7 @@ migrate:
 	docker-compose run --user=$(UID) --rm php sh -c 'cd /app/tests && ./yii migrate  --interactive=0'
 
 installdocker:
-	docker-compose run --user=$(UID) --rm php composer install && chmod +x tests/yii
+	docker-compose run --user="root" --rm php composer install && chmod +x tests/yii
 
 testdocker:
 	docker-compose run --user=$(UID) --rm php sh -c 'vendor/bin/phpunit --repeat 3'
