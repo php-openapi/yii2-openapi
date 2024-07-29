@@ -27,7 +27,7 @@ class JsonActionGenerator extends RestActionGenerator
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
      */
     protected function prepareAction(string $method, Operation $operation, RouteData $routeData):BaseObject
-    {
+    { #
         $actionType = $this->resolveActionType($routeData, $method);
         $modelClass = ResponseSchema::guessModelClass($operation, $actionType);
         $expectedRelations = in_array($actionType, ['list', 'view'])

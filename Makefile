@@ -1,3 +1,8 @@
+# set user to "root" to run commands as root in Docker
+#USER=$$(whoami)
+# The docker command to execute commands directly in Docker
+#DOCKER=docker-compose exec -T --user="$(USER)" php
+
 PHPARGS=-dmemory_limit=64M
 #PHPARGS=-dmemory_limit=64M -dzend_extension=xdebug.so -dxdebug.remote_enable=1 -dxdebug.remote_host=127.0.0.1 -dxdebug.remote_autostart=1
 #PHPARGS=-dmemory_limit=64M -dxdebug.remote_enable=1
@@ -44,7 +49,7 @@ up:
 	docker-compose exec -T mysql timeout 60s sh -c "while ! (mysql --execute \"ALTER USER 'dbuser'@'%' IDENTIFIED WITH mysql_native_password BY 'dbpass';\" > /dev/null 2>&1); do echo -n '.'; sleep 0.1 ; done; echo 'ok'" || (docker-compose ps; docker-compose logs; exit 1)
 
 cli:
-	docker-compose exec --user=$(UID) php bash
+	docker-compose exec --user="root" php bash # --user=$(UID)
 
 cli_mysql:
 	docker-compose exec --user=$(UID) mysql bash
