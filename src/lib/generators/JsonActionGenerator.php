@@ -61,6 +61,7 @@ class JsonActionGenerator extends RestActionGenerator
             $transformerClass = $modelClass !== null
                 ? $this->config->transformerNamespace . '\\' . Inflector::id2camel($modelClass, '_') . 'Transformer'
                 : null;
+            
         }
 
         if ($routeData->type === RouteData::TYPE_RESOURCE_OPERATION && !$modelClass) {
