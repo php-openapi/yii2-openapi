@@ -57,6 +57,9 @@ migrate:
 installdocker:
 	docker-compose run --user=$(UID) --rm php composer install && chmod +x tests/yii
 
+tests_dir_write_permission:
+	docker-compose run --user="root" --rm php chmod -R 777 tests/tmp/ # TODO avoid 777 https://github.com/cebe/yii2-openapi/issues/156
+
 testdocker:
 	docker-compose run --user=$(UID) --rm php sh -c 'vendor/bin/phpunit --repeat 3'
 

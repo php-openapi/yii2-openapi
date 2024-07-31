@@ -45,7 +45,7 @@ services:
         ports:
             - '23306:3306'
         volumes:
-            - ./tests/tmp/maria:/var/lib/mysql:rw
+            - ./tests/tmp/mariadb:/var/lib/mariadb:rw
         environment:
             # TZ: UTC
             # MARIADB_ALLOW_EMPTY_PASSWORD: 1
