@@ -62,6 +62,9 @@ migrate:
 installdocker:
 	docker-compose run --user="root" --rm php composer install && chmod +x tests/yii
 
+tests_dir_write_permission:
+	docker compose run --user="root" --rm php chmod -R 777 tests/tmp/ # TODO avoid 777
+
 testdocker:
 	docker-compose run --user=$(UID) --rm php sh -c 'vendor/bin/phpunit --repeat 3'
 

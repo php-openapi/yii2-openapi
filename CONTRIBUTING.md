@@ -10,7 +10,7 @@ cd yii2-openapi
 make clean_all
 make up
 make installdocker
-sudo chmod -R 777 tests/tmp/ # https://github.com/cebe/yii2-openapi/issues/156
+sudo chmod -R 777 tests/tmp/ # TODO avoid 777 https://github.com/cebe/yii2-openapi/issues/156
 make migrate
 
 # to check everything is setup up correctly ensure all tests passes

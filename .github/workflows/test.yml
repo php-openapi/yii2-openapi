@@ -47,6 +47,9 @@ jobs:
 #        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
         run: echo "dir=./tests/tmp/.composer/cache/files" >> $GITHUB_OUTPUT
 
+      - name: Make tests dir writable for restoring cache in next step
+        run: make tests_dir_write_permission
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
