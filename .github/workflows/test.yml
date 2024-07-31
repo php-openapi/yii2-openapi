@@ -42,9 +42,9 @@ jobs:
       - name: docker-compose up
         run: make up
 
+      # https://github.com/shivammathur/setup-php?tab=readme-ov-file#cache-composer-dependencies
       - name: Get composer cache directory
         id: composer-cache
-#        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
         run: echo "dir=./tests/tmp/.composer/cache/files" >> $GITHUB_OUTPUT
 
       - name: Make tests dir writable for restoring cache in next step

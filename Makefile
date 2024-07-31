@@ -1,8 +1,3 @@
-# set user to "root" to run commands as root in Docker
-#USER=$$(whoami)
-# The docker command to execute commands directly in Docker
-#DOCKER=docker-compose exec -T --user="$(USER)" php
-
 PHPARGS=-dmemory_limit=64M
 #PHPARGS=-dmemory_limit=64M -dzend_extension=xdebug.so -dxdebug.remote_enable=1 -dxdebug.remote_host=127.0.0.1 -dxdebug.remote_autostart=1
 #PHPARGS=-dmemory_limit=64M -dxdebug.remote_enable=1
@@ -60,7 +55,7 @@ migrate:
 	docker-compose run --user=$(UID) --rm php sh -c 'cd /app/tests && ./yii migrate  --interactive=0'
 
 installdocker:
-	docker-compose run --user="root" --rm php composer install && chmod +x tests/yii
+	docker-compose run --user=$(UID) --rm php composer install && chmod +x tests/yii
 
 tests_dir_write_permission:
 	docker-compose run --user="root" --rm php chmod -R 777 tests/tmp/ # TODO avoid 777 https://github.com/cebe/yii2-openapi/issues/156
