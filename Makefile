@@ -44,7 +44,7 @@ up:
 	docker-compose exec -T mysql timeout 60s sh -c "while ! (mysql --execute \"ALTER USER 'dbuser'@'%' IDENTIFIED WITH mysql_native_password BY 'dbpass';\" > /dev/null 2>&1); do echo -n '.'; sleep 0.1 ; done; echo 'ok'" || (docker-compose ps; docker-compose logs; exit 1)
 
 cli:
-	docker-compose exec --user="root" php bash # --user=$(UID)
+	docker-compose exec --user=$(UID) php bash
 
 cli_mysql:
 	docker-compose exec --user=$(UID) mysql bash
