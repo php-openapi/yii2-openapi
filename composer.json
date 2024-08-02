@@ -25,7 +25,8 @@
 		"laminas/laminas-code": ">=3.4 <=4.13",
 		"php-openapi/yii2-fractal": "^1.0.0",
 		"fakerphp/faker": "^1.9",
-		"sam-it/yii2-mariadb": "^2.0"
+		"sam-it/yii2-mariadb": "^2.0",
+		"symfony/var-exporter": "^5.4"
 	},
 	"require-dev": {
 		"cebe/indent": "*",

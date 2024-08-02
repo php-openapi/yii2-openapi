@@ -12,6 +12,7 @@ namespace cebe\yii2openapi\lib;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
 use yii\helpers\VarDumper;
+use Symfony\Component\VarExporter\VarExporter;
 use function str_replace;
 use const PHP_EOL;
 
@@ -61,7 +62,7 @@ class FakerStubResolver
             return null;
         }
 
-        // column name ends with `_id`
+        // column name ends with `_id`/FK
         if (substr($this->attribute->columnName, -3) === '_id' || !empty($this->attribute->fkColName)) {
             $config = $this->config;
             if (!$config) {
@@ -76,20 +77,34 @@ class FakerStubResolver
         $limits = $this->attribute->limits;
         switch ($this->attribute->phpType) {
             case 'bool':
-                return '$faker->boolean';
+                $result = '$faker->boolean';
+                break;
             case 'int':
             case 'integer':
-                return $this->fakeForInt($limits['min'], $limits['max']);
+                $result = $this->fakeForInt($limits['min'], $limits['max']);
+                break;
             case 'string':
-                return $this->fakeForString();
+                $result = $this->fakeForString();
+                break;
             case 'float':
             case 'double':
-                return $this->fakeForFloat($limits['min'], $limits['max']);
+                $result = $this->fakeForFloat($limits['min'], $limits['max']);
+                break;
             case 'array':
-                return $this->fakeForArray();
+                $result = $this->fakeForArray();
+                break;
             default:
                 return null;
         }
+        if (! $this->property->hasAttr('example')) {
+            return $result;
+        }
+        if (stripos($result, 'uniqueFaker') !== false) {
+            return $result;
+        }
+        $example = $this->property->getAttr('example');
+        $example = VarExporter::export($example);
+        return str_replace('$faker->', '$faker->optional(0.92, '.$example.')->', $result);
     }
 
     private function fakeForString():?string
@@ -167,8 +182,6 @@ class FakerStubResolver
             }
         }
 
-        // TODO maybe also consider OpenAPI examples here
-
         if ($size) {
             $method = 'text';
             if ($size < 5) {
@@ -227,6 +240,7 @@ class FakerStubResolver
 
     private function fakeForArray():string
     {
+//        return '$faker->words()'; // TODO
         if ($this->attribute->required) {
             return '["a" => "b"]';
         }

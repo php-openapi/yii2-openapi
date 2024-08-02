@@ -1,0 +1,39 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Consider OpenAPI spec examples in faker code generation https://github.com/php-openapi/yii2-openapi/issues/20
+
+paths:
+  /pet:
+    get:
+      summary: get a pet
+      operationId: aPet
+      responses:
+        200:
+          description: A pet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+
+components:
+  schemas:
+    Pet:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: cat
+#          example: ['long-tail', 'short-tail', 'black', 'white']
+        age:
+          type: integer
+          example: 2
+        tags:
+          type: array
+          items:
+            type: string
+          example: ['long-tail', 'short-tail', 'black', 'white']
