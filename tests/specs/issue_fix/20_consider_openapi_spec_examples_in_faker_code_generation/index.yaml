@@ -36,4 +36,40 @@ components:
           type: array
           items:
             type: string
-          example: ['long-tail', 'short-tail', 'black', 'white']
+        tags_arbit:
+          type: array
+          items: { } # array of arbitrary types e.g. [ "hello", -2, true, [5.7], {"id": 5} ]
+          minItems: 6
+          maxItems: 10
+          uniqueItems: true
+        #            type: string
+        #          example: ['long-tail', 'short-tail', 'black', 'white']
+        number_arr:
+          type: array
+          items:
+            type: number
+
+        number_arr_min_uniq:
+          type: array
+          items:
+            type: number
+          minItems: 6
+          uniqueItems: true
+
+        int_arr:
+          type: array
+          items:
+            type: integer
+
+        int_arr_min_uniq:
+          type: array
+          items:
+            type: integer
+          minItems: 7
+          uniqueItems: true
+
+        bool_arr:
+          type: array
+          items:
+            type: boolean
+

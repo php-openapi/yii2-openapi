@@ -366,12 +366,12 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/index.php");
         $this->runGenerator($testFile);
-        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-            'recursive' => true,
-        ]);
-        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/mysql"), [
-            'recursive' => true,
-        ]);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/mysql"), [
+//            'recursive' => true,
+//        ]);
 //        $this->checkFiles($actualFiles, $expectedFiles); // TODO
     }
 }

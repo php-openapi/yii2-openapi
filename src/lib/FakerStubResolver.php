@@ -11,8 +11,9 @@ namespace cebe\yii2openapi\lib;
 
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
-use yii\helpers\VarDumper;
 use Symfony\Component\VarExporter\VarExporter;
+use yii\helpers\Json;
+use yii\helpers\VarDumper;
 use function str_replace;
 use const PHP_EOL;
 
@@ -238,12 +239,61 @@ class FakerStubResolver
         return '$faker->randomFloat()';
     }
 
-    private function fakeForArray():string
+    private function fakeForArray(): string
     {
-//        return '$faker->words()'; // TODO
-        if ($this->attribute->required) {
-            return '["a" => "b"]';
+        // TODO consider example of OpenAPI spec
+        $property = Json::decode(Json::encode($this->property->getProperty()->getSerializableData()));
+
+        $arbitrary = false;
+        $uniqueItems = false;
+        $type = null;
+        $count = 4; # let's set a number to default number of elements
+
+        if (isset($property['items'])) {
+            $items = $property['items'];
+            if ($items === []) {
+                $arbitrary = true;
+            }
+            if (isset($items['type'])) {
+                $type = $items['type'];
+            }
         }
+
+        if (isset($property['minItems'])) {
+            $minItems = (int)$property['minItems'];
+            $count = $minItems;
+        }
+
+        if (isset($property['maxItems'])) {
+            $maxItems = (int)$property['maxItems'];
+            if ($maxItems < $count) {
+                $count = $maxItems;
+            }
+        }
+
+        if (isset($property['uniqueItems'])) {
+            $uniqueItems = (bool)$property['uniqueItems'];
+        }
+
+        if ($arbitrary || $type === 'string') {
+            return ($uniqueItems ? '$uniqueFaker' : '$faker') . '->words(' . $count . ')';
+        }
+
+        if (in_array($type, ['number', 'integer'])) {
+            return 'array_fill(0, ' . ($count) . ', ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->randomNumber())';
+        }
+
+        if ($type == 'boolean') {
+            return 'array_fill(0, ' . ($count) . ', ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->boolean())';
+        }
+
+        // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
+
+//        return '$faker->words()'; // TODO implement faker for array; also consider min, max, unique
+
+//        if ($this->attribute->required) {
+//            return '["a" => "b"]'; // TODO this is incorrect, array schema should be checked first
+//        }
         return '[]';
     }
 }
