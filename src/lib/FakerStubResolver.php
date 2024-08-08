@@ -9,10 +9,10 @@
 /** @noinspection PhpUndefinedFieldInspection */
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\SpecObjectInterface;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Symfony\Component\VarExporter\VarExporter;
-use yii\helpers\Json;
 use yii\helpers\VarDumper;
 use function str_replace;
 use const PHP_EOL;
@@ -92,7 +92,7 @@ class FakerStubResolver
                 $result = $this->fakeForFloat($limits['min'], $limits['max']);
                 break;
             case 'array':
-                $result = $this->fakeForArray();
+                $result = $this->fakeForArray($this->property->getProperty());
                 break;
             default:
                 return null;
@@ -239,40 +239,39 @@ class FakerStubResolver
         return '$faker->randomFloat()';
     }
 
-    private function fakeForArray(): string
+    private function fakeForArray(SpecObjectInterface $property): string
     {
         // TODO consider example of OpenAPI spec
-        $property = Json::decode(Json::encode($this->property->getProperty()->getSerializableData()));
-
         $arbitrary = false;
         $uniqueItems = false;
         $type = null;
         $count = 4; # let's set a number to default number of elements
 
-        if (isset($property['items'])) {
-            $items = $property['items'];
-            if ($items === []) {
+        $items = $property->items;
+
+        if ($items) {
+            $type = $items->type;
+            if ($items->type === null) {
                 $arbitrary = true;
             }
-            if (isset($items['type'])) {
-                $type = $items['type'];
-            }
+        } else {
+            $arbitrary = true;
         }
 
-        if (isset($property['minItems'])) {
-            $minItems = (int)$property['minItems'];
+        if ($property->minItems) {
+            $minItems = $property->minItems;
             $count = $minItems;
         }
 
-        if (isset($property['maxItems'])) {
-            $maxItems = (int)$property['maxItems'];
+        if ($property->maxItems) {
+            $maxItems = $property->maxItems;
             if ($maxItems < $count) {
                 $count = $maxItems;
             }
         }
 
-        if (isset($property['uniqueItems'])) {
-            $uniqueItems = (bool)$property['uniqueItems'];
+        if (isset($property->uniqueItems)) {
+            $uniqueItems = $property->uniqueItems;
         }
 
         if ($arbitrary || $type === 'string') {
@@ -280,12 +279,32 @@ class FakerStubResolver
         }
 
         if (in_array($type, ['number', 'integer'])) {
-            return 'array_fill(0, ' . ($count) . ', ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->randomNumber())';
+            return 'array_map(function () use ($faker, $uniqueFaker) {
+                return ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->randomNumber();
+            }, range(1, ' . $count . '))';
         }
 
-        if ($type == 'boolean') {
-            return 'array_fill(0, ' . ($count) . ', ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->boolean())';
+        if ($type === 'boolean') {
+            return 'array_map(function () use ($faker, $uniqueFaker) {
+                return ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->boolean();
+            }, range(1, ' . $count . '))';
         }
+
+        if ($type === 'array') { # array or nested arrays
+            return 'array_map(function () use ($faker, $uniqueFaker) {
+                return ' . $this->fakeForArray($items) . ';
+            }, range(1, ' . $count . '))';
+        }
+//
+//        if ($type === 'object') {
+//            $props = [];
+//            foreach ($items['properties'] ?? [] as $name => $prop) {
+//                $props[$name] = $this->fakeForArray($prop);
+//            }
+//            return 'array_map(function () use ($faker, $uniqueFaker) {
+//                return ' .VarExporter::export($props[$name]). ';
+//            }, range(1, '.$count.'))';
+//        }
 
         // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
 
