@@ -104,13 +104,41 @@ components:
 
         arr_of_obj:
           type: array
+          minItems: 3
           items:
             type: object
             properties:
               id:
                 type: integer
+              name:
+                type: string
+              age:
+                type: integer
+                minimum: 0
+                maximum: 200
+              tags:
+                type: array
+                items:
+                  type: string
+                uniqueItems: true
+
+              #              arr_arr_int_2: # [ [1, 2], [3, 4], [5, 6, 7] ]
+              #                type: array
+              #                items:
+              #                  type: array
+              #                  items:
+              #                    type: integer
+
+              appearance:
+                type: object
+                properties:
+                  height:
+                    type: integer
+                  weight:
+                    type: integer
+
 #
-#        ref_obj_arr:
+#        user_ref_obj_arr:
 #          type: array
 #          items:
 #            $ref: '#/components/schemas/User'

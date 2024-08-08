@@ -11,6 +11,8 @@ namespace cebe\yii2openapi\lib;
 
 use cebe\openapi\SpecObjectInterface;
 use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\JunctionSchemas;
+use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Symfony\Component\VarExporter\VarExporter;
 use yii\helpers\VarDumper;
@@ -251,7 +253,7 @@ class FakerStubResolver
 
         if ($items) {
             $type = $items->type;
-            if ($items->type === null) {
+            if ($type === null) {
                 $arbitrary = true;
             }
         } else {
@@ -295,16 +297,22 @@ class FakerStubResolver
                 return ' . $this->fakeForArray($items) . ';
             }, range(1, ' . $count . '))';
         }
-//
-//        if ($type === 'object') {
-//            $props = [];
-//            foreach ($items['properties'] ?? [] as $name => $prop) {
-//                $props[$name] = $this->fakeForArray($prop);
-//            }
-//            return 'array_map(function () use ($faker, $uniqueFaker) {
-//                return ' .VarExporter::export($props[$name]). ';
-//            }, range(1, '.$count.'))';
-//        }
+
+        if ($type === 'object') {
+            $props = [];
+            $cs = new ComponentSchema($items, 'somename');
+            $dbModels = (new AttributeResolver('somename', $cs, new JunctionSchemas([])))->resolve();
+
+            foreach ($items->properties ?? [] as $name => $prop) {
+                $ps = new PropertySchema($prop, $name, $cs);
+                $attr = $dbModels->attributes[$name];
+                $props[$name] = (new static($attr, $ps))->resolve();
+            }
+            $props = str_replace(["' => '", '\',' . PHP_EOL], ["' => ", ',' . PHP_EOL], VarExporter::export($props));
+            return 'array_map(function () use ($faker, $uniqueFaker) {
+                return ' . $props . ';
+            }, range(1, ' . $count . '))';
+        }
 
         // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
 
