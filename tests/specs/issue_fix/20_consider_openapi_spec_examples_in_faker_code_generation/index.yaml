@@ -137,11 +137,13 @@ components:
                     maximum: 20
                   weight:
                     type: integer
+                  email:
+                    type: string
+                    format: email
 
-#
-#        user_ref_obj_arr:
-#          type: array
-#          items:
-#            $ref: '#/components/schemas/User'
+        user_ref_obj_arr:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
 
 # oneOf

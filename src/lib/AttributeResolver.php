@@ -7,8 +7,6 @@
 
 namespace cebe\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\AttributeRelation;
@@ -22,7 +20,6 @@ use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Yii;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function explode;
 use function strpos;
 use function strtolower;
@@ -342,6 +339,10 @@ class AttributeResolver
                 return;
             }
             $attribute->setPhpType($relatedClassName . '[]');
+
+            $this->attributes[$property->getName()] =
+                $attribute->setFakerStub($this->guessFakerStub($attribute, $property)); // TODO
+
             $this->relations[$property->getName()] =
                 Yii::createObject(
                     AttributeRelation::class,

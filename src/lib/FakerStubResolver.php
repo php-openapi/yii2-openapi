@@ -80,27 +80,22 @@ class FakerStubResolver
         }
 
         $limits = $this->attribute->limits;
-        switch ($this->attribute->phpType) {
-            case 'bool':
-                $result = '$faker->boolean';
-                break;
-            case 'int':
-            case 'integer':
-                $result = $this->fakeForInt($limits['min'], $limits['max']);
-                break;
-            case 'string':
-                $result = $this->fakeForString();
-                break;
-            case 'float':
-            case 'double':
-                $result = $this->fakeForFloat($limits['min'], $limits['max']);
-                break;
-            case 'array':
-                $result = $this->fakeForArray($this->property->getProperty());
-                break;
-            default:
-                return null;
+
+        if ($this->attribute->phpType === 'bool') {
+            $result = '$faker->boolean';
+        } elseif (in_array($this->attribute->phpType, ['int', 'integer'])) {
+            $result = $this->fakeForInt($limits['min'], $limits['max']);
+        } elseif ($this->attribute->phpType === 'string') {
+            $result = $this->fakeForString();
+        } elseif (in_array($this->attribute->phpType, ['float', 'double'])) {
+            $result = $this->fakeForFloat($limits['min'], $limits['max']);
+        } elseif ($this->attribute->phpType === 'array' ||
+            substr($this->attribute->phpType, -2) === '[]') {
+            $result = $this->fakeForArray($this->property->getProperty());
+        } else {
+            return null;
         }
+
         if (! $this->property->hasAttr('example')) {
             return $result;
         }
@@ -255,6 +250,11 @@ class FakerStubResolver
         $items = $property->items;
 
         if ($items) {
+            if ($items instanceof Reference) {
+                $class = str_replace('#/components/schemas/', '', $items->getReference());
+                $class .= 'Faker';
+                return '(new ' . $class . ')->generateModel()->attributes';
+            }
             $type = $items->type;
             if ($type === null) {
                 $arbitrary = true;
