@@ -122,18 +122,19 @@ components:
                   type: string
                 uniqueItems: true
 
-              #              arr_arr_int_2: # [ [1, 2], [3, 4], [5, 6, 7] ]
-              #                type: array
-              #                items:
-              #                  type: array
-              #                  items:
-              #                    type: integer
+              arr_arr_int_2: # [ [1, 2], [3, 4], [5, 6, 7] ]
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: integer
 
               appearance:
                 type: object
                 properties:
                   height:
                     type: integer
+                    maximum: 20
                   weight:
                     type: integer
 

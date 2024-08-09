@@ -9,6 +9,8 @@
 /** @noinspection PhpUndefinedFieldInspection */
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
@@ -249,6 +251,7 @@ class FakerStubResolver
         $type = null;
         $count = 4; # let's set a number to default number of elements
 
+        /** @var Schema|Reference|null $items */
         $items = $property->items;
 
         if ($items) {
@@ -299,19 +302,7 @@ class FakerStubResolver
         }
 
         if ($type === 'object') {
-            $props = [];
-            $cs = new ComponentSchema($items, 'somename');
-            $dbModels = (new AttributeResolver('somename', $cs, new JunctionSchemas([])))->resolve();
-
-            foreach ($items->properties ?? [] as $name => $prop) {
-                $ps = new PropertySchema($prop, $name, $cs);
-                $attr = $dbModels->attributes[$name];
-                $props[$name] = (new static($attr, $ps))->resolve();
-            }
-            $props = str_replace(["' => '", '\',' . PHP_EOL], ["' => ", ',' . PHP_EOL], VarExporter::export($props));
-            return 'array_map(function () use ($faker, $uniqueFaker) {
-                return ' . $props . ';
-            }, range(1, ' . $count . '))';
+            return $this->handleObject($items, $count);
         }
 
         // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
@@ -322,5 +313,44 @@ class FakerStubResolver
 //            return '["a" => "b"]'; // TODO this is incorrect, array schema should be checked first
 //        }
         return '[]';
+    }
+
+    /**
+     * @param $items Schema|Reference|null
+     * @param $count int
+     * @return string
+     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @throws \yii\base\InvalidConfigException
+     * @throws exceptions\InvalidDefinitionException
+     * @internal
+     */
+    public function handleObject($items, $count, $nested = false): string
+    {
+        $props = '[' . PHP_EOL;
+        $cs = new ComponentSchema($items, 'unnamed');
+        $dbModels = (new AttributeResolver('unnamed', $cs, new JunctionSchemas([])))->resolve();
+
+        foreach ($items->properties ?? [] as $name => $prop) {
+            /** @var SpecObjectInterface $prop */
+
+            if ($prop->properties) { // object
+                $result = $this->handleObject($prop, $count, true);
+            } else {
+                $ps = new PropertySchema($prop, $name, $cs);
+                $attr = $dbModels->attributes[$name];
+                $result = (string)((new static($attr, $ps))->resolve());
+            }
+
+            $props .= '\'' . $name . '\' => ' . $result . ',' . PHP_EOL;
+        }
+        $props .= ']';
+
+        if ($nested) {
+            return $props;
+        }
+
+        return 'array_map(function () use ($faker, $uniqueFaker) {
+                return ' . $props . ';
+            }, range(1, ' . $count . '))';
     }
 }
