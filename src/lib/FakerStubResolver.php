@@ -7,16 +7,23 @@
 
 /** @noinspection InterfacesAsConstructorDependenciesInspection */
 /** @noinspection PhpUndefinedFieldInspection */
+
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
+use Symfony\Component\VarExporter\Exception\ExceptionInterface;
 use Symfony\Component\VarExporter\VarExporter;
+use yii\base\InvalidConfigException;
+use yii\helpers\Json;
 use yii\helpers\VarDumper;
 use function str_replace;
 use const PHP_EOL;
@@ -28,18 +35,12 @@ use const PHP_EOL;
 class FakerStubResolver
 {
     public const MAX_INT = 1000000;
-    /**
-     * @var \cebe\yii2openapi\lib\items\Attribute
-     */
-    private $attribute;
 
-    /**
-     * @var \cebe\yii2openapi\lib\openapi\PropertySchema
-     */
-    private $property;
+    private Attribute $attribute;
 
-    /** @var Config */
-    private $config;
+    private PropertySchema $property;
+
+    private ?Config $config;
 
     public function __construct(Attribute $attribute, PropertySchema $property, ?Config $config = null)
     {
@@ -48,7 +49,14 @@ class FakerStubResolver
         $this->config = $config;
     }
 
-    public function resolve():?string
+    /**
+     * @throws InvalidConfigException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidDefinitionException
+     * @throws ExceptionInterface
+     */
+    public function resolve(): ?string
     {
         if ($this->property->xFaker === false) {
             $this->attribute->setFakerStub(null);
@@ -74,9 +82,9 @@ class FakerStubResolver
                 $config = new Config;
             }
             $mn = $config->modelNamespace;
-            return '$faker->randomElement(\\'.$mn
-                    . ($mn ? '\\' : '')
-                    . ucfirst($this->attribute->reference).'::find()->select("id")->column())';
+            return '$faker->randomElement(\\' . $mn
+                . ($mn ? '\\' : '')
+                . ucfirst($this->attribute->reference) . '::find()->select("id")->column())';
         }
 
         $limits = $this->attribute->limits;
@@ -96,7 +104,7 @@ class FakerStubResolver
             return null;
         }
 
-        if (! $this->property->hasAttr('example')) {
+        if (!$this->property->hasAttr('example')) {
             return $result;
         }
         if (stripos($result, 'uniqueFaker') !== false) {
@@ -104,10 +112,10 @@ class FakerStubResolver
         }
         $example = $this->property->getAttr('example');
         $example = VarExporter::export($example);
-        return str_replace('$faker->', '$faker->optional(0.92, '.$example.')->', $result);
+        return str_replace('$faker->', '$faker->optional(0.92, ' . $example . ')->', $result);
     }
 
-    private function fakeForString():?string
+    private function fakeForString(): ?string
     {
         $formats = [
             'date' => '$faker->dateTimeThisCentury->format(\'Y-m-d\')',
@@ -127,7 +135,7 @@ class FakerStubResolver
         }
         $enum = $this->property->getAttr('enum');
         if (!empty($enum) && is_array($enum)) {
-            $items = str_replace([PHP_EOL, '  ',',]'], ['', '', ']'], VarDumper::export($enum));
+            $items = str_replace([PHP_EOL, '  ', ',]'], ['', '', ']'], VarDumper::export($enum));
             return '$faker->randomElement(' . $items . ')';
         }
         if ($this->attribute->columnName === 'title'
@@ -172,7 +180,7 @@ class FakerStubResolver
             '~(url|site|website|href)~i' => '$faker->url',
             '~(username|login)~i' => '$faker->userName',
         ];
-        $size = $this->attribute->size > 0 ? $this->attribute->size: null;
+        $size = $this->attribute->size > 0 ? $this->attribute->size : null;
         foreach ($patterns as $pattern => $fake) {
             if (preg_match($pattern, $this->attribute->columnName)) {
                 if ($size) {
@@ -187,27 +195,27 @@ class FakerStubResolver
             if ($size < 5) {
                 $method = 'word';
             }
-            return 'substr($faker->'.$method.'(' . $size . '), 0, ' . $size . ')';
+            return 'substr($faker->' . $method . '(' . $size . '), 0, ' . $size . ')';
         }
         return '$faker->sentence';
     }
 
-    private function fakeForInt(?int $min, ?int $max):?string
+    private function fakeForInt(?int $min, ?int $max): ?string
     {
         $fakerVariable = 'faker';
         if (preg_match('~_?id$~', $this->attribute->columnName)) {
             $fakerVariable = 'uniqueFaker';
         }
         if ($min !== null && $max !== null) {
-            return "\${$fakerVariable}->numberBetween($min, $max)";
+            return "\$$fakerVariable->numberBetween($min, $max)";
         }
 
         if ($min !== null) {
-            return "\${$fakerVariable}->numberBetween($min, ".self::MAX_INT.")";
+            return "\$$fakerVariable->numberBetween($min, " . self::MAX_INT . ")";
         }
 
         if ($max !== null) {
-            return "\${$fakerVariable}->numberBetween(0, $max)";
+            return "\$$fakerVariable->numberBetween(0, $max)";
         }
 
         $patterns = [
@@ -221,10 +229,10 @@ class FakerStubResolver
                 return $fake;
             }
         }
-        return "\${$fakerVariable}->numberBetween(0, ".self::MAX_INT.")";
+        return "\$$fakerVariable->numberBetween(0, " . self::MAX_INT . ")";
     }
 
-    private function fakeForFloat(?int $min, ?int $max):?string
+    private function fakeForFloat(?int $min, ?int $max): ?string
     {
         if ($min !== null && $max !== null) {
             return "\$faker->randomFloat(null, $min, $max)";
@@ -238,22 +246,49 @@ class FakerStubResolver
         return '$faker->randomFloat()';
     }
 
+    /**
+     * @throws InvalidConfigException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws InvalidDefinitionException|ExceptionInterface
+     */
     private function fakeForArray(SpecObjectInterface $property, int $count = 4): string
     {
-        // TODO consider example of OpenAPI spec
-        $arbitrary = false;
         $uniqueItems = false;
+        $arbitrary = false;
         $type = null;
+        if ($property->minItems) {
+            $count = $property->minItems;
+        }
+        if ($property->maxItems) {
+            $maxItems = $property->maxItems;
+            if ($maxItems < $count) {
+                $count = $maxItems;
+            }
+        }
+        if (isset($property->uniqueItems)) {
+            $uniqueItems = $property->uniqueItems;
+        }
+
+        // TODO consider example of OpenAPI spec
+
 //        $count = 4; # let's set a number to default number of elements
 
         /** @var Schema|Reference|null $items */
         $items = $property->items ?? $property; # later is used in `oneOf`
 
+        $aElementData = Json::decode(Json::encode($this->property->getProperty()->getSerializableData()));
+        $compoSchemaArr = [
+            'properties' => [
+                'unnamedProp' => $aElementData['items']
+            ]
+        ];
+
         if ($items) {
             if ($items instanceof Reference) {
                 $class = str_replace('#/components/schemas/', '', $items->getReference());
                 $class .= 'Faker';
-                return '(new ' . $class . ')->generateModel()->attributes';
+                return $this->wrapAsArray('(new ' . $class . ')->generateModel()->attributes', false, $count);
             } elseif (!empty($items->oneOf)) {
                 return $this->handleOneOf($items, $count);
             } else {
@@ -261,46 +296,24 @@ class FakerStubResolver
                 if ($type === null) {
                     $arbitrary = true;
                 }
+                $cs = new ComponentSchema(new Schema($compoSchemaArr), 'UnnamedCompo');
+                $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([])))->resolve();
+                $aElementFaker = (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp')))->resolve();
             }
         } else {
             $arbitrary = true;
         }
 
-        if ($property->minItems) {
-            $count = $property->minItems;
+        if ($arbitrary) {
+            return '$faker->words()';
         }
 
-        if ($property->maxItems) {
-            $maxItems = $property->maxItems;
-            if ($maxItems < $count) {
-                $count = $maxItems;
-            }
-        }
-
-        if (isset($property->uniqueItems)) {
-            $uniqueItems = $property->uniqueItems;
-        }
-
-        if ($arbitrary || $type === 'string') {
-            return ($uniqueItems ? '$uniqueFaker' : '$faker') . '->words(' . $count . ')';
-        }
-
-        if (in_array($type, ['number', 'integer'])) {
-            return 'array_map(function () use ($faker, $uniqueFaker) {
-                return ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->randomNumber();
-            }, range(1, ' . $count . '))';
-        }
-
-        if ($type === 'boolean') {
-            return 'array_map(function () use ($faker, $uniqueFaker) {
-                return ' . ($uniqueItems ? '$uniqueFaker' : '$faker') . '->boolean();
-            }, range(1, ' . $count . '))';
+        if (in_array($type, ['string', 'number', 'integer', 'boolean'])) {
+            return $this->wrapAsArray($aElementFaker, $uniqueItems, $count);
         }
 
         if ($type === 'array') { # array or nested arrays
-            return 'array_map(function () use ($faker, $uniqueFaker) {
-                return ' . $this->{__FUNCTION__}($items) . ';
-            }, range(1, ' . $count . '))';
+            return $this->{__FUNCTION__}($items);
         }
 
         if ($type === 'object') {
@@ -321,13 +334,16 @@ class FakerStubResolver
     /**
      * @param $items Schema|Reference|null
      * @param $count int
+     * @param bool $nested
      * @return string
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \yii\base\InvalidConfigException
-     * @throws exceptions\InvalidDefinitionException
+     * @throws ExceptionInterface
+     * @throws InvalidConfigException
+     * @throws InvalidDefinitionException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      * @internal
      */
-    public function handleObject($items, $count, $nested = false): string
+    public function handleObject(Schema $items, int $count, bool $nested = false): string
     {
         $props = '[' . PHP_EOL;
         $cs = new ComponentSchema($items, 'unnamed');
@@ -361,53 +377,32 @@ class FakerStubResolver
      * @param $items
      * @param $count
      * @return string
+     * @throws ExceptionInterface
+     * @throws InvalidConfigException
+     * @throws InvalidDefinitionException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      * @internal
      */
     public function handleOneOf($items, $count): string
     {
-        $fakerForADataType = [];
         $result = 'array_map(function () use ($faker, $uniqueFaker) {';
         foreach ($items->oneOf as $key => $aDataType) {
             /** @var Schema|Reference $aDataType */
-//                $fakerForADataType[] = $this->{__FUNCTION__}($aDataType);
+
             $a1 = $this->fakeForArray($aDataType, 1);
             $result .= '$dataType' . $key . ' = ' . $a1 . ';';
         }
         $ct = count($items->oneOf) - 1;
         $result .= 'return ${"dataType".rand(0, ' . $ct . ')};';
-//            $items = $items->oneOf[$rand];
-
-//                $dataType'..'
-//                return "";
         $result .= '}, range(1, ' . $count . '))';
         return $result;
     }
 
-    public function aString()
+    public function wrapAsArray($aElementFaker, $uniqueItems, $count): string
     {
-    }
-
-    public function aNumber()
-    {
-    }
-
-    public function aInteger()
-    {
-    }
-
-    public function aBoolean()
-    {
-    }
-
-    public function aArray()
-    {
-    }
-
-    public function aObject()
-    {
-    }
-
-    public function aRefObj()
-    {
+        return 'array_map(function () use ($faker, $uniqueFaker) {
+            return ' . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aElementFaker) : $aElementFaker) . ';
+        }, range(1, ' . $count . '))';
     }
 }
