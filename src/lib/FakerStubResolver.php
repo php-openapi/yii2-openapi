@@ -207,15 +207,15 @@ class FakerStubResolver
             $fakerVariable = 'uniqueFaker';
         }
         if ($min !== null && $max !== null) {
-            return "\$$fakerVariable->numberBetween($min, $max)";
+            return "\${$fakerVariable}->numberBetween($min, $max)";
         }
 
         if ($min !== null) {
-            return "\$$fakerVariable->numberBetween($min, " . self::MAX_INT . ")";
+            return "\${$fakerVariable}->numberBetween($min, " . self::MAX_INT . ")";
         }
 
         if ($max !== null) {
-            return "\$$fakerVariable->numberBetween(0, $max)";
+            return "\${$fakerVariable}->numberBetween(0, $max)";
         }
 
         $patterns = [
@@ -229,7 +229,7 @@ class FakerStubResolver
                 return $fake;
             }
         }
-        return "\$$fakerVariable->numberBetween(0, " . self::MAX_INT . ")";
+        return "\${$fakerVariable}->numberBetween(0, " . self::MAX_INT . ")";
     }
 
     private function fakeForFloat(?int $min, ?int $max): ?string
@@ -247,6 +247,7 @@ class FakerStubResolver
     }
 
     /**
+     * @param int $count let's set a number to default number of elements
      * @throws InvalidConfigException
      * @throws TypeErrorException
      * @throws UnresolvableReferenceException
@@ -255,8 +256,6 @@ class FakerStubResolver
     private function fakeForArray(SpecObjectInterface $property, int $count = 4): string
     {
         $uniqueItems = false;
-        $arbitrary = false;
-        $type = null;
         if ($property->minItems) {
             $count = $property->minItems;
         }
@@ -272,41 +271,26 @@ class FakerStubResolver
 
         // TODO consider example of OpenAPI spec
 
-//        $count = 4; # let's set a number to default number of elements
-
         /** @var Schema|Reference|null $items */
-        $items = $property->items ?? $property; # later is used in `oneOf`
+        $items = $property->items; # later is used only in `oneOf`
 
-        $aElementData = Json::decode(Json::encode($this->property->getProperty()->getSerializableData()));
-        $compoSchemaArr = [
-            'properties' => [
-                'unnamedProp' => $aElementData['items']
-            ]
-        ];
-
-        if ($items) {
-            if ($items instanceof Reference) {
-                $class = str_replace('#/components/schemas/', '', $items->getReference());
-                $class .= 'Faker';
-                return $this->wrapAsArray('(new ' . $class . ')->generateModel()->attributes', false, $count);
-            } elseif (!empty($items->oneOf)) {
-                return $this->handleOneOf($items, $count);
-            } else {
-                $type = $items->type;
-                if ($type === null) {
-                    $arbitrary = true;
-                }
-                $cs = new ComponentSchema(new Schema($compoSchemaArr), 'UnnamedCompo');
-                $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([])))->resolve();
-                $aElementFaker = (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp')))->resolve();
-            }
-        } else {
-            $arbitrary = true;
+        if (!$items) {
+            return $this->arbitraryArray();
         }
 
-        if ($arbitrary) {
-            return '$faker->words()';
+        if ($items instanceof Reference) {
+            $class = str_replace('#/components/schemas/', '', $items->getReference());
+            $class .= 'Faker';
+            return $this->wrapAsArray('(new ' . $class . ')->generateModel()->attributes', false, $count);
+        } elseif (!empty($items->oneOf)) {
+            return $this->handleOneOf($items, $count);
         }
+
+        $type = $items->type;
+        if ($type === null) {
+            return $this->arbitraryArray();
+        }
+        $aElementFaker = $this->aElementFaker();
 
         if (in_array($type, ['string', 'number', 'integer', 'boolean'])) {
             return $this->wrapAsArray($aElementFaker, $uniqueItems, $count);
@@ -390,7 +374,8 @@ class FakerStubResolver
         foreach ($items->oneOf as $key => $aDataType) {
             /** @var Schema|Reference $aDataType */
 
-            $a1 = $this->fakeForArray($aDataType, 1);
+//            $a1 = $this->fakeForArray($aDataType, 1);
+            $a1 = $this->aElementFaker();
             $result .= '$dataType' . $key . ' = ' . $a1 . ';';
         }
         $ct = count($items->oneOf) - 1;
@@ -404,5 +389,23 @@ class FakerStubResolver
         return 'array_map(function () use ($faker, $uniqueFaker) {
             return ' . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aElementFaker) : $aElementFaker) . ';
         }, range(1, ' . $count . '))';
+    }
+
+    public function arbitraryArray(): string
+    {
+        return '$faker->words()';
+    }
+
+    public function aElementFaker(): ?string
+    {
+        $aElementData = Json::decode(Json::encode($this->property->getProperty()->getSerializableData()));
+        $compoSchemaData = [
+            'properties' => [
+                'unnamedProp' => $aElementData['items']
+            ]
+        ];
+        $cs = new ComponentSchema(new Schema($compoSchemaData), 'UnnamedCompo');
+        $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([])))->resolve();
+        return (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp')))->resolve();
     }
 }
