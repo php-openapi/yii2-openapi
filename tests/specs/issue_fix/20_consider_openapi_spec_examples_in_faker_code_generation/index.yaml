@@ -34,7 +34,7 @@ components:
         name:
           type: string
           example: cat
-#          example: ['long-tail', 'short-tail', 'black', 'white']
+        #          example: ['long-tail', 'short-tail', 'black', 'white']
         age:
           type: integer
           example: 2
@@ -157,6 +157,15 @@ components:
             oneOf:
               - type: integer
               - type: string
+              - type: boolean
+              - type: array
+              - type: array
+                items:
+                  type: string
+              - type: object
+                properties:
+                  id:
+                    type: integer
 
 
 # oneOf

@@ -272,7 +272,7 @@ class FakerStubResolver
         // TODO consider example of OpenAPI spec
 
         /** @var Schema|Reference|null $items */
-        $items = $property->items; # later is used only in `oneOf`
+        $items = $property->items;
 
         if (!$items) {
             return $this->arbitraryArray();
@@ -290,7 +290,7 @@ class FakerStubResolver
         if ($type === null) {
             return $this->arbitraryArray();
         }
-        $aElementFaker = $this->aElementFaker();
+        $aElementFaker = $this->aElementFaker($this->property->getProperty()->getSerializableData());
 
         if (in_array($type, ['string', 'number', 'integer', 'boolean'])) {
             return $this->wrapAsArray($aElementFaker, $uniqueItems, $count);
@@ -375,7 +375,7 @@ class FakerStubResolver
             /** @var Schema|Reference $aDataType */
 
 //            $a1 = $this->fakeForArray($aDataType, 1);
-            $a1 = $this->aElementFaker();
+            $a1 = $this->aElementFaker($aDataType->getSerializableData());
             $result .= '$dataType' . $key . ' = ' . $a1 . ';';
         }
         $ct = count($items->oneOf) - 1;
@@ -396,12 +396,12 @@ class FakerStubResolver
         return '$faker->words()';
     }
 
-    public function aElementFaker(): ?string
+    public function aElementFaker($data): ?string
     {
-        $aElementData = Json::decode(Json::encode($this->property->getProperty()->getSerializableData()));
+        $aElementData = Json::decode(Json::encode($data));
         $compoSchemaData = [
             'properties' => [
-                'unnamedProp' => $aElementData['items']
+                'unnamedProp' => $aElementData['items'] ?? $aElementData # later is used only in `oneOf`
             ]
         ];
         $cs = new ComponentSchema(new Schema($compoSchemaData), 'UnnamedCompo');
