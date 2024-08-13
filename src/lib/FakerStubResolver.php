@@ -238,34 +238,36 @@ class FakerStubResolver
         return '$faker->randomFloat()';
     }
 
-    private function fakeForArray(SpecObjectInterface $property): string
+    private function fakeForArray(SpecObjectInterface $property, int $count = 4): string
     {
         // TODO consider example of OpenAPI spec
         $arbitrary = false;
         $uniqueItems = false;
         $type = null;
-        $count = 4; # let's set a number to default number of elements
+//        $count = 4; # let's set a number to default number of elements
 
         /** @var Schema|Reference|null $items */
-        $items = $property->items;
+        $items = $property->items ?? $property; # later is used in `oneOf`
 
         if ($items) {
             if ($items instanceof Reference) {
                 $class = str_replace('#/components/schemas/', '', $items->getReference());
                 $class .= 'Faker';
                 return '(new ' . $class . ')->generateModel()->attributes';
-            }
-            $type = $items->type;
-            if ($type === null) {
-                $arbitrary = true;
+            } elseif (!empty($items->oneOf)) {
+                return $this->handleOneOf($items, $count);
+            } else {
+                $type = $items->type;
+                if ($type === null) {
+                    $arbitrary = true;
+                }
             }
         } else {
             $arbitrary = true;
         }
 
         if ($property->minItems) {
-            $minItems = $property->minItems;
-            $count = $minItems;
+            $count = $property->minItems;
         }
 
         if ($property->maxItems) {
@@ -297,13 +299,14 @@ class FakerStubResolver
 
         if ($type === 'array') { # array or nested arrays
             return 'array_map(function () use ($faker, $uniqueFaker) {
-                return ' . $this->fakeForArray($items) . ';
+                return ' . $this->{__FUNCTION__}($items) . ';
             }, range(1, ' . $count . '))';
         }
 
         if ($type === 'object') {
             return $this->handleObject($items, $count);
         }
+
 
         // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
 
@@ -334,7 +337,7 @@ class FakerStubResolver
             /** @var SpecObjectInterface $prop */
 
             if ($prop->properties) { // object
-                $result = $this->handleObject($prop, $count, true);
+                $result = $this->{__FUNCTION__}($prop, $count, true);
             } else {
                 $ps = new PropertySchema($prop, $name, $cs);
                 $attr = $dbModels->attributes[$name];
@@ -352,5 +355,59 @@ class FakerStubResolver
         return 'array_map(function () use ($faker, $uniqueFaker) {
                 return ' . $props . ';
             }, range(1, ' . $count . '))';
+    }
+
+    /**
+     * @param $items
+     * @param $count
+     * @return string
+     * @internal
+     */
+    public function handleOneOf($items, $count): string
+    {
+        $fakerForADataType = [];
+        $result = 'array_map(function () use ($faker, $uniqueFaker) {';
+        foreach ($items->oneOf as $key => $aDataType) {
+            /** @var Schema|Reference $aDataType */
+//                $fakerForADataType[] = $this->{__FUNCTION__}($aDataType);
+            $a1 = $this->fakeForArray($aDataType, 1);
+            $result .= '$dataType' . $key . ' = ' . $a1 . ';';
+        }
+        $ct = count($items->oneOf) - 1;
+        $result .= 'return ${"dataType".rand(0, ' . $ct . ')};';
+//            $items = $items->oneOf[$rand];
+
+//                $dataType'..'
+//                return "";
+        $result .= '}, range(1, ' . $count . '))';
+        return $result;
+    }
+
+    public function aString()
+    {
+    }
+
+    public function aNumber()
+    {
+    }
+
+    public function aInteger()
+    {
+    }
+
+    public function aBoolean()
+    {
+    }
+
+    public function aArray()
+    {
+    }
+
+    public function aObject()
+    {
+    }
+
+    public function aRefObj()
+    {
     }
 }

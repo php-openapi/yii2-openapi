@@ -140,10 +140,24 @@ components:
                   email:
                     type: string
                     format: email
+                  nested_obj:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
 
         user_ref_obj_arr:
           type: array
           items:
             $ref: '#/components/schemas/User'
+
+        one_of_arr:
+          type: array # ["foo", 5, -2, "bar"]
+          maxItems: 8
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+
 
 # oneOf
