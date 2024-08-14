@@ -12,6 +12,7 @@ namespace cebe\yii2openapi\lib;
 
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
@@ -22,6 +23,7 @@ use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Symfony\Component\VarExporter\Exception\ExceptionInterface;
 use Symfony\Component\VarExporter\VarExporter;
+use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\Json;
 use yii\helpers\VarDumper;
@@ -100,6 +102,8 @@ class FakerStubResolver
         } elseif ($this->attribute->phpType === 'array' ||
             substr($this->attribute->phpType, -2) === '[]') {
             $result = $this->fakeForArray($this->property->getProperty());
+        } elseif ($this->attribute->phpType === 'object') {
+            $result = $this->fakeForObject($this->property->getProperty());
         } else {
             return null;
         }
@@ -265,7 +269,7 @@ class FakerStubResolver
                 $count = $maxItems;
             }
         }
-        if (isset($property->uniqueItems)) {
+        if (!empty($property->uniqueItems)) {
             $uniqueItems = $property->uniqueItems;
         }
 
@@ -281,7 +285,7 @@ class FakerStubResolver
         if ($items instanceof Reference) {
             $class = str_replace('#/components/schemas/', '', $items->getReference());
             $class .= 'Faker';
-            return $this->wrapAsArray('(new ' . $class . ')->generateModel()->attributes', false, $count);
+            return $this->wrapInArray('(new ' . $class . ')->generateModel()->attributes', false, $count);
         } elseif (!empty($items->oneOf)) {
             return $this->handleOneOf($items, $count);
         }
@@ -293,7 +297,7 @@ class FakerStubResolver
         $aElementFaker = $this->aElementFaker($this->property->getProperty()->getSerializableData());
 
         if (in_array($type, ['string', 'number', 'integer', 'boolean'])) {
-            return $this->wrapAsArray($aElementFaker, $uniqueItems, $count);
+            return $this->wrapInArray($aElementFaker, $uniqueItems, $count);
         }
 
         if ($type === 'array') { # array or nested arrays
@@ -301,7 +305,8 @@ class FakerStubResolver
         }
 
         if ($type === 'object') {
-            return $this->handleObject($items, $count);
+            $result = $this->fakeForObject($items, $count);
+            return $this->wrapInArray($result, $uniqueItems, $count);
         }
 
 
@@ -316,18 +321,9 @@ class FakerStubResolver
     }
 
     /**
-     * @param $items Schema|Reference|null
-     * @param $count int
-     * @param bool $nested
-     * @return string
-     * @throws ExceptionInterface
-     * @throws InvalidConfigException
-     * @throws InvalidDefinitionException
-     * @throws TypeErrorException
-     * @throws UnresolvableReferenceException
      * @internal
      */
-    public function handleObject(Schema $items, int $count, bool $nested = false): string
+    public function fakeForObject(SpecObjectInterface $items): string
     {
         $props = '[' . PHP_EOL;
         $cs = new ComponentSchema($items, 'unnamed');
@@ -337,35 +333,24 @@ class FakerStubResolver
             /** @var SpecObjectInterface $prop */
 
             if ($prop->properties) { // object
-                $result = $this->{__FUNCTION__}($prop, $count, true);
+                $result = $this->{__FUNCTION__}($prop);
             } else {
                 $ps = new PropertySchema($prop, $name, $cs);
                 $attr = $dbModels->attributes[$name];
-                $result = (string)((new static($attr, $ps))->resolve());
+                $result = (string)((new static($attr, $ps, $this->config))->resolve());
             }
 
             $props .= '\'' . $name . '\' => ' . $result . ',' . PHP_EOL;
         }
         $props .= ']';
 
-        if ($nested) {
-            return $props;
-        }
-
-        return 'array_map(function () use ($faker, $uniqueFaker) {
-                return ' . $props . ';
-            }, range(1, ' . $count . '))';
+        return $props;
     }
 
     /**
      * @param $items
      * @param $count
      * @return string
-     * @throws ExceptionInterface
-     * @throws InvalidConfigException
-     * @throws InvalidDefinitionException
-     * @throws TypeErrorException
-     * @throws UnresolvableReferenceException
      * @internal
      */
     public function handleOneOf($items, $count): string
@@ -374,8 +359,7 @@ class FakerStubResolver
         foreach ($items->oneOf as $key => $aDataType) {
             /** @var Schema|Reference $aDataType */
 
-//            $a1 = $this->fakeForArray($aDataType, 1);
-            $a1 = $this->aElementFaker($aDataType->getSerializableData());
+            $a1 = $this->aElementFaker(['items' => $aDataType->getSerializableData()]);
             $result .= '$dataType' . $key . ' = ' . $a1 . ';';
         }
         $ct = count($items->oneOf) - 1;
@@ -384,7 +368,7 @@ class FakerStubResolver
         return $result;
     }
 
-    public function wrapAsArray($aElementFaker, $uniqueItems, $count): string
+    public function wrapInArray($aElementFaker, $uniqueItems, $count): string
     {
         return 'array_map(function () use ($faker, $uniqueFaker) {
             return ' . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aElementFaker) : $aElementFaker) . ';
@@ -401,11 +385,19 @@ class FakerStubResolver
         $aElementData = Json::decode(Json::encode($data));
         $compoSchemaData = [
             'properties' => [
-                'unnamedProp' => $aElementData['items'] ?? $aElementData # later is used only in `oneOf`
+                'unnamedProp' => $aElementData['items']
             ]
         ];
-        $cs = new ComponentSchema(new Schema($compoSchemaData), 'UnnamedCompo');
-        $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([])))->resolve();
-        return (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp')))->resolve();
+
+        $schema = new Schema($compoSchemaData);
+
+        if ($this->config) {
+            $rc = new ReferenceContext($this->config->getOpenApi(), Yii::getAlias($this->config->openApiPath));
+            $schema->setReferenceContext($rc);
+        }
+
+        $cs = new ComponentSchema($schema, 'UnnamedCompo');
+        $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([]), $this->config))->resolve();
+        return (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp'), $this->config))->resolve();
     }
 }
