@@ -325,11 +325,15 @@ class FakerStubResolver
      */
     public function fakeForObject(SpecObjectInterface $items): string
     {
+        if (!$items->properties) {
+            return $this->arbitraryArray();
+        }
+
         $props = '[' . PHP_EOL;
         $cs = new ComponentSchema($items, 'unnamed');
         $dbModels = (new AttributeResolver('unnamed', $cs, new JunctionSchemas([])))->resolve();
 
-        foreach ($items->properties ?? [] as $name => $prop) {
+        foreach ($items->properties as $name => $prop) {
             /** @var SpecObjectInterface $prop */
 
             if ($prop->properties) { // object
@@ -342,6 +346,7 @@ class FakerStubResolver
 
             $props .= '\'' . $name . '\' => ' . $result . ',' . PHP_EOL;
         }
+
         $props .= ']';
 
         return $props;
