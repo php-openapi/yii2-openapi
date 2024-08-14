@@ -259,7 +259,8 @@ class AttributeResolver
                       ->setSize($fkProperty->getMaxLength())
                       ->setDescription($property->getRefSchema()->getDescription())
                       ->setDefault($fkProperty->guessDefault())
-                      ->setLimits($min, $max, $fkProperty->getMinLength());
+                      ->setLimits($min, $max, $fkProperty->getMinLength())
+                      ->setFakerStub($this->guessFakerStub($attribute, $property));
 
             $relation = Yii::createObject(
                 AttributeRelation::class,
@@ -339,9 +340,6 @@ class AttributeResolver
                 return;
             }
             $attribute->setPhpType($relatedClassName . '[]');
-
-            $this->attributes[$property->getName()] =
-                $attribute->setFakerStub($this->guessFakerStub($attribute, $property)); // TODO
 
             $this->relations[$property->getName()] =
                 Yii::createObject(

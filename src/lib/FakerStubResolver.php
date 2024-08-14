@@ -390,7 +390,6 @@ class FakerStubResolver
         ];
 
         $schema = new Schema($compoSchemaData);
-
         if ($this->config) {
             $rc = new ReferenceContext($this->config->getOpenApi(), Yii::getAlias($this->config->openApiPath));
             $schema->setReferenceContext($rc);
