@@ -65,11 +65,11 @@ class AlldbdatatypeFaker extends BaseModelFaker
         $model->datetime_col = $faker->dateTimeThisYear('now', 'UTC')->format('Y-m-d H:i:s');
         $model->timestamp_col = $faker->dateTimeThisYear('now', 'UTC')->format('Y-m-d H:i:s');
         $model->year_col = $faker->year;
-        $model->json_col = [];
-        $model->json_col_def = [];
-        $model->json_col_def_2 = [];
+        $model->json_col = $faker->words();
+        $model->json_col_def = $faker->words();
+        $model->json_col_def_2 = $faker->words();
         $model->text_def = $faker->sentence;
-        $model->json_def = [];
+        $model->json_def = $faker->words();
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {
