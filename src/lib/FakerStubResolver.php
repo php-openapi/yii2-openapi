@@ -393,6 +393,9 @@ class FakerStubResolver
                 'unnamedProp' => $aElementData['items']
             ]
         ];
+        if (!empty($compoSchemaData['properties']['unnamedProp']['items']['$ref'])) { // TODO
+            $compoSchemaData['properties']['unnamedProp']['x-no-relation'] = true;
+        }
 
         $schema = new Schema($compoSchemaData);
         $cs = new ComponentSchema($schema, 'UnnamedCompo');
@@ -402,15 +405,15 @@ class FakerStubResolver
         }
         $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([]), $this->config))->resolve();
 
-        foreach ($schema->properties as $name => $prop) {
-            if($prop->items instanceof Reference) {
-                $dbModels->attributes[$name] = new Attribute($name, [
-                    'phpType' => 'array',
-                    'dbType' => 'array',
-                    'reference' => $prop->items->getReference(),
-                ]);
-            }
-        }
+//        foreach ($schema->properties as $name => $prop) {
+//            if($prop->items instanceof Reference) {
+//                $dbModels->attributes[$name] = new Attribute($name, [
+//                    'phpType' => 'array',
+//                    'dbType' => 'array',
+//                    'reference' => $prop->items->getReference(),
+//                ]);
+//            }
+//        }
 
         return (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp'), $this->config))->resolve();
     }

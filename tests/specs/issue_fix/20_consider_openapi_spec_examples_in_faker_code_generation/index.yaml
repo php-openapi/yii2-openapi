@@ -143,8 +143,17 @@ components:
                       id:
                         type: integer
 
-        user_ref_obj_arr:
+        user_ref_obj_arr_normal: # faker for this won't be generated
           type: array
+          maxItems: 3
+          # x-no-relation: true
+          items:
+            $ref: '#/components/schemas/User'
+
+        user_ref_obj_arr: # special
+          type: array
+          maxItems: 3
+          x-no-relation: true
           items:
             $ref: '#/components/schemas/User'
 
