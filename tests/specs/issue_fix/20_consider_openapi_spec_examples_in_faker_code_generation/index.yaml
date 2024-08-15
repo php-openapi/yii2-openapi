@@ -34,7 +34,6 @@ components:
         name:
           type: string
           example: cat
-        #          example: ['long-tail', 'short-tail', 'black', 'white']
         age:
           type: integer
           example: 2
@@ -48,8 +47,7 @@ components:
           minItems: 6
           maxItems: 10
           uniqueItems: true
-        #            type: string
-        #          example: ['long-tail', 'short-tail', 'black', 'white']
+          # example: ['long-tail', 'short-tail', 'black', 'white']
         number_arr:
           type: array
           items:

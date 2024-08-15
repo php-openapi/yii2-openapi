@@ -225,7 +225,8 @@ class AttributeResolver
                   ->setXDbDefaultExpression($property->getAttr(CustomSpecAttr::DB_DEFAULT_EXPRESSION))
                   ->setNullable($nullableValue)
                   ->setIsPrimary($property->isPrimaryKey())
-                  ->setForeignKeyColumnName($property->fkColName);
+                  ->setForeignKeyColumnName($property->fkColName)
+                  ->setFakerStub($this->guessFakerStub($attribute, $property));
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');

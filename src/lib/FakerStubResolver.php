@@ -336,7 +336,7 @@ class FakerStubResolver
         foreach ($items->properties as $name => $prop) {
             /** @var SpecObjectInterface $prop */
 
-            if ($prop->properties) { // object
+            if ($prop->properties) { // nested object
                 $result = $this->{__FUNCTION__}($prop);
             } else {
                 $ps = new PropertySchema($prop, $name, $cs);
@@ -387,7 +387,7 @@ class FakerStubResolver
 
     public function aElementFaker($data): ?string
     {
-        $aElementData = Json::decode(Json::encode($data));
+        $aElementData = Json::decode(Json::encode($data)); // object of stdClass -> array
         $compoSchemaData = [
             'properties' => [
                 'unnamedProp' => $aElementData['items']
@@ -395,13 +395,23 @@ class FakerStubResolver
         ];
 
         $schema = new Schema($compoSchemaData);
+        $cs = new ComponentSchema($schema, 'UnnamedCompo');
         if ($this->config) {
             $rc = new ReferenceContext($this->config->getOpenApi(), Yii::getAlias($this->config->openApiPath));
             $schema->setReferenceContext($rc);
         }
-
-        $cs = new ComponentSchema($schema, 'UnnamedCompo');
         $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([]), $this->config))->resolve();
+
+        foreach ($schema->properties as $name => $prop) {
+            if($prop->items instanceof Reference) {
+                $dbModels->attributes[$name] = new Attribute($name, [
+                    'phpType' => 'array',
+                    'dbType' => 'array',
+                    'reference' => $prop->items->getReference(),
+                ]);
+            }
+        }
+
         return (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp'), $this->config))->resolve();
     }
 }
