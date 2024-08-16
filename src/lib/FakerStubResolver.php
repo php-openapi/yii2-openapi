@@ -10,6 +10,7 @@
 
 namespace cebe\yii2openapi\lib;
 
+use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\ReferenceContext;
@@ -256,6 +257,7 @@ class FakerStubResolver
      * @throws TypeErrorException
      * @throws UnresolvableReferenceException
      * @throws InvalidDefinitionException|ExceptionInterface
+     * @throws IOException
      */
     private function fakeForArray(SpecObjectInterface $property, int $count = 4): string
     {
@@ -294,21 +296,16 @@ class FakerStubResolver
         if ($type === null) {
             return $this->arbitraryArray();
         }
-        $aElementFaker = $this->aElementFaker($this->property->getProperty()->getSerializableData());
+        $aFaker = $this->aElementFaker($this->property->getProperty()->getSerializableData());
 
-        if (in_array($type, ['string', 'number', 'integer', 'boolean'])) {
-            return $this->wrapInArray($aElementFaker, $uniqueItems, $count);
-        }
-
-        if ($type === 'array') { # array or nested arrays
-            return $this->{__FUNCTION__}($items);
+        if (in_array($type, ['string', 'number', 'integer', 'boolean', 'array'])) {
+            return $this->wrapInArray($aFaker, $uniqueItems, $count);
         }
 
         if ($type === 'object') {
-            $result = $this->fakeForObject($items, $count);
+            $result = $this->fakeForObject($items);
             return $this->wrapInArray($result, $uniqueItems, $count);
         }
-
 
         // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
 
@@ -373,10 +370,10 @@ class FakerStubResolver
         return $result;
     }
 
-    public function wrapInArray($aElementFaker, $uniqueItems, $count): string
+    public function wrapInArray($aFaker, $uniqueItems, $count): string
     {
         return 'array_map(function () use ($faker, $uniqueFaker) {
-            return ' . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aElementFaker) : $aElementFaker) . ';
+            return ' . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aFaker) : $aFaker) . ';
         }, range(1, ' . $count . '))';
     }
 
@@ -385,6 +382,19 @@ class FakerStubResolver
         return '$faker->words()';
     }
 
+    /**
+     * This method is only for `fakeForArray()` or methods only used inside `fakeForArray()`. If needed to use outside `fakeForArray()` context then some changes might be required.
+     * Also see OpenAPI extension `x-no-relation` in README.md
+     * @param $data
+     * @return string|null
+     * @throws ExceptionInterface
+     * @throws InvalidConfigException
+     * @throws InvalidDefinitionException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
+     * @throws IOException
+     * @internal
+     */
     public function aElementFaker($data): ?string
     {
         $aElementData = Json::decode(Json::encode($data)); // object of stdClass -> array
@@ -393,7 +403,11 @@ class FakerStubResolver
                 'unnamedProp' => $aElementData['items']
             ]
         ];
-        if (!empty($compoSchemaData['properties']['unnamedProp']['items']['$ref'])) { // TODO
+
+        // This condition is only for properties with type = array
+        // If you intend to use this method from out of `fakeForArray()` context then below condition should be changed depending on your use case
+        // Also see OpenAPI extension `x-no-relation` in README.md
+        if (!empty($compoSchemaData['properties']['unnamedProp']['items']['$ref'])) {
             $compoSchemaData['properties']['unnamedProp']['x-no-relation'] = true;
         }
 
@@ -404,16 +418,6 @@ class FakerStubResolver
             $schema->setReferenceContext($rc);
         }
         $dbModels = (new AttributeResolver('UnnamedCompo', $cs, new JunctionSchemas([]), $this->config))->resolve();
-
-//        foreach ($schema->properties as $name => $prop) {
-//            if($prop->items instanceof Reference) {
-//                $dbModels->attributes[$name] = new Attribute($name, [
-//                    'phpType' => 'array',
-//                    'dbType' => 'array',
-//                    'reference' => $prop->items->getReference(),
-//                ]);
-//            }
-//        }
 
         return (new static($dbModels->attributes['unnamedProp'], $cs->getProperty('unnamedProp'), $this->config))->resolve();
     }

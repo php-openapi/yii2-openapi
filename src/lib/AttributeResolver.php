@@ -347,7 +347,6 @@ class AttributeResolver
                 return;
             }
             $attribute->setPhpType($relatedClassName . '[]');
-
             $this->relations[$property->getName()] =
                 Yii::createObject(
                     AttributeRelation::class,

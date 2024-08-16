@@ -93,10 +93,13 @@ components:
 
         arr_arr_arr_str:
           type: array
+          minItems: 3
           items:
             type: array
+            minItems: 4
             items:
               type: array
+              minItems: 5
               items:
                 type: string
 
