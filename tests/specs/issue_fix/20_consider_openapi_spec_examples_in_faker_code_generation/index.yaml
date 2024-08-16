@@ -24,6 +24,12 @@ components:
           type: integer
         name:
           type: string
+    Fruit:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
     Pet:
       required:
         - id
@@ -188,7 +194,16 @@ components:
               - type: array
                 items:
                   $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/Fruit'
+
+        one_of_from_multi_ref_arr:
+          type: array
+          x-no-relation: true
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/Fruit'
 
 
-# oneOf
+
 # TODO count is not working in some cases

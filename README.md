@@ -309,6 +309,8 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+### `x-no-relation`
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:

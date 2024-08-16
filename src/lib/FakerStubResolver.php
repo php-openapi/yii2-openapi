@@ -87,7 +87,7 @@ class FakerStubResolver
             $mn = $config->modelNamespace;
             return '$faker->randomElement(\\' . $mn
                 . ($mn ? '\\' : '')
-                . ucfirst((string) $this->attribute->reference) . '::find()->select("id")->column())';
+                . ucfirst((string)$this->attribute->reference) . '::find()->select("id")->column())'; // TODO PK "id" can be also something else
         }
 
         $limits = $this->attribute->limits;
@@ -285,10 +285,10 @@ class FakerStubResolver
         }
 
         if ($items instanceof Reference) {
-            $class = str_replace('#/components/schemas/', '', $items->getReference());
-            $class .= 'Faker';
-            return $this->wrapInArray('(new ' . $class . ')->generateModel()->attributes', false, $count);
-        } elseif (!empty($items->oneOf)) {
+            $aFakerForRef = $this->aElementFaker($items);
+            return $this->wrapInArray($aFakerForRef, $uniqueItems, $count);
+        }
+        if (!empty($items->oneOf)) {
             return $this->handleOneOf($items, $count);
         }
 
@@ -296,8 +296,7 @@ class FakerStubResolver
         if ($type === null) {
             return $this->arbitraryArray();
         }
-        $aFaker = $this->aElementFaker($this->property->getProperty()->getSerializableData());
-
+        $aFaker = $this->aElementFaker($this->property->getProperty());
         if (in_array($type, ['string', 'number', 'integer', 'boolean', 'array'])) {
             return $this->wrapInArray($aFaker, $uniqueItems, $count);
         }
@@ -350,9 +349,16 @@ class FakerStubResolver
     }
 
     /**
-     * @param $items
-     * @param $count
+     * This method must be only used incase of array
+     * @param SpecObjectInterface $items
+     * @param int $count
      * @return string
+     * @throws ExceptionInterface
+     * @throws IOException
+     * @throws InvalidConfigException
+     * @throws InvalidDefinitionException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      * @internal
      */
     public function handleOneOf(SpecObjectInterface $items, int $count): string
@@ -361,8 +367,9 @@ class FakerStubResolver
         foreach ($items->oneOf as $key => $aDataType) {
             /** @var Schema|Reference $aDataType */
 
-            $a1 = $this->aElementFaker(['items' => $aDataType->getSerializableData()]);
-            $result .= '$dataType' . $key . ' = ' . $a1 . ';';
+            $inp = $aDataType instanceof Reference ? $aDataType : ['items' => $aDataType->getSerializableData()];
+            $aFaker = $this->aElementFaker($inp);
+            $result .= '$dataType' . $key . ' = ' . $aFaker . ';';
         }
         $ct = count($items->oneOf) - 1;
         $result .= 'return ${"dataType".rand(0, ' . $ct . ')};';
@@ -385,7 +392,7 @@ class FakerStubResolver
     /**
      * This method is only for `fakeForArray()` or methods only used inside `fakeForArray()`. If needed to use outside `fakeForArray()` context then some changes might be required.
      * Also see OpenAPI extension `x-no-relation` in README.md
-     * @param $data object|array
+     * @param $data array|\stdClass|SpecObjectInterface
      * @return string|null
      * @throws ExceptionInterface
      * @throws InvalidConfigException
@@ -397,7 +404,14 @@ class FakerStubResolver
      */
     public function aElementFaker($data): ?string
     {
-        $aElementData = Json::decode(Json::encode($data)); // element object of stdClass -> array
+        if ($data instanceof Reference) {
+            $class = str_replace('#/components/schemas/', '', $data->getReference());
+            $class .= 'Faker';
+            return '(new ' . $class . ')->generateModel()->attributes';
+        }
+
+        $inp = $data instanceof SpecObjectInterface ? $data->getSerializableData() : $data;
+        $aElementData = Json::decode(Json::encode($inp));
         $compoSchemaData = [
             'properties' => [
                 'unnamedProp' => $aElementData['items']
