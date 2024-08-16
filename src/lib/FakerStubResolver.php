@@ -355,7 +355,7 @@ class FakerStubResolver
      * @return string
      * @internal
      */
-    public function handleOneOf($items, $count): string
+    public function handleOneOf(SpecObjectInterface $items, int $count): string
     {
         $result = 'array_map(function () use ($faker, $uniqueFaker) {';
         foreach ($items->oneOf as $key => $aDataType) {
@@ -370,7 +370,7 @@ class FakerStubResolver
         return $result;
     }
 
-    public function wrapInArray($aFaker, $uniqueItems, $count): string
+    public function wrapInArray(string $aFaker, bool $uniqueItems, int $count): string
     {
         return 'array_map(function () use ($faker, $uniqueFaker) {
             return ' . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aFaker) : $aFaker) . ';
@@ -385,7 +385,7 @@ class FakerStubResolver
     /**
      * This method is only for `fakeForArray()` or methods only used inside `fakeForArray()`. If needed to use outside `fakeForArray()` context then some changes might be required.
      * Also see OpenAPI extension `x-no-relation` in README.md
-     * @param $data
+     * @param $data object|array
      * @return string|null
      * @throws ExceptionInterface
      * @throws InvalidConfigException
@@ -397,7 +397,7 @@ class FakerStubResolver
      */
     public function aElementFaker($data): ?string
     {
-        $aElementData = Json::decode(Json::encode($data)); // object of stdClass -> array
+        $aElementData = Json::decode(Json::encode($data)); // element object of stdClass -> array
         $compoSchemaData = [
             'properties' => [
                 'unnamedProp' => $aElementData['items']

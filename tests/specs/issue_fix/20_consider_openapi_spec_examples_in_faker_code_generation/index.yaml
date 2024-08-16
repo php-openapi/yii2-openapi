@@ -126,9 +126,9 @@ components:
                 type: array
                 items:
                   type: array
+                  minItems: 11
                   items:
                     type: integer
-
               appearance:
                 type: object
                 properties:
@@ -171,7 +171,7 @@ components:
 
         one_of_arr_complex:
           type: array
-          maxItems: 8
+          minItems: 8
           items:
             oneOf:
               - type: integer
