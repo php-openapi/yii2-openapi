@@ -86,7 +86,7 @@ class FakerStubResolver
             $mn = $config->modelNamespace;
             return '$faker->randomElement(\\' . $mn
                 . ($mn ? '\\' : '')
-                . ucfirst($this->attribute->reference) . '::find()->select("id")->column())';
+                . ucfirst((string) $this->attribute->reference) . '::find()->select("id")->column())';
         }
 
         $limits = $this->attribute->limits;
