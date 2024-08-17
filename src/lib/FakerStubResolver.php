@@ -332,7 +332,7 @@ class FakerStubResolver
         foreach ($items->properties as $name => $prop) {
             /** @var SpecObjectInterface $prop */
 
-            if ($prop->properties) { // nested object
+            if (!empty($prop->properties)) { // nested object
                 $result = $this->{__FUNCTION__}($prop);
             } else {
                 $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);

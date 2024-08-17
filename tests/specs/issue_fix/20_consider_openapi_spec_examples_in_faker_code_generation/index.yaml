@@ -123,6 +123,13 @@ components:
                 type: integer
                 minimum: 0
                 maximum: 200
+              user:
+                $ref: '#/components/schemas/User'
+              user_2:
+                type: array
+                # x-no-relation: true # it is not required since we only implemented handling of such object for arrays only
+                items:
+                  $ref: '#/components/schemas/User'
               tags:
                 type: array
                 items:
@@ -155,14 +162,13 @@ components:
         user_ref_obj_arr_normal: # faker for this won't be generated
           type: array
           maxItems: 3
-          # x-no-relation: true
           items:
             $ref: '#/components/schemas/User'
 
         user_ref_obj_arr: # special
           type: array
           maxItems: 3
-          x-no-relation: true
+          x-no-relation: true # it is required because this property is not part of any array
           items:
             $ref: '#/components/schemas/User'
 
@@ -198,12 +204,8 @@ components:
 
         one_of_from_multi_ref_arr:
           type: array
-          x-no-relation: true
+          # x-no-relation: true # it is not required since we only implemented handling of oneOf for arrays only
           items:
             oneOf:
               - $ref: '#/components/schemas/User'
               - $ref: '#/components/schemas/Fruit'
-
-
-
-# TODO count is not working in some cases
