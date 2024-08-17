@@ -1,0 +1,216 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Consider OpenAPI spec examples in faker code generation https://github.com/php-openapi/yii2-openapi/issues/20. And also generate faker for arrays
+
+paths:
+  /pet:
+    get:
+      summary: get a pet
+      operationId: aPet
+      responses:
+        200:
+          description: A pet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Fruit:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Pet:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: cat
+        age:
+          type: integer
+          example: 2
+        tags:
+          type: array
+          items:
+            type: string
+        tags_arbit:
+          type: array
+          items: { } # array of arbitrary types e.g. [ "hello", -2, true, [5.7], {"id": 5} ]
+          minItems: 6
+          maxItems: 10
+          # uniqueItems: true
+          example: [ 'long-tail', 'short-tail', 'black', 'white' ]
+        number_arr:
+          type: array
+          items:
+            type: number
+
+        number_arr_min_uniq:
+          type: array
+          items:
+            type: number
+          minItems: 6
+          uniqueItems: true
+
+        int_arr:
+          type: array
+          #          uniqueItems: true
+          example: [ 4, 5 ]
+          items:
+            type: integer
+
+        int_arr_min_uniq:
+          type: array
+          items:
+            type: integer
+          minItems: 7
+          uniqueItems: true
+
+        bool_arr:
+          type: array
+          items:
+            type: boolean
+
+        arr_arr_int: # [ [1, 2], [3, 4], [5, 6, 7] ]
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+
+        arr_arr_str:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+
+        arr_arr_arr_str:
+          type: array
+          minItems: 3
+          items:
+            type: array
+            minItems: 4
+            items:
+              type: array
+              minItems: 5
+              items:
+                type: string
+
+        arr_of_obj:
+          type: array
+          minItems: 3
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              age:
+                type: integer
+                minimum: 0
+                maximum: 200
+              user:
+                $ref: '#/components/schemas/User'
+              user_2:
+                type: array
+                # x-no-relation: true # it is not required since we only implemented handling of such object for arrays only
+                items:
+                  $ref: '#/components/schemas/User'
+              tags:
+                type: array
+                items:
+                  type: string
+                uniqueItems: true
+              arr_arr_int_2: # [ [1, 2], [3, 4], [5, 6, 7] ]
+                type: array
+                items:
+                  type: array
+                  minItems: 11
+                  items:
+                    type: integer
+              appearance:
+                type: object
+                properties:
+                  height:
+                    type: integer
+                    maximum: 20
+                  weight:
+                    type: integer
+                  email:
+                    type: string
+                    format: email
+                  nested_obj:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      title:
+                        type: string
+                        maxLength: 4
+
+        user_ref_obj_arr_normal: # faker for this won't be generated
+          type: array
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/User'
+
+        user_ref_obj_arr: # special
+          type: array
+          maxItems: 3
+          x-no-relation: true # it is required because this property is not part of any array
+          items:
+            $ref: '#/components/schemas/User'
+
+        one_of_arr:
+          type: array # ["foo", 5, -2, "bar"]
+          maxItems: 8
+          items:
+            oneOf:
+              - type: integer
+              - type: string
+              - type: boolean
+
+        one_of_arr_complex:
+          type: array
+          minItems: 8
+          items:
+            oneOf:
+              - type: integer
+              - type: string
+              - type: boolean
+              - type: array
+              - type: array
+                items:
+                  type: string
+              - type: object
+                properties:
+                  id:
+                    type: integer
+              - type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/Fruit'
+
+        one_of_from_multi_ref_arr:
+          type: array
+          # x-no-relation: true # it is not required since we only implemented handling of oneOf for arrays only
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/Fruit'

@@ -7,8 +7,6 @@
 
 namespace cebe\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\AttributeRelation;
@@ -22,7 +20,6 @@ use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Yii;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function explode;
 use function strpos;
 use function strtolower;
@@ -220,7 +217,13 @@ class AttributeResolver
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
         }
         $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
+
+        if (!empty($property->getAttr(CustomSpecAttr::NO_RELATION))) {
+            $this->attributes[$property->getName()] = $attribute->setFakerStub($this->guessFakerStub($attribute, $property));
+        }
+
         $attribute->setRequired($isRequired)
+                  ->setPhpType($property->guessPhpType())
                   ->setDescription($property->getAttr('description', ''))
                   ->setReadOnly($property->isReadonly())
                   ->setDefault($property->guessDefault())
@@ -228,7 +231,8 @@ class AttributeResolver
                   ->setXDbDefaultExpression($property->getAttr(CustomSpecAttr::DB_DEFAULT_EXPRESSION))
                   ->setNullable($nullableValue)
                   ->setIsPrimary($property->isPrimaryKey())
-                  ->setForeignKeyColumnName($property->fkColName);
+                  ->setForeignKeyColumnName($property->fkColName)
+                  ->setFakerStub($this->guessFakerStub($attribute, $property));
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
@@ -262,7 +266,8 @@ class AttributeResolver
                       ->setSize($fkProperty->getMaxLength())
                       ->setDescription($property->getRefSchema()->getDescription())
                       ->setDefault($fkProperty->guessDefault())
-                      ->setLimits($min, $max, $fkProperty->getMinLength());
+                      ->setLimits($min, $max, $fkProperty->getMinLength())
+                      ->setFakerStub($this->guessFakerStub($attribute, $property));
 
             $relation = Yii::createObject(
                 AttributeRelation::class,

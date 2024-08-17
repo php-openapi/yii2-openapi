@@ -7,29 +7,27 @@
 
 namespace cebe\yii2openapi\lib\openapi;
 
-use yii\db\ColumnSchema;
-use cebe\yii2openapi\generator\ApiGenerator;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
-use cebe\yii2openapi\lib\items\Attribute;
-use yii\base\NotSupportedException;
 use BadMethodCallException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use Throwable;
 use Yii;
+use yii\base\NotSupportedException;
+use yii\db\ColumnSchema;
+use yii\db\mysql\Schema as MySqlSchema;
+use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\db\Schema as YiiDbSchema;
 use yii\helpers\Inflector;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function is_int;
 use function strpos;
-use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class PropertySchema
 {
@@ -410,8 +408,6 @@ class PropertySchema
                 return 'bool';
             case 'number': // can be double and float
                 return $this->getAttr('format') === 'double' ? 'double' : 'float';
-//            case 'array':
-//                return $property->type;
             default:
                 return $this->getAttr('type', 'string');
         }

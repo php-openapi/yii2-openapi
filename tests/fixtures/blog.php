@@ -117,9 +117,11 @@ return [
                 ->setDescription('The User')
                 ->setFakerStub('$faker->randomElement(\app\models\User::find()->select("id")->column())'),
             'message' => (new Attribute('message', ['phpType' => 'array', 'dbType' => 'json', 'xDbType' => 'json']))
-                ->setRequired()->setDefault([])->setFakerStub('["a" => "b"]'),
+                ->setRequired()->setDefault([])->setFakerStub('$faker->words()'),
             'meta_data' => (new Attribute('meta_data', ['phpType' => 'array', 'dbType' => 'json', 'xDbType' => 'json']))
-                ->setDefault([])->setFakerStub('[]'),
+                ->setDefault([])->setFakerStub('array_map(function () use ($faker, $uniqueFaker) {
+            return $faker->words();
+        }, range(1, 4))'),
             'created_at' => (new Attribute('created_at',['phpType' => 'int', 'dbType' => 'integer']))
                 ->setRequired()->setFakerStub('$faker->unixTime'),
         ],

@@ -37,7 +37,7 @@ class PristineFaker extends BaseModelFaker
         $model->col_5 = $faker->randomFloat();
         $model->col_6 = $faker->randomFloat();
         $model->col_7 = $faker->randomFloat();
-        $model->col_8 = [];
+        $model->col_8 = $faker->words();
         $model->col_9 = $faker->sentence;
         $model->col_10 = $faker->sentence;
         $model->col_11 = $faker->sentence;

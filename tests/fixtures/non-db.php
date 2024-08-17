@@ -21,7 +21,7 @@ return [
             'catsCount' => (new Attribute('catsCount', ['phpType' => 'int', 'dbType' => 'integer'])),
             'summary' => (new Attribute('summary', ['phpType' => 'string', 'dbType' => 'text'])),
             'parentPet' => (new Attribute('parentPet', ['phpType' => 'int', 'dbType' => 'bigint']))
-                ->asReference('Pet')->setDescription('A Pet'),
+                ->asReference('Pet')->setDescription('A Pet')->setFakerStub('$faker->randomElement(\app\models\Pet::find()->select("id")->column())'),
         ],
         'relations' => [
             'parentPet' => new AttributeRelation('parentPet', 'pets', 'Pet', 'hasOne', ['id' => 'parentPet_id']),

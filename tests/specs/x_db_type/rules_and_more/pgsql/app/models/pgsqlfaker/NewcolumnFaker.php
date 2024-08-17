@@ -35,12 +35,12 @@ class NewcolumnFaker extends BaseModelFaker
         $model->first_name = $faker->sentence;
         $model->last_name = $faker->sentence;
         $model->dec_col = $faker->randomFloat();
-        $model->json_col = [];
+        $model->json_col = $faker->words();
         $model->varchar_col = $faker->sentence;
         $model->numeric_col = $faker->randomFloat();
-        $model->json_col_def_n = [];
-        $model->json_col_def_n_2 = [];
-        $model->text_col_array = [];
+        $model->json_col_def_n = $faker->words();
+        $model->json_col_def_n_2 = $faker->words();
+        $model->text_col_array = $faker->words();
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {
