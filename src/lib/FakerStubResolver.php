@@ -105,18 +105,21 @@ class FakerStubResolver
         } elseif ($this->attribute->phpType === 'array' ||
             substr($this->attribute->phpType, -2) === '[]') {
             $result = $this->fakeForArray($this->property->getProperty());
+            if ($result !== '$faker->words()') { # example for array will only work with a list/`$faker->words()`
+                return $result;
+            }
         } elseif ($this->attribute->phpType === 'object') {
             $result = $this->fakeForObject($this->property->getProperty());
         } else {
             return null;
         }
 
-        if (!$this->property->hasAttr('example')) {
+        if (!$this->property->hasAttr('example') ||
+            $this->property->getAttr('uniqueItems')
+        ) {
             return $result;
         }
-        if (stripos($result, 'uniqueFaker') !== false) {
-            return $result;
-        }
+
         $example = $this->property->getAttr('example');
         $example = VarExporter::export($example);
         return str_replace('$faker->', '$faker->optional(0.92, ' . $example . ')->', $result);
@@ -277,8 +280,6 @@ class FakerStubResolver
             $uniqueItems = $property->uniqueItems;
         }
 
-        // TODO consider example of OpenAPI spec
-
         /** @var Schema|Reference|null $items */
         $items = $property->items;
 
@@ -308,13 +309,6 @@ class FakerStubResolver
             return $this->wrapInArray($result, $uniqueItems, $count);
         }
 
-        // TODO more complex type array/object; also consider $ref; may be recursively; may use `oneOf`
-
-//        return '$faker->words()'; // TODO implement faker for array; also consider min, max, unique
-
-//        if ($this->attribute->required) {
-//            return '["a" => "b"]'; // TODO this is incorrect, array schema should be checked first
-//        }
         return '[]';
     }
 
@@ -383,7 +377,8 @@ class FakerStubResolver
 
     public function arbitraryArray(): string
     {
-        return '$faker->words()';
+        $theFaker = $this->property->getAttr('uniqueItems') ? '$uniqueFaker' : '$faker';
+        return $theFaker . '->words()';
     }
 
     /**

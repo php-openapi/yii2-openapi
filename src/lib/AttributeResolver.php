@@ -218,7 +218,7 @@ class AttributeResolver
         }
         $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
 
-        if (!empty($property->getAttr(CustomSpecAttr::NO_RELATION))) { // TODO custom attr
+        if (!empty($property->getAttr(CustomSpecAttr::NO_RELATION))) {
             $this->attributes[$property->getName()] = $attribute->setFakerStub($this->guessFakerStub($attribute, $property));
         }
 

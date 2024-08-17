@@ -52,8 +52,8 @@ components:
           items: { } # array of arbitrary types e.g. [ "hello", -2, true, [5.7], {"id": 5} ]
           minItems: 6
           maxItems: 10
-          uniqueItems: true
-          # example: ['long-tail', 'short-tail', 'black', 'white']
+          # uniqueItems: true
+          example: [ 'long-tail', 'short-tail', 'black', 'white' ]
         number_arr:
           type: array
           items:
@@ -68,6 +68,8 @@ components:
 
         int_arr:
           type: array
+          #          uniqueItems: true
+          example: [ 4, 5 ]
           items:
             type: integer
 
@@ -158,6 +160,9 @@ components:
                     properties:
                       id:
                         type: integer
+                      title:
+                        type: string
+                        maxLength: 4
 
         user_ref_obj_arr_normal: # faker for this won't be generated
           type: array

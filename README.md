@@ -314,7 +314,7 @@ Provide custom database table column name in case of relationship column. This w
 ### `x-no-relation`
 
 To differentiate a component schema property from one-to-many or many-to-many relation in favour of array(json) of
-related objects, `x-no-relation` is used.
+related objects, `x-no-relation` (type: boolean, default: false) is used.
 
 ```yaml
         comments:
