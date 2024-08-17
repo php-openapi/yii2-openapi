@@ -364,20 +364,14 @@ class IssueFixTest extends DbTestCase
     // https://github.com/php-openapi/yii2-openapi/issues/20
     public function test20ConsiderOpenApiSpecExamplesInFakeCodeGeneration()
     {
-//        $faker = \Faker\Factory::create();
-//        $uniqueFaker = $faker->unique();
-//
-//        var_dump();
-//        return;
-
         $testFile = Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/index.php");
         $this->runGenerator($testFile);
-//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-//            'recursive' => true,
-//        ]);
-//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/mysql"), [
-//            'recursive' => true,
-//        ]);
-//        $this->checkFiles($actualFiles, $expectedFiles); // TODO
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
