@@ -323,7 +323,7 @@ related objects, `x-no-relation` (type: boolean, default: false) is used.
             $ref: "#/components/schemas/Comment"
 ```
 
-This will not generate 'comments' column in database migrations. But it will generate `getComments()` relation in model.
+This will not generate 'comments' column in database migrations. But it will generate `getComments()` relation in Yii model file.
 
 In order to make it real database column, extension `x-no-relation` can be used.
 
@@ -348,7 +348,7 @@ Now if the Comment schema from the above example is
           type: string
 ```
 
-then the value can be
+then the value for `comments` can be
 
 ```json
 [
@@ -363,7 +363,7 @@ then the value can be
 ]
 ```
 
-At this moment, `x-no-relation` can be only used with OpenAPI schema data type `array`.
+`x-no-relation` can be only used with OpenAPI schema data type `array`.
 
 ## Many-to-Many relation definition
 
