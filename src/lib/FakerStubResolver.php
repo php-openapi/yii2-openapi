@@ -421,7 +421,7 @@ class FakerStubResolver
         // If you intend to use this method from out of `fakeForArray()` context then below condition should be changed depending on your use case
         // Also see OpenAPI extension `x-no-relation` in README.md
         if (!empty($compoSchemaData['properties'][$columnName]['items']['$ref'])) {
-            $compoSchemaData['properties'][$columnName]['x-no-relation'] = true;
+            $compoSchemaData['properties'][$columnName][CustomSpecAttr::NO_RELATION] = true;
         }
 
         $schema = new Schema($compoSchemaData);

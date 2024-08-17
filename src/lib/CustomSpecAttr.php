@@ -44,5 +44,5 @@ class CustomSpecAttr
     /**
      * Foreign key column name. See README for usage docs
      */
-//    public const FK_COLUMN_NAME = 'x-fk-column-name';
+    public const NO_RELATION = 'x-no-relation';
 }
