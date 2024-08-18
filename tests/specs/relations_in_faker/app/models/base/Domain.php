@@ -24,10 +24,10 @@ abstract class Domain extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'required' => [['name', 'account_id'], 'required'],
             'account_id_integer' => [['account_id'], 'integer'],
             'account_id_exist' => [['account_id'], 'exist', 'targetRelation' => 'Account'],
             'name_string' => [['name'], 'string', 'max' => 128],
+            'required' => [['name', 'account_id'], 'required'],
         ];
     }
 

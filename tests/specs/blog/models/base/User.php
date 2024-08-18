@@ -25,7 +25,6 @@ abstract class User extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['username', 'email', 'password', 'role', 'created_at'], 'trim'],
-            'required' => [['username', 'email', 'password'], 'required'],
             'username_unique' => [['username'], 'unique'],
             'email_unique' => [['email'], 'unique'],
             'username_string' => [['username'], 'string', 'max' => 200],
@@ -37,6 +36,7 @@ abstract class User extends \yii\db\ActiveRecord
             'flags_integer' => [['flags'], 'integer'],
             'flags_default' => [['flags'], 'default', 'value' => 0],
             'created_at_datetime' => [['created_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
+            'required' => [['username', 'email', 'password'], 'required'],
         ];
     }
 }

@@ -26,7 +26,6 @@ abstract class Comment extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['message', 'meta_data', 'created_at'], 'trim'],
-            'required' => [['post_id', 'message', 'created_at'], 'required'],
             'post_id_integer' => [['post_id'], 'integer'],
             'post_id_exist' => [['post_id'], 'exist', 'targetRelation' => 'Post'],
             'user_id_integer' => [['user_id'], 'integer'],
@@ -35,6 +34,7 @@ abstract class Comment extends \yii\db\ActiveRecord
             'meta_data_string' => [['meta_data'], 'string', 'min' => 1, 'max' => 300],
             'meta_data_default' => [['meta_data'], 'default', 'value' => ''],
             'created_at_datetime' => [['created_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
+            'required' => [['post_id', 'message', 'created_at'], 'required'],
         ];
     }
 

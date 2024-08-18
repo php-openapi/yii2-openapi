@@ -28,7 +28,6 @@ abstract class Post extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['title', 'slug', 'created_at'], 'trim'],
-            'required' => [['title', 'category_id', 'active'], 'required'],
             'category_id_integer' => [['category_id'], 'integer'],
             'category_id_exist' => [['category_id'], 'exist', 'targetRelation' => 'Category'],
             'created_by_id_integer' => [['created_by_id'], 'integer'],
@@ -40,6 +39,7 @@ abstract class Post extends \yii\db\ActiveRecord
             'active_boolean' => [['active'], 'boolean'],
             'active_default' => [['active'], 'default', 'value' => false],
             'created_at_date' => [['created_at'], 'date', 'format' => 'php:Y-m-d'],
+            'required' => [['title', 'category_id', 'active'], 'required'],
         ];
     }
 

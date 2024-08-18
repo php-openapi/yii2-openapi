@@ -1,0 +1,35 @@
+openapi: 3.0.3
+
+info:
+  title: 'Bug: rules() "required" is generated before "*_default" #22'
+  version: 1.0.0
+
+components:
+  schemas:
+    Account:
+      description: Account
+      type: object
+      required:
+        - id
+        - name
+        - verified
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          description: account name
+          type: string
+          maxLength: 128
+        paymentMethodName:
+          type: string
+        verified:
+            type: boolean
+            default: false
+
+paths:
+  '/account':
+    get:
+      responses:
+        '200':
+          description: Account info

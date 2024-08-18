@@ -26,8 +26,8 @@ abstract class Photo extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['filename'], 'trim'],
-            'required' => [['filename'], 'required'],
             'filename_string' => [['filename'], 'string'],
+            'required' => [['filename'], 'required'],
         ];
     }
 
