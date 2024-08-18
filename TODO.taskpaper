@@ -3,7 +3,7 @@ TODO.taskpaper
 ### Bug: rules() "required" is generated before "*_default" #22
  ✔ create failing test @done (24-08-18 19:21)
  ✔ implement the solution @done (24-08-18 19:21)
- ☐ fix failing tests if any
+ ✔ fix failing tests if any @done (24-08-18 19:39)
  ☐ resolve TODOs if any
  ☐ review PR
  ☐ delete this file and submit PR

@@ -101,7 +101,6 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         foreach ($actual as $file) {
             $expectedFile = str_replace('@app', substr($testFile, 0, -4), $file);
             $actualFile = str_replace('@app', Yii::getAlias('@app'), $file);
-            // exec('cp '.$actualFile.' '.$expectedFile);
             $this->checkFiles([$actualFile], [$expectedFile]);
         }
     }
