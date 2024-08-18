@@ -39,42 +39,6 @@ components:
         user:
           $ref: '#/components/schemas/User'
 
-    Contact:
-      description: Contact
-      type: object
-      required:
-        - id
-        - account
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        account:
-          $ref: '#/components/schemas/Account'
-        active:
-          type: boolean
-          default: false
-        nickname:
-          type: string
-
-    PaymentMethod:
-      type: object
-      description: PaymentMethod
-      x-indexes:
-        - 'unique:name'
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        name:
-          type: string
-          example: Bank transfer within 14 days
-          maxLength: 150
-          x-faker: false
-
 paths:
   '/account':
     get:
