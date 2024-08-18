@@ -23,12 +23,12 @@ abstract class Contact extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['nickname'], 'trim'],
-            'required' => [['mailing_id'], 'required'],
             'mailing_id_integer' => [['mailing_id'], 'integer'],
             'mailing_id_exist' => [['mailing_id'], 'exist', 'targetRelation' => 'Mailing'],
             'active_boolean' => [['active'], 'boolean'],
             'active_default' => [['active'], 'default', 'value' => false],
             'nickname_string' => [['nickname'], 'string'],
+            'required' => [['mailing_id'], 'required'],
         ];
     }
 

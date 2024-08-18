@@ -29,7 +29,6 @@ abstract class Newcolumn extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'first_name', 'last_name', 'varchar_col'], 'trim'],
-            'required' => [['name'], 'required'],
             'name_string' => [['name'], 'string'],
             'first_name_string' => [['first_name'], 'string'],
             'last_name_string' => [['last_name'], 'string'],
@@ -39,6 +38,7 @@ abstract class Newcolumn extends \yii\db\ActiveRecord
             'json_col_def_n_default' => [['json_col_def_n'], 'default', 'value' => []],
             'json_col_def_n_2_default' => [['json_col_def_n_2'], 'default', 'value' => []],
             'safe' => [['json_col', 'json_col_def_n', 'json_col_def_n_2', 'text_col_array'], 'safe'],
+            'required' => [['name'], 'required'],
         ];
     }
 }

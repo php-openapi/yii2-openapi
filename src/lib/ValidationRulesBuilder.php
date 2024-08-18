@@ -10,8 +10,6 @@ namespace cebe\yii2openapi\lib;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ValidationRule;
-use yii\helpers\VarDumper;
-use yii\validators\DateValidator;
 use function count;
 use function implode;
 use function in_array;
@@ -53,9 +51,6 @@ class ValidationRulesBuilder
             $this->rules['trim'] = new ValidationRule($this->typeScope['trim'], 'trim');
         }
 
-        if (!empty($this->typeScope['required'])) {
-            $this->rules['required'] = new ValidationRule($this->typeScope['required'], 'required');
-        }
         if (!empty($this->typeScope['ref'])) {
             $this->addExistRules($this->typeScope['ref']);
         }
@@ -76,6 +71,9 @@ class ValidationRulesBuilder
 
         if (!empty($this->typeScope['safe'])) {
             $this->rules['safe'] = new ValidationRule($this->typeScope['safe'], 'safe');
+        }
+        if (!empty($this->typeScope['required'])) {
+            $this->rules['required'] = new ValidationRule($this->typeScope['required'], 'required');
         }
         return $this->rules;
     }

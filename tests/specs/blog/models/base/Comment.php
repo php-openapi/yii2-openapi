@@ -26,7 +26,6 @@ abstract class Comment extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['post_id'], 'trim'],
-            'required' => [['post_id', 'author_id', 'message', 'created_at'], 'required'],
             'post_id_string' => [['post_id'], 'string', 'max' => 128],
             'post_id_exist' => [['post_id'], 'exist', 'targetRelation' => 'Post'],
             'author_id_integer' => [['author_id'], 'integer'],
@@ -35,6 +34,7 @@ abstract class Comment extends \yii\db\ActiveRecord
             'meta_data_default' => [['meta_data'], 'default', 'value' => []],
             'created_at_integer' => [['created_at'], 'integer'],
             'safe' => [['message', 'meta_data'], 'safe'],
+            'required' => [['post_id', 'author_id', 'message', 'created_at'], 'required'],
         ];
     }
 

@@ -31,7 +31,6 @@ abstract class Editcolumn extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'tag', 'first_name', 'string_col', 'str_col_def', 'json_col'], 'trim'],
-            'required' => [['name', 'str_col_def', 'json_col', 'json_col_2'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 254],
             'name_default' => [['name'], 'default', 'value' => 'Horse-2'],
             'tag_string' => [['tag'], 'string'],
@@ -47,6 +46,7 @@ abstract class Editcolumn extends \yii\db\ActiveRecord
             'json_col_def_n_default' => [['json_col_def_n'], 'default', 'value' => []],
             'json_col_def_n_2_default' => [['json_col_def_n_2'], 'default', 'value' => []],
             'safe' => [['json_col_2', 'json_col_def_n', 'json_col_def_n_2', 'text_col_array'], 'safe'],
+            'required' => [['name', 'str_col_def', 'json_col', 'json_col_2'], 'required'],
         ];
     }
 }

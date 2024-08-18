@@ -30,7 +30,6 @@ abstract class Routing extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['path', 'service'], 'trim'],
-            'required' => [['domain_id'], 'required'],
             'domain_id_integer' => [['domain_id'], 'integer'],
             'domain_id_exist' => [['domain_id'], 'exist', 'targetRelation' => 'Domain'],
             'd123_id_integer' => [['d123_id'], 'integer'],
@@ -41,6 +40,7 @@ abstract class Routing extends \yii\db\ActiveRecord
             'ssl_boolean' => [['ssl'], 'boolean'],
             'redirect_to_ssl_boolean' => [['redirect_to_ssl'], 'boolean'],
             'service_string' => [['service'], 'string', 'max' => 255],
+            'required' => [['domain_id'], 'required'],
         ];
     }
 

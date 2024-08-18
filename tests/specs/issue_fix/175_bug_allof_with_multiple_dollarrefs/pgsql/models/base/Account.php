@@ -21,9 +21,9 @@ abstract class Account extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'paymentMethodName'], 'trim'],
-            'required' => [['name'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 128],
             'paymentMethodName_string' => [['paymentMethodName'], 'string'],
+            'required' => [['name'], 'required'],
         ];
     }
 }

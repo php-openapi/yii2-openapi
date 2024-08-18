@@ -20,9 +20,9 @@ abstract class PaymentMethod extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'required' => [['name'], 'required'],
             'name_unique' => [['name'], 'unique'],
             'name_string' => [['name'], 'string', 'max' => 150],
+            'required' => [['name'], 'required'],
         ];
     }
 }

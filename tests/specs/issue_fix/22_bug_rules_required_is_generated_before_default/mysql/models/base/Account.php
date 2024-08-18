@@ -3,18 +3,19 @@
 namespace app\models\base;
 
 /**
- * Mailing
+ * Account
  *
  * @property int $id
- * @property string $name name
+ * @property string $name account name
  * @property string $paymentMethodName
+ * @property bool $verified
  *
  */
-abstract class Mailing extends \yii\db\ActiveRecord
+abstract class Account extends \yii\db\ActiveRecord
 {
     public static function tableName()
     {
-        return '{{%mailings}}';
+        return '{{%accounts}}';
     }
 
     public function rules()
@@ -23,7 +24,9 @@ abstract class Mailing extends \yii\db\ActiveRecord
             'trim' => [['name', 'paymentMethodName'], 'trim'],
             'name_string' => [['name'], 'string', 'max' => 128],
             'paymentMethodName_string' => [['paymentMethodName'], 'string'],
-            'required' => [['name'], 'required'],
+            'verified_boolean' => [['verified'], 'boolean'],
+            'verified_default' => [['verified'], 'default', 'value' => false],
+            'required' => [['name', 'verified'], 'required'],
         ];
     }
 }

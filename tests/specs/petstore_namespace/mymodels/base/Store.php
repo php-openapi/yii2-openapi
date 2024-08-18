@@ -20,8 +20,8 @@ abstract class Store extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'required' => [['name'], 'required'],
             'name_string' => [['name'], 'string'],
+            'required' => [['name'], 'required'],
         ];
     }
 }
