@@ -40,8 +40,7 @@ class AttributeRelation
         ?string $className = null,
         ?string $method = null,
         array   $link = []
-    )
-    {
+    ) {
         $this->name = $name;
         $this->tableName = $tableName;
         $this->className = $className;
