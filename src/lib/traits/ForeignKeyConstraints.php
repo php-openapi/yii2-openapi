@@ -10,16 +10,18 @@ namespace cebe\yii2openapi\lib\traits;
 trait ForeignKeyConstraints
 {
     /**
+     * @var string
      * Contains foreign key constraint
      * @example 'SET NULL'
      * @example 'CASCADE'
      */
-    public string $onDeleteFkConstraint;
+    public $onDeleteFkConstraint;
 
     /**
+     * @var string
      * Contains foreign key constraint
      * @example 'SET NULL'
      * @example 'CASCADE'
      */
-    public string $onUpdateFkConstraint;
+    public $onUpdateFkConstraint;
 }

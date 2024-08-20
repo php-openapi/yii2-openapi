@@ -27,8 +27,10 @@ use const PHP_EOL;
  */
 class DbModel extends BaseObject
 {
-    // primary key attribute name
-    public string $pkName;
+    /**
+     * @var string primary key attribute name
+     */
+    public $pkName;
 
     // model name
     public string $name;
