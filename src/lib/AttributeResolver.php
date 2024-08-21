@@ -35,7 +35,8 @@ class AttributeResolver
     /**
      * @var AttributeRelation[]|array
      */
-    private array $relations = [];
+    public array $relations = [];
+
     /**
      * @var NonDbRelation[]|array
      */
@@ -58,6 +59,11 @@ class AttributeResolver
     private bool $hasMany2Many;
 
     private ?Config $config;
+
+    /**
+     * @var AttributeRelation[]|array
+     */
+    public array $inverseRelations = [];
 
     public function __construct(string $schemaName, ComponentSchema $schema, JunctionSchemas $junctions, ?Config $config = null)
     {
@@ -94,22 +100,7 @@ class AttributeResolver
                 $this->resolveProperty($property, $isRequired, $nullableValue);
             }
         }
-        return Yii::createObject(DbModel::class, [
-            [
-                'pkName' => $this->schema->getPkName(),
-                'name' => $this->schemaName,
-                'tableName' => $this->tableName,
-                'description' => $this->schema->getDescription(),
-                'attributes' => $this->attributes,
-                'relations' => $this->relations,
-                'nonDbRelations' => $this->nonDbRelations,
-                'many2many' => $this->many2many,
-                'indexes' => $this->prepareIndexes($this->schema->getIndexes()),
-                //For valid primary keys for junction tables
-                'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
-                'isNotDb' => $this->schema->isNonDb(),
-            ],
-        ]);
+        return $this->createDbModel();
     }
 
     /**
@@ -258,6 +249,14 @@ class AttributeResolver
                 $relation->asSelfReference();
             }
             $this->relations[$property->getName()] = $relation;
+
+            $inverseRelation = Yii::createObject(
+                AttributeRelation::class,
+                [$this->schemaName, $this->tableName, $this->schemaName]
+            )
+                ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
+            $inverseRelation->setInverse(true);
+            $this->inverseRelations[$relatedClassName] = $inverseRelation;
         }
         if (!$property->isReference() && !$property->hasRefItems()) {
             [$min, $max] = $property->guessMinMax();
@@ -474,5 +473,29 @@ class AttributeResolver
             ->setLimits($min, $max, $fkProperty->getMinLength());
         $this->attributes[$property->getName()] =
             $attribute->setFakerStub($this->guessFakerStub($attribute, $fkProperty));
+    }
+
+    /**
+     * @throws InvalidDefinitionException
+     * @throws InvalidConfigException
+     */
+    public function createDbModel(): DbModel
+    {
+        return Yii::createObject(DbModel::class, [
+            [
+                'pkName' => $this->schema->getPkName(),
+                'name' => $this->schemaName,
+                'tableName' => $this->tableName,
+                'description' => $this->schema->getDescription(),
+                'attributes' => $this->attributes,
+                'relations' => $this->relations,
+                'nonDbRelations' => $this->nonDbRelations,
+                'many2many' => $this->many2many,
+                'indexes' => $this->prepareIndexes($this->schema->getIndexes()),
+                //For valid primary keys for junction tables
+                'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
+                'isNotDb' => $this->schema->isNonDb(),
+            ],
+        ]);
     }
 }

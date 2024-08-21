@@ -103,4 +103,12 @@ abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
 <?php endif;?>
     }
 <?php endforeach; ?>
+<?php foreach ($model->inverseRelations as $relationName => $relation): ?>
+
+    public function get<?= $relation->getCamelName() ?>()
+    {
+    return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
+    echo $relation->linkToString() ?>)->inverseOf('<?= Inflector::variablize($model->getClassName()) ?>');
+    }
+<?php endforeach; ?>
 }

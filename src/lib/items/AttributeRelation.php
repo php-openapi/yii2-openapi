@@ -27,12 +27,14 @@ class AttributeRelation
 
     /**
      * hasOne/hasMany
-     **/
+     */
     private ?string $method;
 
     private array $link;
 
     private bool $selfReference = false;
+
+    private bool $inverse = false;
 
     public function __construct(
         string  $name,
@@ -180,5 +182,16 @@ class AttributeRelation
             [', ', ' => ', ']'],
             preg_replace('~\s+~', '', VarDumper::export($this->getLink()))
         );
+    }
+
+    public function setInverse(bool $inverse): AttributeRelation
+    {
+        $this->inverse = $inverse;
+        return $this;
+    }
+
+    public function getInverse(): bool
+    {
+        return $this->inverse;
     }
 }

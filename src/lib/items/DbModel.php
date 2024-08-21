@@ -51,7 +51,7 @@ class DbModel extends BaseObject
      */
     public array $relations = [];
 
-    /***
+    /**
      * @var array|NonDbRelation[] non-db relations
      */
     public array $nonDbRelations = [];

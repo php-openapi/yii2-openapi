@@ -11,6 +11,7 @@ use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\items\AttributeRelation;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
@@ -79,7 +80,7 @@ class SchemaToDatabase
      */
     public function prepareModels(): array
     {
-        $models = [];
+        $models = $resolvers = [];
         $openApi = $this->config->getOpenApi();
         $junctions = $this->findJunctionSchemas();
         foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
@@ -93,8 +94,23 @@ class SchemaToDatabase
             }
             /**@var AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
-            $models[$schemaName] = $resolver->resolve();
+
+            // $models[$schemaName] = $resolver->resolve();
+            $resolvers[$schemaName] = $resolver;
+            $models[$schemaName] = $resolvers[$schemaName]->resolve();
         }
+
+        // handle inverse relation
+        foreach ($resolvers as $aResolver) {
+            /** @var AttributeResolver $aResolver */
+            if ($aResolver->inverseRelations) {
+                foreach ($aResolver->inverseRelations as $name => $aRelation) {
+                    /** @var AttributeRelation $aRelation */
+                    $models[$name]->inverseRelations[] = $aRelation;
+                }
+            }
+        }
+
         foreach ($models as $model) {
             foreach ($model->many2many as $relation) {
                 if (isset($models[$relation->viaModelName])) {
