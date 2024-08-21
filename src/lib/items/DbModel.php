@@ -28,6 +28,11 @@ use const PHP_EOL;
 class DbModel extends BaseObject
 {
     /**
+     * @var \cebe\openapi\spec\Schema
+    */
+    public $openapiSchema;
+
+    /**
      * @var string primary key attribute name
      */
     public $pkName;

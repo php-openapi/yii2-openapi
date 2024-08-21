@@ -60,7 +60,7 @@ class AttributeResolver
     /**
      * @var ComponentSchema
      */
-    private $schema;
+    private $componentSchema;
 
     /**
      * @var \cebe\yii2openapi\lib\items\JunctionSchemas
@@ -79,7 +79,7 @@ class AttributeResolver
     public function __construct(string $schemaName, ComponentSchema $schema, JunctionSchemas $junctions, ?Config $config = null)
     {
         $this->schemaName = $schemaName;
-        $this->schema = $schema;
+        $this->componentSchema = $schema;
         $this->tableName = $schema->resolveTableName($schemaName);
         $this->junctions = $junctions;
         $this->isJunctionSchema = $junctions->isJunctionSchema($schemaName);
@@ -94,10 +94,10 @@ class AttributeResolver
      */
     public function resolve():DbModel
     {
-        foreach ($this->schema->getProperties() as $property) {
+        foreach ($this->componentSchema->getProperties() as $property) {
             /** @var $property \cebe\yii2openapi\lib\openapi\PropertySchema */
 
-            $isRequired = $this->schema->isRequiredProperty($property->getName());
+            $isRequired = $this->componentSchema->isRequiredProperty($property->getName());
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
             if ($nullableValue === false) { // see docs in README regarding NOT NULL, required and nullable
                 $isRequired = true;
@@ -113,18 +113,20 @@ class AttributeResolver
         }
         return Yii::createObject(DbModel::class, [
             [
-                'pkName' => $this->schema->getPkName(),
+                /** @see \cebe\openapi\spec\Schema */
+                'openapiSchema' => $this->componentSchema->getSchema(),
+                'pkName' => $this->componentSchema->getPkName(),
                 'name' => $this->schemaName,
                 'tableName' => $this->tableName,
-                'description' => $this->schema->getDescription(),
+                'description' => $this->componentSchema->getDescription(),
                 'attributes' => $this->attributes,
                 'relations' => $this->relations,
                 'nonDbRelations' => $this->nonDbRelations,
                 'many2many' => $this->many2many,
-                'indexes' => $this->prepareIndexes($this->schema->getIndexes()),
+                'indexes' => $this->prepareIndexes($this->componentSchema->getIndexes()),
                 //For valid primary keys for junction tables
                 'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
-                'isNotDb' => $this->schema->isNonDb(),
+                'isNotDb' => $this->componentSchema->isNonDb(),
             ],
         ]);
     }
@@ -185,7 +187,7 @@ class AttributeResolver
                     'relatedSchemaName' => $junkAttribute['relatedClassName'],
                     'tableName' => $this->tableName,
                     'relatedTableName' => $junkAttribute['relatedTableName'],
-                    'pkAttribute' => $this->attributes[$this->schema->getPkName()],
+                    'pkAttribute' => $this->attributes[$this->componentSchema->getPkName()],
                     'hasViaModel' => true,
                     'viaModelName' => $viaModel,
                     'viaRelationName' => Inflector::id2camel($junkRef, '_'),
@@ -197,7 +199,7 @@ class AttributeResolver
 
             $this->relations[Inflector::pluralize($junkRef)] =
                 Yii::createObject(AttributeRelation::class, [$junkRef, $junkAttribute['junctionTable'], $viaModel])
-                   ->asHasMany([$junkAttribute['pairProperty'] . '_id' => $this->schema->getPkName()]);
+                   ->asHasMany([$junkAttribute['pairProperty'] . '_id' => $this->componentSchema->getPkName()]);
             return;
         }
 
@@ -328,7 +330,7 @@ class AttributeResolver
                         AttributeRelation::class,
                         [$property->getName(), $relatedTableName, $relatedClassName]
                     )
-                       ->asHasMany([$foreignPk => $this->schema->getPkName()]);
+                       ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
             }
             $relatedClassName = $property->getRefClassName();
@@ -347,10 +349,10 @@ class AttributeResolver
                     AttributeRelation::class,
                     [$property->getName(), $relatedTableName, $relatedClassName]
                 )
-                   ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->schema->getPkName()]);
+                   ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->componentSchema->getPkName()]);
             return;
         }
-        if ($this->schema->isNonDb() && $attribute->isReference()) {
+        if ($this->componentSchema->isNonDb() && $attribute->isReference()) {
             $this->attributes[$property->getName()] = $attribute;
             return;
         }
@@ -398,7 +400,7 @@ class AttributeResolver
                 'relatedSchemaName' => $relatedSchemaName,
                 'tableName' => $this->tableName,
                 'relatedTableName' => $relatedTableName,
-                'pkAttribute' => $this->attributes[$this->schema->getPkName()],
+                'pkAttribute' => $this->attributes[$this->componentSchema->getPkName()],
             ],
         ]);
         $this->many2many[$propertyName] = $relation;
@@ -480,7 +482,7 @@ class AttributeResolver
         $fkProperty = new PropertySchema(
             $property->getRefSchema()->getSchema(),
             $property->getName(),
-            $this->schema
+            $this->componentSchema
         );
         [$min, $max] = $fkProperty->guessMinMax();
         $attribute->setPhpType($fkProperty->guessPhpType())
