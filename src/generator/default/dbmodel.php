@@ -45,6 +45,16 @@ namespace <?= $namespace ?>;
  */
 abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
 {
+<?php if($scenarios = $model->getScenarios()):
+foreach($scenarios as $scenario): ?>
+    /**
+     * <?=$scenario['description']?>
+
+     */
+    public const <?= $scenario['const'] ?> = '<?= $scenario['name'] ?>';
+
+<?php endforeach; ?>
+<?php endif ?>
 <?php if (count($model->virtualAttributes())):?>
     protected $virtualAttributes = ['<?=implode("', '", array_map(function ($attr) {
     return $attr->columnName;

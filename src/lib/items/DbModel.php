@@ -81,6 +81,11 @@ class DbModel extends BaseObject
 
     public $isNotDb = false;
 
+    /**
+     * @var array Automatically generated scenarios from the model 'x-scenarios'.
+     */
+    private array $scenarios;
+
     public function getTableAlias():string
     {
         return '{{%' . $this->tableName . '}}';
@@ -178,4 +183,55 @@ class DbModel extends BaseObject
             return !$attribute->isVirtual;
         });
     }
+
+    /**
+     * @return array
+     */
+    public function getScenarios(): array
+    {
+        if (isset($this->scenarios)) {
+            return $this->scenarios;
+        }
+        $this->scenarios = $this->getScenariosByOpenapiSchema();
+        return $this->scenarios;
+    }
+
+    /**
+     * @return array
+     */
+    private function getScenariosByOpenapiSchema(): array
+    {
+        $x_scenarios = $this->openapiSchema->{'x-scenarios'} ?? [];
+        if (empty($x_scenarios) || !is_array($x_scenarios)) {
+            return [];
+        }
+
+        $uniqueNames = [];
+        $scenarios = array_filter($x_scenarios, function ($scenario) use (&$uniqueNames) {
+            $name = $scenario['name'] ?? '';
+
+            // Check if the name is empty, already used, or does not meet the criteria
+            if (
+                empty($name) ||
+                in_array($name, $uniqueNames) ||
+                !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name)
+            ) {
+                return false; // Exclude this item
+            }
+
+            // Add the name to the uniqueNames array and keep the item
+            $uniqueNames[] = $name;
+            return true;
+        });
+
+        foreach ($scenarios as $key => $scenario) {
+            $scenarios[$key]['const'] = 'SCENARIO_' . strtoupper($scenario['name']);
+            if (empty($scenario['description'])) {
+                $scenarios[$key]['description'] = 'Scenario ' . $scenario['name'];
+            }
+        }
+
+        return $scenarios;
+    }
+
 }
