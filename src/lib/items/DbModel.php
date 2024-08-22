@@ -234,4 +234,25 @@ class DbModel extends BaseObject
         return $scenarios;
     }
 
+    public function getModelClassDescription_()
+    {
+        return !empty($this->description) ?
+            str_replace("\n", "\n *", ' ' . trim($this->description))
+            : ' This is the model class for table "'.$this->tableName.'".';
+    }
+
+    /** @noinspection PhpParamsInspection */
+    public function getModelClassDescription()
+    {
+        if (empty($this->description)) {
+            return ' This is the model class for table "'.$this->tableName.'".';
+        }
+
+        $descriptionArr = explode("\n", $this->description);
+        $descriptionArr = array_map('trim', $descriptionArr);
+        $descriptionArr = array_map(function($item) {
+            return $item !== '' ? ' ' . $item : $item;
+        }, $descriptionArr);
+        return implode("\n *", $descriptionArr);
+    }
 }
