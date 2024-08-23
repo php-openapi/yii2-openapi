@@ -249,14 +249,7 @@ class AttributeResolver
                 $relation->asSelfReference();
             }
             $this->relations[$property->getName()] = $relation;
-
-            $inverseRelation = Yii::createObject(
-                AttributeRelation::class,
-                [$this->schemaName, $this->tableName, $this->schemaName]
-            )
-                ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
-            $inverseRelation->setInverse(true);
-            $this->inverseRelations[$relatedClassName] = $inverseRelation;
+            $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
         }
         if (!$property->isReference() && !$property->hasRefItems()) {
             [$min, $max] = $property->guessMinMax();
@@ -329,7 +322,8 @@ class AttributeResolver
                     AttributeRelation::class,
                     [$property->getName(), $relatedTableName, $relatedClassName]
                 )
-                    ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->schema->getPkName()]);
+                    ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->schema->getPkName()])
+                    ->setInverse(Inflector::variablize($this->schemaName));
             return;
         }
         if ($this->schema->isNonDb() && $attribute->isReference()) {
@@ -497,5 +491,22 @@ class AttributeResolver
                 'isNotDb' => $this->schema->isNonDb(),
             ],
         ]);
+    }
+
+    public function addInverseRelation(
+        string $relatedClassName,
+        Attribute $attribute,
+        PropertySchema $property,
+        PropertySchema $fkProperty
+    ): void
+    {
+        $inverseRelation = Yii::createObject(
+            AttributeRelation::class,
+            [$this->schemaName, $this->tableName, $this->schemaName]
+        )
+            ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
+        $inverseRelation->setInverse($property->getName());
+        $this->inverseRelations[$relatedClassName][] = $inverseRelation;
+
     }
 }

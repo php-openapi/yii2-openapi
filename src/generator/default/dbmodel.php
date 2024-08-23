@@ -87,7 +87,7 @@ abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
     public function get<?= $relation->getCamelName() ?>()
     {
         return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
-            echo $relation->linkToString()?>);
+            echo $relation->linkToString()?>)<?= $relation->getInverse() ? '->inverseOf(\''.$relation->getInverse().'\')' : '' ?>;
     }
 <?php endforeach; ?>
 <?php foreach ($model->many2many as $relation): ?>
@@ -103,12 +103,12 @@ abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
 <?php endif;?>
     }
 <?php endforeach; ?>
-<?php foreach ($model->inverseRelations as $relationName => $relation): ?>
+<?php $i = 1; foreach ($model->inverseRelations as $relationName => $relation): ?>
 
-    public function get<?= $relation->getCamelName() ?>()
+    public function get<?= $relation->getCamelName().($i===1 ? '' : $i) ?>()
     {
-    return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
-    echo $relation->linkToString() ?>)->inverseOf('<?= Inflector::variablize($model->getClassName()) ?>');
+        return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
+    echo $relation->linkToString() ?>)->inverseOf('<?= $relation->getInverse() ?>');
     }
-<?php endforeach; ?>
+<?php $i++; endforeach; ?>
 }

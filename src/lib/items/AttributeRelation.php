@@ -34,7 +34,7 @@ class AttributeRelation
 
     private bool $selfReference = false;
 
-    private bool $inverse = false;
+    private ?string $inverse = null;
 
     public function __construct(
         string  $name,
@@ -184,13 +184,13 @@ class AttributeRelation
         );
     }
 
-    public function setInverse(bool $inverse): AttributeRelation
+    public function setInverse(string $inverse): AttributeRelation
     {
         $this->inverse = $inverse;
         return $this;
     }
 
-    public function getInverse(): bool
+    public function getInverse(): ?string
     {
         return $this->inverse;
     }

@@ -104,9 +104,11 @@ class SchemaToDatabase
         foreach ($resolvers as $aResolver) {
             /** @var AttributeResolver $aResolver */
             if ($aResolver->inverseRelations) {
-                foreach ($aResolver->inverseRelations as $name => $aRelation) {
-                    /** @var AttributeRelation $aRelation */
-                    $models[$name]->inverseRelations[] = $aRelation;
+                foreach ($aResolver->inverseRelations as $name => $relations) {
+                    foreach ($relations as $relation) {
+                        /** @var AttributeRelation $relation */
+                        $models[$name]->inverseRelations[] = $relation;
+                    }
                 }
             }
         }

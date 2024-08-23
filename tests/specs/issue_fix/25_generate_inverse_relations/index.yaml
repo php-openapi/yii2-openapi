@@ -19,6 +19,10 @@ components:
         name:
           type: string
           maxLength: 128
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
 
     Account:
       description: Account
@@ -38,6 +42,12 @@ components:
           type: string
         user:
           $ref: '#/components/schemas/User'
+        user2: # copy of user (not one to many)
+          $ref: '#/components/schemas/User'
+        user3: # copy of user (not one to many)
+          allOf:
+            - $ref: '#/components/schemas/User'
+            - x-fk-column-name: user3
 
 paths:
   '/account':
