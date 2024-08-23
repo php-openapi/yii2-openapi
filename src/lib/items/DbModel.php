@@ -7,6 +7,7 @@
 
 namespace cebe\yii2openapi\lib\items;
 
+use cebe\yii2openapi\lib\helpers\FormatHelper;
 use cebe\yii2openapi\lib\ValidationRulesBuilder;
 use Yii;
 use yii\base\BaseObject;
@@ -234,25 +235,14 @@ class DbModel extends BaseObject
         return $scenarios;
     }
 
-    public function getModelClassDescription_()
-    {
-        return !empty($this->description) ?
-            str_replace("\n", "\n *", ' ' . trim($this->description))
-            : ' This is the model class for table "'.$this->tableName.'".';
-    }
-
-    /** @noinspection PhpParamsInspection */
-    public function getModelClassDescription()
+    /**
+     * @return string
+     */
+    public function getModelClassDescription(): string
     {
         if (empty($this->description)) {
             return ' This is the model class for table "'.$this->tableName.'".';
         }
-
-        $descriptionArr = explode("\n", $this->description);
-        $descriptionArr = array_map('trim', $descriptionArr);
-        $descriptionArr = array_map(function($item) {
-            return $item !== '' ? ' ' . $item : $item;
-        }, $descriptionArr);
-        return implode("\n *", $descriptionArr);
+        return FormatHelper::getFormattedDescription($this->description);
     }
 }

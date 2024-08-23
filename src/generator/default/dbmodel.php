@@ -22,7 +22,7 @@ namespace <?= $namespace ?>;
 
  *
 <?php foreach ($model->dbAttributes() as $attribute): ?>
- * @property <?= $attribute->getFormattedDescription() ?>
+ * @property <?= $attribute->getPropertyAnnotation() ?>
 
 <?php endforeach; ?>
  *
