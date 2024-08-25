@@ -7,6 +7,7 @@
 
 namespace cebe\yii2openapi\generator;
 
+use cebe\yii2openapi\lib\items\DbModel;
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
@@ -132,6 +133,15 @@ class ApiGenerator extends Generator
      * @var array List of model names to exclude.
      */
     public $excludeModels = [];
+
+    /**
+     * @var array Map for custom dbModels
+     * @example
+     *  'dbModel' => [
+     *      'scenarioDefaultDescription' => " Scenario {name}",     @see DbModel::$scenarioDefaultDescription
+     *  ]
+     */
+    public $dbModel = [];
 
     /**
      * @var array Map for custom controller names not based on model name for exclusive cases
