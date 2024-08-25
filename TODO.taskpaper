@@ -1,8 +1,8 @@
 TODO.taskpaper
 
 ### Generate inverse relations #25
- ☐ create failing test
- ☐ implement the solution
+ ✔ create failing test @done (24-08-25 15:25)
+ ✔ implement the solution @done (24-08-25 15:25)
  ☐ fix failing tests if any
  ☐ resolve TODOs if any
  ☐ review PR

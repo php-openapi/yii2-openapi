@@ -80,7 +80,12 @@ class SchemaToDatabase
      */
     public function prepareModels(): array
     {
-        $models = $resolvers = [];
+        /** @var DbModel[] $models */
+        $models = [];
+
+        /** @var AttributeResolver[] $resolvers */
+        $resolvers = [];
+
         $openApi = $this->config->getOpenApi();
         $junctions = $this->findJunctionSchemas();
         foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
@@ -102,13 +107,10 @@ class SchemaToDatabase
 
         // handle inverse relation
         foreach ($resolvers as $aResolver) {
-            /** @var AttributeResolver $aResolver */
-            if ($aResolver->inverseRelations) {
-                foreach ($aResolver->inverseRelations as $name => $relations) {
-                    foreach ($relations as $relation) {
-                        /** @var AttributeRelation $relation */
-                        $models[$name]->inverseRelations[] = $relation;
-                    }
+            foreach ($aResolver->inverseRelations as $name => $relations) {
+                foreach ($relations as $relation) {
+                    /** @var AttributeRelation $relation */
+                    $models[$name]->inverseRelations[] = $relation;
                 }
             }
         }

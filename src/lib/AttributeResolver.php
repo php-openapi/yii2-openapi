@@ -100,7 +100,23 @@ class AttributeResolver
                 $this->resolveProperty($property, $isRequired, $nullableValue);
             }
         }
-        return $this->createDbModel();
+
+        return Yii::createObject(DbModel::class, [
+            [
+                'pkName' => $this->schema->getPkName(),
+                'name' => $this->schemaName,
+                'tableName' => $this->tableName,
+                'description' => $this->schema->getDescription(),
+                'attributes' => $this->attributes,
+                'relations' => $this->relations,
+                'nonDbRelations' => $this->nonDbRelations,
+                'many2many' => $this->many2many,
+                'indexes' => $this->prepareIndexes($this->schema->getIndexes()),
+                //For valid primary keys for junction tables
+                'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
+                'isNotDb' => $this->schema->isNonDb(),
+            ],
+        ]);
     }
 
     /**
@@ -472,29 +488,8 @@ class AttributeResolver
     }
 
     /**
-     * @throws InvalidDefinitionException
      * @throws InvalidConfigException
      */
-    public function createDbModel(): DbModel
-    {
-        return Yii::createObject(DbModel::class, [
-            [
-                'pkName' => $this->schema->getPkName(),
-                'name' => $this->schemaName,
-                'tableName' => $this->tableName,
-                'description' => $this->schema->getDescription(),
-                'attributes' => $this->attributes,
-                'relations' => $this->relations,
-                'nonDbRelations' => $this->nonDbRelations,
-                'many2many' => $this->many2many,
-                'indexes' => $this->prepareIndexes($this->schema->getIndexes()),
-                //For valid primary keys for junction tables
-                'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
-                'isNotDb' => $this->schema->isNonDb(),
-            ],
-        ]);
-    }
-
     public function addInverseRelation(
         string $relatedClassName,
         Attribute $attribute,
