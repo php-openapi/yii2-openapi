@@ -233,7 +233,7 @@ class DbModel extends BaseObject
         });
 
         foreach ($scenarios as $key => $scenario) {
-            $scenarios[$key]['const'] = 'SCENARIO_' . strtoupper($scenario['name']);
+            $scenarios[$key]['const'] = 'SCENARIO_' . strtoupper(implode('_', preg_split('/(?=[A-Z])/', $scenario['name'])));
             $scenarios[$key]['description'] = FormatHelper::getFormattedDescription(
             !empty($scenario['description']) ?
                 $scenario['description']
