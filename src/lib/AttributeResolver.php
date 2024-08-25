@@ -249,7 +249,9 @@ class AttributeResolver
                 $relation->asSelfReference();
             }
             $this->relations[$property->getName()] = $relation;
-            $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
+            if (!$property->isRefPointerToSelf()) {
+                $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
+            }
         }
         if (!$property->isReference() && !$property->hasRefItems()) {
             [$min, $max] = $property->guessMinMax();
@@ -498,8 +500,7 @@ class AttributeResolver
         Attribute $attribute,
         PropertySchema $property,
         PropertySchema $fkProperty
-    ): void
-    {
+    ): void {
         $inverseRelation = Yii::createObject(
             AttributeRelation::class,
             [$this->schemaName, $this->tableName, $this->schemaName]
@@ -507,6 +508,5 @@ class AttributeResolver
             ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
         $inverseRelation->setInverse($property->getName());
         $this->inverseRelations[$relatedClassName][] = $inverseRelation;
-
     }
 }
