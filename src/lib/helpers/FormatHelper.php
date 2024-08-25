@@ -5,15 +5,16 @@ namespace cebe\yii2openapi\lib\helpers;
 class FormatHelper
 {
     /**
-     * @param $description
+     * @param string $description
+     * @param int $spacing
      * @return string
      */
-    public static function getFormattedDescription($description): string
+    public static function getFormattedDescription(string $description, int $spacing = 1): string
     {
         $descriptionArr = explode("\n", trim($description));
-        $descriptionArr = array_map(function($item) {
-            return $item !== '' ? ' ' . $item : $item;
+        $descriptionArr = array_map(function ($item) {
+            return $item === '' ? '' : ' ' . $item;
         }, $descriptionArr);
-        return implode("\n *", $descriptionArr);
+        return implode("\n".str_repeat(" ", $spacing)."*", $descriptionArr);
     }
 }

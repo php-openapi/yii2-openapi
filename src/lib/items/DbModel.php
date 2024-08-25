@@ -227,9 +227,9 @@ class DbModel extends BaseObject
 
         foreach ($scenarios as $key => $scenario) {
             $scenarios[$key]['const'] = 'SCENARIO_' . strtoupper($scenario['name']);
-            if (empty($scenario['description'])) {
-                $scenarios[$key]['description'] = 'Scenario ' . $scenario['name'];
-            }
+            $scenarios[$key]['description'] = !empty($scenario['description']) ?
+                FormatHelper::getFormattedDescription($scenario['description'], 5)
+                : ' Scenario ' . $scenario['name'];
         }
 
         return $scenarios;

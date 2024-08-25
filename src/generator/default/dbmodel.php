@@ -52,7 +52,7 @@ abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
 <?php if($scenarios = $model->getScenarios()):
 foreach($scenarios as $scenario): ?>
     /**
-     * <?= $scenario['description'] ?>
+     *<?= $scenario['description'] ?>
 
      */
     public const <?= $scenario['const'] ?> = '<?= $scenario['name'] ?>';
