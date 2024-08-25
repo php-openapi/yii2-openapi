@@ -90,9 +90,9 @@ class DbModel extends BaseObject
     /**
      * @var string
      * Here, you can set your own default description for the scenario.
-     * You can use the {name} attribute from the schema for the YAML model.
+     * AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
      */
-    public string $scenarioDefaultDescription = " Scenario {name}";
+    public string $scenarioDefaultDescription = " Scenario {scenarioName}";
 
     public function getTableAlias():string
     {
@@ -237,8 +237,15 @@ class DbModel extends BaseObject
             $scenarios[$key]['description'] = FormatHelper::getFormattedDescription(
             !empty($scenario['description']) ?
                 $scenario['description']
-                : str_replace('{name}', $scenario['name'], $this->scenarioDefaultDescription
-            ),
+                : str_replace([
+                    '{scenarioName}',
+                    '{scenarioConst}',
+                    '{modelName}',
+                ], [
+                    $scenario['name'],
+                    $scenarios[$key]['const'],
+                    $this->name,
+                ], $this->scenarioDefaultDescription),
             5);
         }
 

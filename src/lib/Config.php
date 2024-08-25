@@ -113,7 +113,8 @@ class Config extends BaseObject
      * @var array Map for custom dbModels
      * @example
      *  'dbModel' => [
-     *      'scenarioDefaultDescription' => " Scenario {name}",             @see DbModel::$scenarioDefaultDescription
+     *      AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
+     *      'scenarioDefaultDescription' => " Scenario {scenarioName}",     @see DbModel::$scenarioDefaultDescription
      *  ]
      */
     public $dbModel = [];
