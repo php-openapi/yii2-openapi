@@ -125,8 +125,6 @@ class SchemaToDatabase
             }
         }
 
-        // TODO generate inverse relations
-
         return $models;
     }
 
