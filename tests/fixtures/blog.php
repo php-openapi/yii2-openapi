@@ -48,7 +48,7 @@ return [
                 ->setRequired()->setDefault(false)->setFakerStub('$faker->boolean'),
         ],
         'relations' => [
-            'posts' => new AttributeRelation('posts', 'blog_posts', 'Post', 'hasMany', ['category_id' => 'id']),
+            'posts' => (new AttributeRelation('posts', 'blog_posts', 'Post', 'hasMany', ['category_id' => 'id']))->setInverse('category'),
         ],
         'indexes' => [
             'categories_active_index' => DbIndex::make('categories', ['active']),
@@ -88,7 +88,7 @@ return [
                 'hasOne',
                 ['id' => 'category_id']),
             'created_by' => new AttributeRelation('created_by', 'users', 'User', 'hasOne', ['id' => 'created_by_id']),
-            'comments' => new AttributeRelation('comments', 'post_comments', 'Comment', 'hasMany', ['post_id' => 'uid']),
+            'comments' => (new AttributeRelation('comments', 'post_comments', 'Comment', 'hasMany', ['post_id' => 'uid']))->setInverse('post'),
         ],
         'indexes' => [
             'blog_posts_title_key' => DbIndex::make('blog_posts', ['title'], null, true),
