@@ -1,9 +1,9 @@
 TODO.taskpaper
 
 ### Add validation rules by attribute name or pattern #30
- ☐ create failing test
- ☐ implement the solution
- ☐ fix failing tests if any
- ☐ resolve TODOs if any
+ ✔ create failing test @done (24-08-26 18:13)
+ ✔ implement the solution @done (24-08-26 18:13)
+ ✔ fix failing tests if any @done (24-08-26 18:13)
+ ✔ resolve TODOs if any @done (24-08-26 18:13)
  ☐ review PR
  ☐ delete this file and submit PR

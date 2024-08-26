@@ -360,4 +360,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/30
+    public function test30AddValidationRulesByAttributeNameOrPattern()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/index.php");
+        $this->runGenerator($testFile);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/mysql"), [
+//            'recursive' => true,
+//        ]);
+//        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
