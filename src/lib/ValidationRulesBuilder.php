@@ -151,7 +151,6 @@ class ValidationRulesBuilder
         foreach ($patterns as $pattern => $validator) {
             if (empty($attribute->reference) # ignore column name based rules in case of reference/relation # https://github.com/cebe/yii2-openapi/issues/159
                 && preg_match($pattern, strtolower($attribute->columnName))) {
-
                 if (in_array($validator, ['image', 'file'], true)) {
                     if ($attribute->dbType === 'binary') {
                         $addRule($attribute, $validator);

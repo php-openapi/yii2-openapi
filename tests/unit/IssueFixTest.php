@@ -366,12 +366,12 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/index.php");
         $this->runGenerator($testFile);
-//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-//            'recursive' => true,
-//        ]);
-//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/mysql"), [
-//            'recursive' => true,
-//        ]);
-//        $this->checkFiles($actualFiles, $expectedFiles);
+       $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+           'recursive' => true,
+       ]);
+       $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/mysql"), [
+           'recursive' => true,
+       ]);
+       $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
