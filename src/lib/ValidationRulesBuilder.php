@@ -134,7 +134,6 @@ class ValidationRulesBuilder
 
     private function addRulesByAttributeName(Attribute $attribute):void
     {
-        //@TODO: probably also patterns for file, image
         $patterns = [
             '~e?mail~i' => 'email',
             '~(url|site|website|href|link)~i' => 'url',
