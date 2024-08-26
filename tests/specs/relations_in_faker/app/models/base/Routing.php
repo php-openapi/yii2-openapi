@@ -3,7 +3,7 @@
 namespace app\models\base;
 
 /**
- * rounting specification
+ * routing specification
  *
  * @property int $id
  * @property int $domain_id domain

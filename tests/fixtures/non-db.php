@@ -25,7 +25,7 @@ return [
         ],
         'relations' => [
             'parentPet' => new AttributeRelation('parentPet', 'pets', 'Pet', 'hasOne', ['id' => 'parentPet_id']),
-            'favoritePets' => new AttributeRelation('favoritePets', 'pets', 'Pet', 'hasMany', ['pet_statistic_id' => 'id']),
+            'favoritePets' => (new AttributeRelation('favoritePets', 'pets', 'Pet', 'hasMany', ['pet_statistic_id' => 'id']))->setInverse('petStatistic'),
         ],
         'nonDbRelations' => [
             'topDoctors' => new NonDbRelation('topDoctors', 'Doctor', 'hasMany'),

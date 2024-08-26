@@ -26,4 +26,9 @@ abstract class Account extends \yii\db\ActiveRecord
             'paymentMethodName_string' => [['paymentMethodName'], 'string'],
         ];
     }
+
+    public function getContact()
+    {
+        return $this->hasOne(\app\models\Contact::class, ['account_id' => 'id'])->inverseOf('account');
+    }
 }
