@@ -92,7 +92,7 @@ class DbModel extends BaseObject
      * Here, you can set your own default description for the scenario.
      * AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
      */
-    public string $scenarioDefaultDescription = " Scenario {scenarioName}";
+    public string $scenarioDefaultDescription = "Scenario {scenarioName}";
 
     public function getTableAlias():string
     {
@@ -234,10 +234,10 @@ class DbModel extends BaseObject
 
         foreach ($scenarios as $key => $scenario) {
             $scenarios[$key]['const'] = 'SCENARIO_' . strtoupper(implode('_', preg_split('/(?=[A-Z])/', $scenario['name'])));
+            $description = !empty($scenario['description']) ?
+                $scenario['description'] : $this->scenarioDefaultDescription;
             $scenarios[$key]['description'] = FormatHelper::getFormattedDescription(
-            !empty($scenario['description']) ?
-                $scenario['description']
-                : str_replace([
+                str_replace([
                     '{scenarioName}',
                     '{scenarioConst}',
                     '{modelName}',
@@ -245,8 +245,9 @@ class DbModel extends BaseObject
                     $scenario['name'],
                     $scenarios[$key]['const'],
                     $this->name,
-                ], $this->scenarioDefaultDescription),
-            5);
+                ], $description),
+                5
+            );
         }
 
         return $scenarios;
