@@ -76,6 +76,33 @@ foreach($scenarios as $scenario): ?>
     {
         return <?= var_export($model->getTableAlias()) ?>;
     }
+<?php if($scenarios): ?>
+
+    /**
+     * Automatically generated scenarios from the model 'x-scenarios'.
+     * @return array a list of scenarios and the corresponding active attributes.
+     */
+    public function scenarios()
+    {
+        /**
+         * Each scenario is assigned attributes as in the 'default' scenario.
+         * The advantage is that the scenario can be used immediately.
+         * This can be overridden in the child model if needed.
+         */
+        $default = parent::scenarios()[self::SCENARIO_DEFAULT];
+
+        return [
+<?php foreach($scenarios as $scenario): ?>
+            self::<?= $scenario['const'] ?> => $default,
+<?php endforeach; ?>
+            /**
+             * The 'default' scenario and all scenarios mentioned in the rules() using 'on' and 'except'
+             * are automatically included in the scenarios() function for the model.
+             */
+            ...parent::scenarios(),
+        ];
+    }
+<?php endif;?>
 <?php if (count($model->virtualAttributes())):?>
 
     public function attributes()
