@@ -106,8 +106,21 @@ final class FractalAction extends BaseObject
     {
         //@TODO: re-check
         if ($this->prefix && !empty($this->prefixSettings)) {
-            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/').'/'.$this->controllerId.'/options';
+//            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
+            if (isset($this->prefixSettings['module'])) {
+                $prefix = $this->prefixSettings['module'];
+                return trim($prefix, '/') . '/' . $this->controllerId . '/options';
+            } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) {
+                $prefix = static::computeModule('\\', $this->prefixSettings['namespace']);
+                if ($prefix) {
+                    return trim($prefix, '/') . '/' . $this->controllerId . '/options';
+                }
+            } elseif (isset($this->prefixSettings['path']) && str_contains($this->prefixSettings['path'], '/modules/')) {
+                $prefix = static::computeModule('/', $this->prefixSettings['path']);
+                if ($prefix) {
+                    return trim($prefix, '/') . '/' . $this->controllerId . '/options';
+                }
+            }
         }
         return $this->controllerId.'/options';
     }
@@ -250,5 +263,30 @@ final class FractalAction extends BaseObject
             return 'string';
         }
         return $this->params[$this->idParam]['type'] === 'integer' ? 'int' : 'string';
+    }
+
+    /**
+     * @param string $separator
+     * @param string $entity path or namespace
+     * @return void
+     */
+    public static function computeModule(string $separator, string $entity): ?string
+    {
+        $parts = explode($separator . 'modules' . $separator, $entity);
+        if (empty($parts[1])) {
+            return null;
+        }
+        if (str_contains($parts[1], 'controller')) {
+            $result = explode($separator . 'controller', $parts[1]);
+            $result = array_map(function ($val) {
+                return str_replace('\\', '/', $val);
+            }, $result);
+        } else {
+            $result = explode($separator, $parts[1]);
+        }
+        if (empty($result[0])) {
+            return null;
+        }
+        return $result[0];
     }
 }

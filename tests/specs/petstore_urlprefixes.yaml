@@ -111,6 +111,18 @@ paths:
       responses:
         '200':
           description: list of details
+  /fgh/pet-detail2s:
+    get:
+      description: list all pet details
+      responses:
+        '200':
+          description: list of details
+  /fgh2/pet-detail3s:
+    get:
+      description: list all pet details
+      responses:
+        '200':
+          description: list of details
 
 components:
   schemas:

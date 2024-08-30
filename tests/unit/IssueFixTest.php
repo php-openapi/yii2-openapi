@@ -360,4 +360,19 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+
+    public function testRecheckFractalActionsOptionsRoute()
+    {
+        $this->changeDbToMariadb();
+        $testFile = Yii::getAlias("@specs/petstore_urlprefixes.php");
+        $this->runGenerator($testFile);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/maria"), [
+//            'recursive' => true,
+//        ]);
+//        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

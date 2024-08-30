@@ -1,0 +1,10 @@
+TODO.taskpaper
+
+### Add validation rules by attribute name or pattern #30
+ ☐ Re-check 
+ ☐ create failing test
+ ☐ implement the solution
+ ☐ fix failing tests if any
+ ☐ resolve TODOs if any
+ ☐ review PR
+ ☐ delete this file and submit PR
