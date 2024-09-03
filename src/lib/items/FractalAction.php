@@ -32,7 +32,7 @@ use function strpos;
  */
 final class FractalAction extends BaseObject
 {
-    use OptionsRouteTrait;
+    use OptionsRoutesTrait;
 
     /**@var string* */
     public $id;

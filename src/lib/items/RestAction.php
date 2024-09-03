@@ -31,7 +31,7 @@ use function var_export;
  */
 final class RestAction extends BaseObject
 {
-    use OptionsRouteTrait;
+    use OptionsRoutesTrait;
 
     /**@var string* */
     public $id;

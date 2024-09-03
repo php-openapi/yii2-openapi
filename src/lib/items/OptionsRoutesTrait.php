@@ -7,7 +7,7 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-trait OptionsRouteTrait
+trait OptionsRoutesTrait
 {
     public function getOptionsRoute():string
     {
@@ -15,7 +15,7 @@ trait OptionsRouteTrait
             if (isset($this->prefixSettings['module'])) {
                 $prefix = $this->prefixSettings['module'];
                 return static::finalOptionsRoute($prefix, $this->controllerId);
-            } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) {
+            } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) { # if `module` not present then check in namespace and then in path
                 $prefix = static::computeModule('\\', $this->prefixSettings['namespace']);
                 if ($prefix) {
                     return static::finalOptionsRoute($prefix, $this->controllerId);
