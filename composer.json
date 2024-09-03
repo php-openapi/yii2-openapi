@@ -25,13 +25,13 @@
 		"laminas/laminas-code": ">=3.4 <=4.13",
 		"php-openapi/yii2-fractal": "^1.0.0",
 		"fakerphp/faker": "^1.9",
-		"sam-it/yii2-mariadb": "^2.0"
+		"sam-it/yii2-mariadb": "^2.0",
+		"symfony/polyfill-php80": "^1.30"
 	},
 	"require-dev": {
 		"cebe/indent": "*",
 		"friendsofphp/php-cs-fixer": "~2.16",
 		"phpunit/phpunit": "^8.0",
-		"symfony/polyfill-php80": "^1.16",
 		"yiisoft/yii2-gii": ">=2.1.0"
 	},
 	"autoload": {
