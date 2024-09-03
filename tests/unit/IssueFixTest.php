@@ -375,4 +375,20 @@ class IssueFixTest extends DbTestCase
 //        ]);
 //        $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/35
+    public function test35ResolveTodoReCheckOptionsRouteInRestAction()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/index.php");
+        $content = str_replace("'useJsonApi' => true,", "'useJsonApi' => false,", file_get_contents($testFile));
+        file_put_contents($testFile, $content);
+        $this->runGenerator($testFile);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/mysql"), [
+//            'recursive' => true,
+//        ]);
+//        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
