@@ -104,21 +104,19 @@ final class FractalAction extends BaseObject
 
     public function getOptionsRoute():string
     {
-        //@TODO: re-check
         if ($this->prefix && !empty($this->prefixSettings)) {
-//            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
             if (isset($this->prefixSettings['module'])) {
                 $prefix = $this->prefixSettings['module'];
-                return trim($prefix, '/') . '/' . $this->controllerId . '/options';
+                return static::finalOptionsRoute($prefix, $this->controllerId);
             } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) {
                 $prefix = static::computeModule('\\', $this->prefixSettings['namespace']);
                 if ($prefix) {
-                    return trim($prefix, '/') . '/' . $this->controllerId . '/options';
+                    return static::finalOptionsRoute($prefix, $this->controllerId);
                 }
             } elseif (isset($this->prefixSettings['path']) && str_contains($this->prefixSettings['path'], '/modules/')) {
                 $prefix = static::computeModule('/', $this->prefixSettings['path']);
                 if ($prefix) {
-                    return trim($prefix, '/') . '/' . $this->controllerId . '/options';
+                    return static::finalOptionsRoute($prefix, $this->controllerId);
                 }
             }
         }
@@ -288,5 +286,10 @@ final class FractalAction extends BaseObject
             return null;
         }
         return $result[0];
+    }
+
+    public static function finalOptionsRoute(string $prefix, string $controllerId): string
+    {
+        return trim($prefix, '/') . '/' . $controllerId . '/options';
     }
 }

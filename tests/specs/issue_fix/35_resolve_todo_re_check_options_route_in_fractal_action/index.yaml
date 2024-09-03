@@ -111,6 +111,24 @@ paths:
       responses:
         '200':
           description: list of details
+  /forum/pet2-details:
+    get:
+      description: list all pet details
+      responses:
+        '200':
+          description: list of details
+  /forum2/pet3-details:
+    get:
+      description: list all pet details
+      responses:
+        '200':
+          description: list of details
+  /api/v2/comments:
+    get:
+      description: list all pet details
+      responses:
+        '200':
+          description: list of details
 
 components:
   schemas:

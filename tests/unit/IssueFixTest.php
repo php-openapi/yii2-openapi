@@ -362,15 +362,15 @@ class IssueFixTest extends DbTestCase
     }
 
 
-    public function testRecheckFractalActionsOptionsRoute()
+    // https://github.com/php-openapi/yii2-openapi/issues/35
+    public function test35ResolveTodoReCheckOptionsRouteInFractalAction()
     {
-        $this->changeDbToMariadb();
-        $testFile = Yii::getAlias("@specs/petstore_urlprefixes.php");
+        $testFile = Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/index.php");
         $this->runGenerator($testFile);
 //        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
 //            'recursive' => true,
 //        ]);
-//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/maria"), [
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/158_bug_giiapi_generated_rules_enum_with_trim/mysql"), [
 //            'recursive' => true,
 //        ]);
 //        $this->checkFiles($actualFiles, $expectedFiles);
