@@ -126,7 +126,6 @@ final class RestAction extends BaseObject
 
     public function getTemplate():?string
     {
-        //@TODO: Model scenarios for create/update actions
         $template = ActionTemplates::getTemplate($this->id);
         if (!$template) {
             return null;
