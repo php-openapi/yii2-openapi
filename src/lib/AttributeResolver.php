@@ -492,9 +492,10 @@ class AttributeResolver
 
     public static function relationName(string $propertyName, ?string $fkColumnName): string
     {
+        $fkColumnName = (string) $fkColumnName;
         $relationName = $propertyName;
-        if (!str_contains((string) $fkColumnName, '_')) {
-            $relationName = strtolower((string) $fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
+        if (!str_contains($fkColumnName, '_')) {
+            $relationName = strtolower($fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
         }
         return $relationName;
     }
