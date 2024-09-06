@@ -167,9 +167,6 @@ class ColumnToCode
         }
         if ($this->rawParts['default'] === null) {
             $default = '';
-        } elseif (ApiGenerator::isPostgres() && $this->isEnum()) {
-            $default =
-                $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
         } else {
             $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
         }
