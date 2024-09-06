@@ -366,12 +366,12 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/index.php");
         $this->runGenerator($testFile);
-        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-        //     'recursive' => true,
-        // ]);
-        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
-        //     'recursive' => true,
-        // ]);
-        // $this->checkFiles($actualFiles, $expectedFiles); // TODO
+         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+             'recursive' => true,
+         ]);
+         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
+             'recursive' => true,
+         ]);
+         $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
