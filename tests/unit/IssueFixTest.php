@@ -360,4 +360,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/29
+    public function test29ExtensionFkColumnNameCauseErrorInCaseOfColumnNameWithoutUnderscore()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/index.php");
+        $this->runGenerator($testFile);
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles); // TODO
+    }
 }
