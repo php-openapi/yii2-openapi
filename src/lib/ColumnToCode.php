@@ -166,13 +166,14 @@ class ColumnToCode
             return implode('->', array_filter(array_map('trim', $parts)));
         }
 
+        if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
+            return $quoted ? VarDumper::export($this->rawParts['type']) : $this->rawParts['type'];
+        }
+
         $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
         $code = $this->rawParts['type'] . ' ' . $this->rawParts['nullable'] . $default;
         if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb()) && $this->rawParts['position']) {
             $code .= ' ' . $this->rawParts['position'];
-        }
-        if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
-            return $quoted ? VarDumper::export($this->rawParts['type']) : $this->rawParts['type'];
         }
         return $quoted ? VarDumper::export($code) : $code;
     }
