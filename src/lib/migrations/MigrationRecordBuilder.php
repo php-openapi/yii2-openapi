@@ -227,6 +227,7 @@ final class MigrationRecordBuilder
                 $onUpdate
             );
         }
+        return '';
     }
 
     public function addUniqueIndex(string $tableAlias, string $indexName, array $columns):string
