@@ -165,12 +165,8 @@ class ColumnToCode
             array_unshift($parts, '$this');
             return implode('->', array_filter(array_map('trim', $parts)));
         }
-        if ($this->rawParts['default'] === null) {
-            $default = '';
-        } else {
-            $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
-        }
 
+        $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
         $code = $this->rawParts['type'] . ' ' . $this->rawParts['nullable'] . $default;
         if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb()) && $this->rawParts['position']) {
             $code .= ' ' . $this->rawParts['position'];
