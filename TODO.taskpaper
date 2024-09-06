@@ -1,0 +1,9 @@
+TODO.taskpaper
+
+### Extension FK COLUMN NAME cause error in case of column name without underscore #29
+ ☐ create failing test
+ ☐ implement the solution
+ ☐ fix failing tests if any
+ ☐ resolve TODOs if any
+ ☐ review PR
+ ☐ delete this file and submit PR
