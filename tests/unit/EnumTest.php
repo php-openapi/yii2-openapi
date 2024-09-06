@@ -200,7 +200,6 @@ class EnumTest extends DbTestCase
 
     // public function testChangeEnumValues()
     // {
-    //     // TODO
     //     // add a value to list
     //     // fix a typo in a enum value present in existing list
     //     // remove a value from list
