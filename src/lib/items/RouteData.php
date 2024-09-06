@@ -189,7 +189,6 @@ final class RouteData extends BaseObject
             if (array_key_exists($paramName, $pathParameters)) {
                 //$additional = $pathParameters[$paramName]->schema->additionalProperties ?? null;
                 $this->params[$paramName] = [
-                    //@TODO: use only required params
                     //'required'=> $pathParameters[$paramName]->required,
                     'type' => $pathParameters[$paramName]->schema->type ?? null,
                     //'model' => $additional ? SchemaResponseResolver::guessModelByRef($additional) : null,
