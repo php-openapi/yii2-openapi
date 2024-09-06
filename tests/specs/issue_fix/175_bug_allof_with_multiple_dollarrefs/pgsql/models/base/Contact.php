@@ -25,7 +25,7 @@ abstract class Contact extends \yii\db\ActiveRecord
             'trim' => [['nickname'], 'trim'],
             'required' => [['account_id'], 'required'],
             'account_id_integer' => [['account_id'], 'integer'],
-            'account_id_exist' => [['account_id'], 'exist', 'targetRelation' => 'Account'],
+            'account_id_exist' => [['account_id'], 'exist', 'targetRelation' => 'account'],
             'active_boolean' => [['active'], 'boolean'],
             'active_default' => [['active'], 'default', 'value' => false],
             'nickname_string' => [['nickname'], 'string'],
