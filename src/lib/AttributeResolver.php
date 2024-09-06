@@ -494,7 +494,7 @@ class AttributeResolver
     {
         $relationName = $propertyName;
         if (!str_contains((string) $fkColumnName, '_')) {
-            $relationName = strtolower($fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
+            $relationName = strtolower((string) $fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
         }
         return $relationName;
     }
