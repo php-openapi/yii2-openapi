@@ -161,7 +161,7 @@ class ValidationRulesBuilder
                 $this->addStringRule($attribute);
             }
 
-            $targetRelation = AttributeResolver::relationName($attribute->columnName, $attribute->propertyName);
+            $targetRelation = AttributeResolver::relationName($attribute->propertyName, $attribute->fkColName);
             $this->rules[$attribute->columnName . '_exist'] = new ValidationRule(
                 [$attribute->columnName],
                 'exist',
