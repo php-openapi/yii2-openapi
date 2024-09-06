@@ -31,4 +31,3 @@ components:
           allOf:
             - $ref: '#/components/schemas/User'
             - x-fk-column-name: user
-
