@@ -29,9 +29,6 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         foreach ($changed as $attr) {
             $newColumn->$attr = $desired->$attr;
         }
-        if (static::isEnum($newColumn)) {
-            $newColumn->dbType = 'enum'; // TODO this is concretely not correct
-        }
         $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn))
                         ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current));
     }
