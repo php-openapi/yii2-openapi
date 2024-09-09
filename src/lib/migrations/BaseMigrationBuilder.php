@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\migrations;
+namespace phpopenapi\yii2openapi\lib\migrations;
 
 use phpopenapi\yii2openapi\generator\ApiGenerator;
 use phpopenapi\yii2openapi\lib\ColumnToCode;

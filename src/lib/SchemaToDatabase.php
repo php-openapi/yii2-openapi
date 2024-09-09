@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib;
+namespace phpopenapi\yii2openapi\lib;
 
 use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
 use phpopenapi\yii2openapi\lib\openapi\ComponentSchema;

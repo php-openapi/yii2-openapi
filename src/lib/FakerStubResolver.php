@@ -7,7 +7,7 @@
 
 /** @noinspection InterfacesAsConstructorDependenciesInspection */
 /** @noinspection PhpUndefinedFieldInspection */
-namespace cebe\yii2openapi\lib;
+namespace phpopenapi\yii2openapi\lib;
 
 use phpopenapi\yii2openapi\lib\items\Attribute;
 use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
