@@ -25,7 +25,7 @@ class FractalActionTemplates
 {
 
     /**
-     * @var \cebe\yii2openapi\lib\items\FractalAction
+     * @var \phpopenapi\yii2openapi\lib\items\FractalAction
      */
     private $action;
 

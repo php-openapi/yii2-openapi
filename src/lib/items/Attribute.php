@@ -374,7 +374,7 @@ class Attribute extends BaseObject
 
     public function handleDecimal(ColumnSchema $columnSchema): void
     {
-        if ($decimalAttributes = \cebe\yii2openapi\lib\ColumnToCode::isDecimalByDbType($columnSchema->dbType)) {
+        if ($decimalAttributes = \phpopenapi\yii2openapi\lib\ColumnToCode::isDecimalByDbType($columnSchema->dbType)) {
             $columnSchema->precision = $decimalAttributes['precision'];
             $columnSchema->scale = $decimalAttributes['scale'];
             $columnSchema->dbType = $decimalAttributes['dbType'];

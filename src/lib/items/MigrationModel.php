@@ -49,11 +49,11 @@ class MigrationModel extends BaseObject
     private $fileClassName = '';
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var \phpopenapi\yii2openapi\lib\items\DbModel
      */
     private $model;
 
-    /**@var \cebe\yii2openapi\lib\items\ManyToManyRelation|null **/
+    /**@var \phpopenapi\yii2openapi\lib\items\ManyToManyRelation|null **/
     private $relation;
 
     public function __construct(DbModel $model, bool $isFresh = true, ManyToManyRelation $relation = null, $config = [])

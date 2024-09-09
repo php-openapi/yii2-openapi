@@ -176,7 +176,7 @@ class ApiGenerator extends Generator
     private $_openApiWithoutRef;
 
     /**
-     * @var \cebe\yii2openapi\lib\Config $config
+     * @var \phpopenapi\yii2openapi\lib\Config $config
      **/
     private $config;
 

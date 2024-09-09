@@ -15,12 +15,12 @@ use yii\gii\CodeFile;
 class UrlRulesGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\RestAction[]|\cebe\yii2openapi\lib\items\FractalAction[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\RestAction[]|\phpopenapi\yii2openapi\lib\items\FractalAction[]
      */
     protected $actions;
 
@@ -31,7 +31,7 @@ class UrlRulesGenerator
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\CodeFiles
+     * @return \phpopenapi\yii2openapi\lib\CodeFiles
      * @throws \yii\base\InvalidConfigException
      */
     public function generate():CodeFiles

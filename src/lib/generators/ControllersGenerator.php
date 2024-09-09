@@ -24,12 +24,12 @@ use yii\helpers\Inflector;
 class ControllersGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\RestAction[]|\cebe\yii2openapi\lib\items\FractalAction[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\RestAction[]|\phpopenapi\yii2openapi\lib\items\FractalAction[]
      */
     protected $controllers;
 

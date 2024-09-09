@@ -18,12 +18,12 @@ use yii\gii\CodeFile;
 class TransformersGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\DbModel[]
      */
     protected $models;
 
@@ -40,7 +40,7 @@ class TransformersGenerator
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\CodeFiles
+     * @return \phpopenapi\yii2openapi\lib\CodeFiles
      * @throws \yii\base\InvalidConfigException
      */
     public function generate():CodeFiles

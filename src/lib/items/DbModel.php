@@ -23,7 +23,7 @@ use const PHP_EOL;
  * @property-read string                                                $tableAlias
  * @property-read array                                                 $uniqueColumnsList
  * @property-read array[]|array                                         $attributesByType
- * @property-read array|\cebe\yii2openapi\lib\items\AttributeRelation[] $hasOneRelations
+ * @property-read array|\phpopenapi\yii2openapi\lib\items\AttributeRelation[] $hasOneRelations
  */
 class DbModel extends BaseObject
 {
@@ -48,29 +48,29 @@ class DbModel extends BaseObject
     public $description;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\Attribute[] model attributes.
+     * @var array|\phpopenapi\yii2openapi\lib\items\Attribute[] model attributes.
      */
     public $attributes = [];
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\AttributeRelation[] database relations.
+     * @var array|\phpopenapi\yii2openapi\lib\items\AttributeRelation[] database relations.
      */
     public $relations = [];
 
     /***
-     * @var array|\cebe\yii2openapi\lib\items\NonDbRelation[] non-db relations
+     * @var array|\phpopenapi\yii2openapi\lib\items\NonDbRelation[] non-db relations
      */
     public $nonDbRelations = [];
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\ManyToManyRelation[] many to many relations.
+     * @var array|\phpopenapi\yii2openapi\lib\items\ManyToManyRelation[] many to many relations.
      */
     public $many2many = [];
 
     public $junctionCols = [];
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbIndex[]|array
+     * @var \phpopenapi\yii2openapi\lib\items\DbIndex[]|array
      */
     public $indexes = [];
 
@@ -105,7 +105,7 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\AttributeRelation[]|array
+     * @return \phpopenapi\yii2openapi\lib\items\AttributeRelation[]|array
      */
     public function getHasOneRelations():array
     {
@@ -142,7 +142,7 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\Attribute[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\Attribute[]
      */
     public function getEnumAttributes():array
     {
@@ -155,7 +155,7 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\Attribute[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\Attribute[]
      */
     public function virtualAttributes():array
     {
@@ -165,7 +165,7 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\Attribute[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\Attribute[]
      */
     public function dbAttributes():array
     {

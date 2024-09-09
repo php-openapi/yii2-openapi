@@ -52,7 +52,7 @@ class AttributeResolverTest extends DbTestCase
      * @dataProvider dataProvider
      * @param string                              $schemaName
      * @param \cebe\openapi\spec\Schema           $openApiSchema
-     * @param \cebe\yii2openapi\lib\items\DbModel $expected
+     * @param \phpopenapi\yii2openapi\lib\items\DbModel $expected
      */
     public function testResolve(string $schemaName, Schema $openApiSchema, DbModel $expected):void
     {

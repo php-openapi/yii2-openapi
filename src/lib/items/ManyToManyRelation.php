@@ -49,10 +49,10 @@ class ManyToManyRelation extends BaseObject
     /**@var bool* */
     public $hasViaModel = false;
 
-    /**@var \cebe\yii2openapi\lib\items\Attribute */
+    /**@var \phpopenapi\yii2openapi\lib\items\Attribute */
     public $pkAttribute;
 
-    /**@var \cebe\yii2openapi\lib\items\Attribute */
+    /**@var \phpopenapi\yii2openapi\lib\items\Attribute */
     public $relatedPkAttribute;
 
     /**@var string* */
@@ -196,7 +196,7 @@ class ManyToManyRelation extends BaseObject
 
     /**
      * Relations for migration for junction table, when viaModel not defined
-     * @return array|\cebe\yii2openapi\lib\items\AttributeRelation
+     * @return array|\phpopenapi\yii2openapi\lib\items\AttributeRelation
      */
     public function getRelations():array
     {

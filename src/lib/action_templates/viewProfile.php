@@ -1,5 +1,5 @@
 <?php
-/**@var \cebe\yii2openapi\lib\items\FractalAction $action */
+/**@var \phpopenapi\yii2openapi\lib\items\FractalAction $action */
 ?>
         if (Yii::$app->user->isGuest) {
             throw new \yii\web\NotFoundHttpException();

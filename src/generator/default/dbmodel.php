@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \cebe\yii2openapi\lib\items\DbModel $model
+ * @var \phpopenapi\yii2openapi\lib\items\DbModel $model
  * @var string $namespace
  * @var string $relationNamespace
  **/

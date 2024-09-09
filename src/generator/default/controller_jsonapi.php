@@ -4,7 +4,7 @@ use phpopenapi\yii2openapi\lib\items\FractalAction;
 /**
  * @var string                                            $namespace
  * @var string                                            $className
- * @var array|\cebe\yii2openapi\lib\items\FractalAction[] $actions
+ * @var array|\phpopenapi\yii2openapi\lib\items\FractalAction[] $actions
  **/
 
 $findModels = [];

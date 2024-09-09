@@ -28,7 +28,7 @@ abstract class BaseMigrationBuilder
     protected $db;
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var \phpopenapi\yii2openapi\lib\items\DbModel
      */
     protected $model;
 
@@ -48,14 +48,14 @@ abstract class BaseMigrationBuilder
     protected $newColumns;
 
     /**
-     * @var \cebe\yii2openapi\lib\migrations\MigrationRecordBuilder
+     * @var \phpopenapi\yii2openapi\lib\migrations\MigrationRecordBuilder
      */
     protected $recordBuilder;
 
     /**
      * MigrationBuilder constructor.
      * @param \yii\db\Connection                  $db
-     * @param \cebe\yii2openapi\lib\items\DbModel $model
+     * @param \phpopenapi\yii2openapi\lib\items\DbModel $model
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\base\NotSupportedException
      */
@@ -271,7 +271,7 @@ abstract class BaseMigrationBuilder
     abstract public static function getColumnSchemaBuilderClass(): string;
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\DbIndex[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\DbIndex[]
      */
     abstract protected function findTableIndexes():array;
 
@@ -282,14 +282,14 @@ abstract class BaseMigrationBuilder
         $wantIndexNames = array_column($wantIndexes, 'name');
         $haveIndexNames = array_column($haveIndexes, 'name');
         $tableName = $this->model->getTableAlias();
-        /**@var \cebe\yii2openapi\lib\items\DbIndex[] $forDrop */
+        /**@var \phpopenapi\yii2openapi\lib\items\DbIndex[] $forDrop */
         $forDrop = array_map(
             function ($idx) use ($haveIndexes) {
                 return $haveIndexes[$idx];
             },
             array_diff($haveIndexNames, $wantIndexNames)
         );
-        /**@var \cebe\yii2openapi\lib\items\DbIndex[] $forCreate */
+        /**@var \phpopenapi\yii2openapi\lib\items\DbIndex[] $forCreate */
         $forCreate = array_map(
             function ($idx) use ($wantIndexes) {
                 return $wantIndexes[$idx];
@@ -417,7 +417,7 @@ abstract class BaseMigrationBuilder
     }
 
     // temporary save new/changed/desired column to temporary table. If saved we can fetch it from DB and then it can be used to compare with current column
-    public function tmpSaveNewCol(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): \yii\db\ColumnSchema
+    public function tmpSaveNewCol(string $tableAlias, \phpopenapi\yii2openapi\db\ColumnSchema $columnSchema): \yii\db\ColumnSchema
     {
         $tmpTableName = 'tmp_table_';
         $tmpEnumName = function (string $columnName): string {
@@ -471,7 +471,7 @@ abstract class BaseMigrationBuilder
         return $table->columns[$columnSchema->name];
     }
 
-    public function newColStr(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): string
+    public function newColStr(string $tableAlias, \phpopenapi\yii2openapi\db\ColumnSchema $columnSchema): string
     {
         $ctc = new ColumnToCode(\Yii::$app->db->schema, $tableAlias, $columnSchema, false, false, true);
         return ColumnToCode::undoEscapeQuotes($ctc->getCode());

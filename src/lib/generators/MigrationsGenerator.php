@@ -23,12 +23,12 @@ use const YII_ENV_TEST;
 class MigrationsGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\DbModel[]
      */
     protected $models;
 
@@ -104,7 +104,7 @@ class MigrationsGenerator
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\MigrationModel[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\MigrationModel[]
      * @throws \Exception
      */
     public function buildMigrations():array
@@ -156,7 +156,7 @@ class MigrationsGenerator
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\items\MigrationModel $migration
+     * @param \phpopenapi\yii2openapi\lib\items\MigrationModel $migration
      * @throws \Exception
      */
     protected function sortByDependencyRecurse(MigrationModel $migration):void

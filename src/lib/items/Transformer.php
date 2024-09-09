@@ -19,14 +19,14 @@ use function array_unique;
  * @property-read array                                                  $defaultRelations
  * @property-read string                                                 $modelFQN
  * @property-read string                                                 $fQN
- * @property-read array|\cebe\yii2openapi\lib\items\AttributeRelation[]  $relations
- * @property-read \cebe\yii2openapi\lib\items\ManyToManyRelation[]|array $many2Many
- * @property-read \cebe\yii2openapi\lib\items\NonDbRelation[]|array $nonDbRelations
+ * @property-read array|\phpopenapi\yii2openapi\lib\items\AttributeRelation[]  $relations
+ * @property-read \phpopenapi\yii2openapi\lib\items\ManyToManyRelation[]|array $many2Many
+ * @property-read \phpopenapi\yii2openapi\lib\items\NonDbRelation[]|array $nonDbRelations
  * @property-read array                                                  $availableRelations
  */
 class Transformer extends BaseObject
 {
-    /**@var \cebe\yii2openapi\lib\items\DbModel**/
+    /**@var \phpopenapi\yii2openapi\lib\items\DbModel**/
     public $dbModel;
     /**
      * @var bool
@@ -96,21 +96,21 @@ class Transformer extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\AttributeRelation[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\AttributeRelation[]
      */
     public function getRelations(): array
     {
         return $this->dbModel->relations;
     }
     /**
-     * @return array|\cebe\yii2openapi\lib\items\NonDbRelation[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\NonDbRelation[]
      */
     public function getNonDbRelations(): array
     {
         return $this->dbModel->nonDbRelations;
     }
     /**
-     * @return array|\cebe\yii2openapi\lib\items\ManyToManyRelation[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\ManyToManyRelation[]
      */
     public function getMany2Many(): array
     {

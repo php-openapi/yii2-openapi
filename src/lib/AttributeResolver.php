@@ -63,7 +63,7 @@ class AttributeResolver
     private $schema;
 
     /**
-     * @var \cebe\yii2openapi\lib\items\JunctionSchemas
+     * @var \phpopenapi\yii2openapi\lib\items\JunctionSchemas
      */
     private $junctions;
 
@@ -88,14 +88,14 @@ class AttributeResolver
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\DbModel
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @return \phpopenapi\yii2openapi\lib\items\DbModel
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     public function resolve():DbModel
     {
         foreach ($this->schema->getProperties() as $property) {
-            /** @var $property \cebe\yii2openapi\lib\openapi\PropertySchema */
+            /** @var $property \phpopenapi\yii2openapi\lib\openapi\PropertySchema */
 
             $isRequired = $this->schema->isRequiredProperty($property->getName());
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
@@ -130,9 +130,9 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
+     * @param \phpopenapi\yii2openapi\lib\openapi\PropertySchema $property
      * @param bool                                         $isRequired
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     protected function resolveJunctionTableProperty(PropertySchema $property, bool $isRequired):void
@@ -162,9 +162,9 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
+     * @param \phpopenapi\yii2openapi\lib\openapi\PropertySchema $property
      * @param bool                                         $isRequired
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     protected function resolveHasMany2ManyTableProperty(PropertySchema $property, bool $isRequired):void
@@ -205,10 +205,10 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
+     * @param \phpopenapi\yii2openapi\lib\openapi\PropertySchema $property
      * @param bool                                         $isRequired
      * @param bool|null|string                             $nullableValue if string then its value will be only constant `ARG_ABSENT`. Default `null` is avoided because it can be in passed value in method call
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     protected function resolveProperty(
@@ -417,7 +417,7 @@ class AttributeResolver
     /**
      * @param array $indexes
      * @return array|DbIndex[]
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      */
     protected function prepareIndexes(array $indexes):array
     {
@@ -470,8 +470,8 @@ class AttributeResolver
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\openapi\PropertySchema $property
-     * @param \cebe\yii2openapi\lib\items\Attribute        $attribute
+     * @param \phpopenapi\yii2openapi\lib\openapi\PropertySchema $property
+     * @param \phpopenapi\yii2openapi\lib\items\Attribute        $attribute
      * @return void
      * @throws \yii\base\InvalidConfigException
      */

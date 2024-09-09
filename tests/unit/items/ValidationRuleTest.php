@@ -12,7 +12,7 @@ class ValidationRuleTest extends TestCase
 
     /**
      * @dataProvider dataProvider
-     * @param \cebe\yii2openapi\lib\items\ValidationRule $rule
+     * @param \phpopenapi\yii2openapi\lib\items\ValidationRule $rule
      * @param string                                     $expected
      */
     public function testToString(ValidationRule $rule, string $expected):void

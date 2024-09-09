@@ -230,11 +230,11 @@ SQL;
 
     public function modifyDesired(ColumnSchema $desired): void
     {
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
+        /** @var $desired phpopenapi\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
         if (in_array($desired->phpType, ['int', 'integer']) && $desired->defaultValue !== null) {
             $desired->defaultValue = (int)$desired->defaultValue;
         }
-        if ($decimalAttributes = \cebe\yii2openapi\lib\ColumnToCode::isDecimalByDbType($desired->dbType)) {
+        if ($decimalAttributes = \phpopenapi\yii2openapi\lib\ColumnToCode::isDecimalByDbType($desired->dbType)) {
             $desired->precision = $decimalAttributes['precision'];
             $desired->scale = $decimalAttributes['scale'];
         }
@@ -243,7 +243,7 @@ SQL;
     public function modifyDesiredInContextOfCurrent(ColumnSchema $current, ColumnSchema $desired): void
     {
         /** @var $current \yii\db\pgsql\ColumnSchema */
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
+        /** @var $desired phpopenapi\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
         if ($current->type === $desired->type && !$desired->size && $this->isDbDefaultSize($current)) {
             $desired->size = $current->size;
         }

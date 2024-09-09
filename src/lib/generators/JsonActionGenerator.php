@@ -21,8 +21,8 @@ class JsonActionGenerator extends RestActionGenerator
     /**
      * @param string                                $method
      * @param \cebe\openapi\spec\Operation          $operation
-     * @param \cebe\yii2openapi\lib\items\RouteData $routeData
-     * @return \cebe\yii2openapi\lib\items\RestAction|object
+     * @param \phpopenapi\yii2openapi\lib\items\RouteData $routeData
+     * @return \phpopenapi\yii2openapi\lib\items\RestAction|object
      * @throws \yii\base\InvalidConfigException
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
      */

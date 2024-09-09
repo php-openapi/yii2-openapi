@@ -151,7 +151,7 @@ class ComponentSchema
     }
 
     /**
-     * @return \Generator|\cebe\yii2openapi\lib\openapi\PropertySchema[]
+     * @return \Generator|\phpopenapi\yii2openapi\lib\openapi\PropertySchema[]
      * @throws \yii\base\InvalidConfigException
      */
     public function getProperties():Generator

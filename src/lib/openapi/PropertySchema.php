@@ -73,7 +73,7 @@ class PropertySchema
     /** @var string $refPointer */
     private $refPointer;
 
-    /** @var \cebe\yii2openapi\lib\openapi\ComponentSchema $refSchema */
+    /** @var \phpopenapi\yii2openapi\lib\openapi\ComponentSchema $refSchema */
     private $refSchema;
 
     /**
@@ -82,15 +82,15 @@ class PropertySchema
     private $isPk;
 
     /**
-     * @var \cebe\yii2openapi\lib\openapi\ComponentSchema
+     * @var \phpopenapi\yii2openapi\lib\openapi\ComponentSchema
      */
     private $schema;
 
     /**
      * @param \cebe\openapi\SpecObjectInterface             $property
      * @param string                                        $name
-     * @param \cebe\yii2openapi\lib\openapi\ComponentSchema $schema
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @param \phpopenapi\yii2openapi\lib\openapi\ComponentSchema $schema
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     public function __construct(SpecObjectInterface $property, string $name, ComponentSchema $schema)
@@ -165,7 +165,7 @@ class PropertySchema
     }
 
     /**
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     private function initReference():void
@@ -185,7 +185,7 @@ class PropertySchema
     }
 
     /**
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     private function initItemsReference():void

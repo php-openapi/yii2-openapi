@@ -23,12 +23,12 @@ class FakerStubResolver
 {
     public const MAX_INT = 1000000;
     /**
-     * @var \cebe\yii2openapi\lib\items\Attribute
+     * @var \phpopenapi\yii2openapi\lib\items\Attribute
      */
     private $attribute;
 
     /**
-     * @var \cebe\yii2openapi\lib\openapi\PropertySchema
+     * @var \phpopenapi\yii2openapi\lib\openapi\PropertySchema
      */
     private $property;
 

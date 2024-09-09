@@ -56,7 +56,7 @@ use function count;
 class SchemaToDatabase
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
@@ -66,11 +66,11 @@ class SchemaToDatabase
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\DbModel[]
      * @throws \cebe\openapi\exceptions\IOException
      * @throws \cebe\openapi\exceptions\TypeErrorException
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
@@ -88,7 +88,7 @@ class SchemaToDatabase
             if ($junctions->isJunctionSchema($schemaName)) {
                 $schemaName = $junctions->trimPrefix($schemaName);
             }
-            /**@var \cebe\yii2openapi\lib\AttributeResolver $resolver */
+            /**@var \phpopenapi\yii2openapi\lib\AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
             $models[$schemaName] = $resolver->resolve();
         }
@@ -108,7 +108,7 @@ class SchemaToDatabase
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\JunctionSchemas
+     * @return \phpopenapi\yii2openapi\lib\items\JunctionSchemas
      * @throws \cebe\openapi\exceptions\IOException
      * @throws \cebe\openapi\exceptions\TypeErrorException
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
