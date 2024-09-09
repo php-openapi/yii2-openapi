@@ -2,7 +2,7 @@
 
 namespace tests\unit\items;
 
-use cebe\yii2openapi\lib\items\ValidationRule;
+use phpopenapi\yii2openapi\lib\items\ValidationRule;
 use tests\TestCase;
 use function implode;
 use function strtolower;
@@ -12,7 +12,7 @@ class ValidationRuleTest extends TestCase
 
     /**
      * @dataProvider dataProvider
-     * @param \cebe\yii2openapi\lib\items\ValidationRule $rule
+     * @param \phpopenapi\yii2openapi\lib\items\ValidationRule $rule
      * @param string                                     $expected
      */
     public function testToString(ValidationRule $rule, string $expected):void

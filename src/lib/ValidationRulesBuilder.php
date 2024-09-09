@@ -5,11 +5,11 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib;
+namespace phpopenapi\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\items\Attribute;
-use cebe\yii2openapi\lib\items\DbModel;
-use cebe\yii2openapi\lib\items\ValidationRule;
+use phpopenapi\yii2openapi\lib\items\Attribute;
+use phpopenapi\yii2openapi\lib\items\DbModel;
+use phpopenapi\yii2openapi\lib\items\ValidationRule;
 use yii\helpers\VarDumper;
 use yii\validators\DateValidator;
 use function count;
@@ -21,7 +21,7 @@ use function strtolower;
 class ValidationRulesBuilder
 {
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var \phpopenapi\yii2openapi\lib\items\DbModel
      */
     private $model;
 
@@ -43,7 +43,7 @@ class ValidationRulesBuilder
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\ValidationRule[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\ValidationRule[]
      */
     public function build():array
     {
@@ -219,7 +219,7 @@ class ValidationRulesBuilder
     private function prepareTypeScope():void
     {
         foreach ($this->model->attributes as $attribute) {
-            /** @var $attribute \cebe\yii2openapi\lib\items\Attribute */
+            /** @var $attribute \phpopenapi\yii2openapi\lib\items\Attribute */
             if ($attribute->isReadOnly()) {
                 continue;
             }

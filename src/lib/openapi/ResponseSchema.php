@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\openapi;
+namespace phpopenapi\yii2openapi\lib\openapi;
 
 use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\spec\MediaType;
@@ -13,7 +13,7 @@ use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
-use cebe\yii2openapi\lib\items\JunctionSchemas;
+use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
 use function array_keys;
 use function explode;
 use function str_replace;

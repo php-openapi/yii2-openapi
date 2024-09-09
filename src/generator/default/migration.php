@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \cebe\yii2openapi\lib\items\MigrationModel $migration
+ * @var \phpopenapi\yii2openapi\lib\items\MigrationModel $migration
  * @var string $namespace
  * @var bool $isTransactional
  **/

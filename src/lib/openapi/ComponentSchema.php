@@ -5,12 +5,12 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\openapi;
+namespace phpopenapi\yii2openapi\lib\openapi;
 
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
-use cebe\yii2openapi\lib\CustomSpecAttr;
+use phpopenapi\yii2openapi\lib\CustomSpecAttr;
 use Generator;
 use Yii;
 use yii\helpers\Inflector;
@@ -151,7 +151,7 @@ class ComponentSchema
     }
 
     /**
-     * @return \Generator|\cebe\yii2openapi\lib\openapi\PropertySchema[]
+     * @return \Generator|\phpopenapi\yii2openapi\lib\openapi\PropertySchema[]
      * @throws \yii\base\InvalidConfigException
      */
     public function getProperties():Generator

@@ -5,11 +5,11 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\migrations;
+namespace phpopenapi\yii2openapi\lib\migrations;
 
-use cebe\yii2openapi\generator\ApiGenerator;
-use cebe\yii2openapi\lib\ColumnToCode;
-use cebe\yii2openapi\lib\items\DbIndex;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\lib\ColumnToCode;
+use phpopenapi\yii2openapi\lib\items\DbIndex;
 use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\IndexConstraint;
@@ -134,7 +134,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 
     public function modifyDesired(ColumnSchema $desired): void
     {
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
+        /** @var $desired phpopenapi\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
         if ($desired->phpType === 'int' && $desired->defaultValue !== null) {
             $desired->defaultValue = (int)$desired->defaultValue;
         }
@@ -148,7 +148,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     public function modifyDesiredInContextOfCurrent(ColumnSchema $current, ColumnSchema $desired): void
     {
         /** @var $current \yii\db\mysql\ColumnSchema */
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
+        /** @var $desired phpopenapi\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
         if ($current->dbType === 'tinyint(1)' && $desired->type === 'boolean') {
             if (is_bool($desired->defaultValue) || is_string($desired->defaultValue)) {
                 $desired->defaultValue = (int)$desired->defaultValue;

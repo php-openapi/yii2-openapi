@@ -1,5 +1,5 @@
 <?php
-/**@var \cebe\yii2openapi\lib\items\FractalAction $action */
+/**@var \phpopenapi\yii2openapi\lib\items\FractalAction $action */
 ?>
         $model = $this-><?=$action->findModelMethodName?>($<?=$action->idParam?>);
         $model->scenario = 'default';

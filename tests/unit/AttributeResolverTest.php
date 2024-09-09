@@ -5,11 +5,11 @@ namespace tests\unit;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Schema;
-use cebe\yii2openapi\lib\AttributeResolver;
-use cebe\yii2openapi\lib\items\DbModel;
-use cebe\yii2openapi\lib\items\JunctionSchemas;
-use cebe\yii2openapi\lib\items\ManyToManyRelation;
-use cebe\yii2openapi\lib\openapi\ComponentSchema;
+use phpopenapi\yii2openapi\lib\AttributeResolver;
+use phpopenapi\yii2openapi\lib\items\DbModel;
+use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
+use phpopenapi\yii2openapi\lib\items\ManyToManyRelation;
+use phpopenapi\yii2openapi\lib\openapi\ComponentSchema;
 use tests\DbTestCase;
 use Yii;
 use yii\helpers\VarDumper;
@@ -52,7 +52,7 @@ class AttributeResolverTest extends DbTestCase
      * @dataProvider dataProvider
      * @param string                              $schemaName
      * @param \cebe\openapi\spec\Schema           $openApiSchema
-     * @param \cebe\yii2openapi\lib\items\DbModel $expected
+     * @param \phpopenapi\yii2openapi\lib\items\DbModel $expected
      */
     public function testResolve(string $schemaName, Schema $openApiSchema, DbModel $expected):void
     {

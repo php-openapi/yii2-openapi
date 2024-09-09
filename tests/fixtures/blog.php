@@ -1,9 +1,9 @@
 <?php
 //Data provider for AttributeResolver test for blog.yml spec
-use cebe\yii2openapi\lib\items\Attribute;
-use cebe\yii2openapi\lib\items\AttributeRelation;
-use cebe\yii2openapi\lib\items\DbIndex;
-use cebe\yii2openapi\lib\items\DbModel;
+use phpopenapi\yii2openapi\lib\items\Attribute;
+use phpopenapi\yii2openapi\lib\items\AttributeRelation;
+use phpopenapi\yii2openapi\lib\items\DbIndex;
+use phpopenapi\yii2openapi\lib\items\DbModel;
 
 return [
     'user' => new DbModel([

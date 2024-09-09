@@ -5,12 +5,12 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\generators;
+namespace phpopenapi\yii2openapi\lib\generators;
 
-use cebe\yii2openapi\lib\CodeFiles;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\items\FractalAction;
-use cebe\yii2openapi\lib\items\RestAction;
+use phpopenapi\yii2openapi\lib\CodeFiles;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\items\FractalAction;
+use phpopenapi\yii2openapi\lib\items\RestAction;
 use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
@@ -24,12 +24,12 @@ use yii\helpers\Inflector;
 class ControllersGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\RestAction[]|\cebe\yii2openapi\lib\items\FractalAction[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\RestAction[]|\phpopenapi\yii2openapi\lib\items\FractalAction[]
      */
     protected $controllers;
 

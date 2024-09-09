@@ -7,10 +7,10 @@
 
 /** @noinspection InterfacesAsConstructorDependenciesInspection */
 /** @noinspection PhpUndefinedFieldInspection */
-namespace cebe\yii2openapi\lib;
+namespace phpopenapi\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\items\Attribute;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
+use phpopenapi\yii2openapi\lib\items\Attribute;
+use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
 use yii\helpers\VarDumper;
 use function str_replace;
 use const PHP_EOL;
@@ -23,12 +23,12 @@ class FakerStubResolver
 {
     public const MAX_INT = 1000000;
     /**
-     * @var \cebe\yii2openapi\lib\items\Attribute
+     * @var \phpopenapi\yii2openapi\lib\items\Attribute
      */
     private $attribute;
 
     /**
-     * @var \cebe\yii2openapi\lib\openapi\PropertySchema
+     * @var \phpopenapi\yii2openapi\lib\openapi\PropertySchema
      */
     private $property;
 

@@ -59,12 +59,12 @@ if (YII_ENV_DEV) {
         'class' => \yii\gii\Module::class,
         'generators' => [
             // add ApiGenerator to Gii module
-            'api' => \cebe\yii2openapi\generator\ApiGenerator::class,
+            'api' => \phpopenapi\yii2openapi\generator\ApiGenerator::class,
 
             // --------- OR ---------
             // to disable generation of migrations files or with default config change
             'api' => [
-              'class' => \cebe\yii2openapi\generator\ApiGenerator::class,
+              'class' => \phpopenapi\yii2openapi\generator\ApiGenerator::class,
               'generateMigrations' => false, # this config can also be applied in CLI command
             ],
         ],

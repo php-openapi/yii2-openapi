@@ -5,21 +5,21 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\openapi;
+namespace phpopenapi\yii2openapi\lib\openapi;
 
 use yii\db\ColumnSchema;
-use cebe\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
-use cebe\yii2openapi\lib\items\Attribute;
+use phpopenapi\yii2openapi\lib\items\Attribute;
 use yii\base\NotSupportedException;
 use BadMethodCallException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
-use cebe\yii2openapi\lib\CustomSpecAttr;
-use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use phpopenapi\yii2openapi\lib\CustomSpecAttr;
+use phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use Throwable;
 use Yii;
 use yii\db\Schema as YiiDbSchema;
@@ -29,7 +29,7 @@ use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 use function is_int;
 use function strpos;
-use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
+use phpopenapi\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class PropertySchema
 {
@@ -73,7 +73,7 @@ class PropertySchema
     /** @var string $refPointer */
     private $refPointer;
 
-    /** @var \cebe\yii2openapi\lib\openapi\ComponentSchema $refSchema */
+    /** @var \phpopenapi\yii2openapi\lib\openapi\ComponentSchema $refSchema */
     private $refSchema;
 
     /**
@@ -82,15 +82,15 @@ class PropertySchema
     private $isPk;
 
     /**
-     * @var \cebe\yii2openapi\lib\openapi\ComponentSchema
+     * @var \phpopenapi\yii2openapi\lib\openapi\ComponentSchema
      */
     private $schema;
 
     /**
      * @param \cebe\openapi\SpecObjectInterface             $property
      * @param string                                        $name
-     * @param \cebe\yii2openapi\lib\openapi\ComponentSchema $schema
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @param \phpopenapi\yii2openapi\lib\openapi\ComponentSchema $schema
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     public function __construct(SpecObjectInterface $property, string $name, ComponentSchema $schema)
@@ -165,7 +165,7 @@ class PropertySchema
     }
 
     /**
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     private function initReference():void
@@ -185,7 +185,7 @@ class PropertySchema
     }
 
     /**
-     * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
+     * @throws \phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
     private function initItemsReference():void

@@ -2,8 +2,8 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\lib\PathAutoCompletion;
-use cebe\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\PathAutoCompletion;
+use phpopenapi\yii2openapi\lib\Config;
 use tests\TestCase;
 use Yii;
 

@@ -5,15 +5,15 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\generators;
+namespace phpopenapi\yii2openapi\lib\generators;
 
-use cebe\yii2openapi\lib\CodeFiles;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\items\DbModel;
-use cebe\yii2openapi\lib\items\MigrationModel;
-use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
-use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
-use cebe\yii2openapi\lib\migrations\PostgresMigrationBuilder;
+use phpopenapi\yii2openapi\lib\CodeFiles;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\items\DbModel;
+use phpopenapi\yii2openapi\lib\items\MigrationModel;
+use phpopenapi\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use phpopenapi\yii2openapi\lib\migrations\MysqlMigrationBuilder;
+use phpopenapi\yii2openapi\lib\migrations\PostgresMigrationBuilder;
 use Exception;
 use Yii;
 use yii\db\Connection;
@@ -23,12 +23,12 @@ use const YII_ENV_TEST;
 class MigrationsGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\DbModel[]
      */
     protected $models;
 
@@ -104,7 +104,7 @@ class MigrationsGenerator
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\MigrationModel[]
+     * @return array|\phpopenapi\yii2openapi\lib\items\MigrationModel[]
      * @throws \Exception
      */
     public function buildMigrations():array
@@ -156,7 +156,7 @@ class MigrationsGenerator
     }
 
     /**
-     * @param \cebe\yii2openapi\lib\items\MigrationModel $migration
+     * @param \phpopenapi\yii2openapi\lib\items\MigrationModel $migration
      * @throws \Exception
      */
     protected function sortByDependencyRecurse(MigrationModel $migration):void

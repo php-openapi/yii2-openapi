@@ -5,12 +5,12 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\items;
+namespace phpopenapi\yii2openapi\lib\items;
 
 use yii\helpers\Inflector;
 use yii\helpers\VarDumper;
 use function reset;
-use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
+use phpopenapi\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class AttributeRelation
 {

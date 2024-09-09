@@ -5,15 +5,15 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\generators;
+namespace phpopenapi\yii2openapi\lib\generators;
 
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Reference;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\items\RestAction;
-use cebe\yii2openapi\lib\items\RouteData;
-use cebe\yii2openapi\lib\openapi\ResponseSchema;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\items\RestAction;
+use phpopenapi\yii2openapi\lib\items\RouteData;
+use phpopenapi\yii2openapi\lib\openapi\ResponseSchema;
 use Yii;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
@@ -22,7 +22,7 @@ use yii\helpers\Inflector;
 class RestActionGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
@@ -79,8 +79,8 @@ class RestActionGenerator
     /**
      * @param string                                $method
      * @param \cebe\openapi\spec\Operation          $operation
-     * @param \cebe\yii2openapi\lib\items\RouteData $routeData
-     * @return \cebe\yii2openapi\lib\items\RestAction|object
+     * @param \phpopenapi\yii2openapi\lib\items\RouteData $routeData
+     * @return \phpopenapi\yii2openapi\lib\items\RestAction|object
      * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
      * @throws \yii\base\InvalidConfigException
      */

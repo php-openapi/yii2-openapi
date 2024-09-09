@@ -36,7 +36,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"cebe\\yii2openapi\\": "src/"
+			"phpopenapi\\yii2openapi\\": "src/"
 		}
 	},
 	"autoload-dev": {

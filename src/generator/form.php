@@ -2,7 +2,7 @@
 
 /* @var $this yii\web\View */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $generator \cebe\yii2openapi\generator\ApiGenerator */
+/* @var $generator \phpopenapi\yii2openapi\generator\ApiGenerator */
 
 echo $form->field($generator, 'openApiPath')->error(['encode' => false]);
 echo $form->field($generator, 'ignoreSpecErrors')->checkbox();
@@ -58,7 +58,7 @@ echo $form->field($generator, 'ignoreSpecErrors')->checkbox();
 
 <?php
 
-\cebe\yii2openapi\assets\BootstrapCardAsset::register($this);
+\phpopenapi\yii2openapi\assets\BootstrapCardAsset::register($this);
 $this->registerCss(
     <<<CSS
     /* bootstrap 4, Gii 2.1.x */

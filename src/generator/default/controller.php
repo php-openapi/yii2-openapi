@@ -1,10 +1,10 @@
 <?php
-use cebe\yii2openapi\lib\items\RestAction;
+use phpopenapi\yii2openapi\lib\items\RestAction;
 
 /**
  * @var string                                         $namespace
  * @var string                                         $className
- * @var array|\cebe\yii2openapi\lib\items\RestAction[] $actions
+ * @var array|\phpopenapi\yii2openapi\lib\items\RestAction[] $actions
  **/
 
 $serializerConfigs = array_filter(

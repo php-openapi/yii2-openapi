@@ -3,7 +3,7 @@
  * @var string $namespace (current namespace, maby be base, if transformers are extendable)
  * @var string $mainNamespace  (main namespace)
  * @var bool $extendable
- * @var \cebe\yii2openapi\lib\items\Transformer $transformer
+ * @var \phpopenapi\yii2openapi\lib\items\Transformer $transformer
 */
 use yii\helpers\Inflector;
 

@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\items;
+namespace phpopenapi\yii2openapi\lib\items;
 
 use insolita\fractal\actions\CreateAction;
 use insolita\fractal\actions\CreateRelationshipAction;
@@ -25,7 +25,7 @@ class FractalActionTemplates
 {
 
     /**
-     * @var \cebe\yii2openapi\lib\items\FractalAction
+     * @var \phpopenapi\yii2openapi\lib\items\FractalAction
      */
     private $action;
 

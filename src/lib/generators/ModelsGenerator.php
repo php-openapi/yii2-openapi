@@ -5,10 +5,10 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\generators;
+namespace phpopenapi\yii2openapi\lib\generators;
 
-use cebe\yii2openapi\lib\CodeFiles;
-use cebe\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\CodeFiles;
+use phpopenapi\yii2openapi\lib\Config;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Yii;
@@ -17,12 +17,12 @@ use yii\gii\CodeFile;
 class ModelsGenerator
 {
     /**
-     * @var \cebe\yii2openapi\lib\Config
+     * @var \phpopenapi\yii2openapi\lib\Config
      */
     protected $config;
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\DbModel[]
+     * @var array|\phpopenapi\yii2openapi\lib\items\DbModel[]
      */
     protected $models;
 

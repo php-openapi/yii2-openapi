@@ -5,13 +5,13 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib;
+namespace phpopenapi\yii2openapi\lib;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 use Throwable;
-use cebe\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\Config;
 use Yii;
 use yii\helpers\FileHelper;
 
@@ -85,7 +85,7 @@ class PathAutoCompletion
         $config = $this->_config;
 
         // First priority will be given to values present in config (example) to be shown in form fields.
-        // Second to default values present in class cebe\yii2openapi\generator\ApiGenerator
+        // Second to default values present in class phpopenapi\yii2openapi\generator\ApiGenerator
         // Third will be given to values produced by PathAutoCompletion class
 
         if ($config && $config->openApiPath) {

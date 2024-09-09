@@ -5,11 +5,11 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib;
+namespace phpopenapi\yii2openapi\lib;
 
 use yii\db\ArrayExpression;
-use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
-use cebe\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
 use yii\db\ColumnSchema;
 use yii\db\ColumnSchemaBuilder;
 use yii\db\Expression;
@@ -67,7 +67,7 @@ class ColumnToCode
 
     /**
      * @var bool
-     * Built In Type means the \cebe\yii2openapi\lib\items\Attribute::$type or \cebe\yii2openapi\lib\items\Attribute::$dbType is in list of Yii abstract data type list or not. And if is found we can use \yii\db\SchemaBuilderTrait methods to build migration instead of putting raw SQL
+     * Built In Type means the \phpopenapi\yii2openapi\lib\items\Attribute::$type or \phpopenapi\yii2openapi\lib\items\Attribute::$dbType is in list of Yii abstract data type list or not. And if is found we can use \yii\db\SchemaBuilderTrait methods to build migration instead of putting raw SQL
      */
     private $isBuiltinType = false;
 
@@ -142,7 +142,7 @@ class ColumnToCode
         $this->alterByXDbType = $alterByXDbType;
         $this->position = $position;
 
-        // We use `property_exists()` because sometimes we can have instance of \yii\db\mysql\ColumnSchema (or of Maria/Pgsql) or \cebe\yii2openapi\db\ColumnSchema
+        // We use `property_exists()` because sometimes we can have instance of \yii\db\mysql\ColumnSchema (or of Maria/Pgsql) or \phpopenapi\yii2openapi\db\ColumnSchema
         if (property_exists($this->column, 'xDbType') && is_string($this->column->xDbType) && !empty($this->column->xDbType)) {
             $this->raw = true;
         }

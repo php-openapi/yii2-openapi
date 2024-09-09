@@ -5,23 +5,23 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\generator;
+namespace phpopenapi\yii2openapi\generator;
 
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\generators\ControllersGenerator;
-use cebe\yii2openapi\lib\generators\JsonActionGenerator;
-use cebe\yii2openapi\lib\generators\MigrationsGenerator;
-use cebe\yii2openapi\lib\generators\ModelsGenerator;
-use cebe\yii2openapi\lib\generators\RestActionGenerator;
-use cebe\yii2openapi\lib\generators\TransformersGenerator;
-use cebe\yii2openapi\lib\generators\UrlRulesGenerator;
-use cebe\yii2openapi\lib\PathAutoCompletion;
-use cebe\yii2openapi\lib\SchemaToDatabase;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\generators\ControllersGenerator;
+use phpopenapi\yii2openapi\lib\generators\JsonActionGenerator;
+use phpopenapi\yii2openapi\lib\generators\MigrationsGenerator;
+use phpopenapi\yii2openapi\lib\generators\ModelsGenerator;
+use phpopenapi\yii2openapi\lib\generators\RestActionGenerator;
+use phpopenapi\yii2openapi\lib\generators\TransformersGenerator;
+use phpopenapi\yii2openapi\lib\generators\UrlRulesGenerator;
+use phpopenapi\yii2openapi\lib\PathAutoCompletion;
+use phpopenapi\yii2openapi\lib\SchemaToDatabase;
 use Yii;
 use yii\gii\CodeFile;
 use yii\gii\Generator;
@@ -176,7 +176,7 @@ class ApiGenerator extends Generator
     private $_openApiWithoutRef;
 
     /**
-     * @var \cebe\yii2openapi\lib\Config $config
+     * @var \phpopenapi\yii2openapi\lib\Config $config
      **/
     private $config;
 

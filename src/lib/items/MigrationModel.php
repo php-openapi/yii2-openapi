@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\items;
+namespace phpopenapi\yii2openapi\lib\items;
 
 use yii\base\BaseObject;
 use yii\helpers\Inflector;
@@ -49,11 +49,11 @@ class MigrationModel extends BaseObject
     private $fileClassName = '';
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbModel
+     * @var \phpopenapi\yii2openapi\lib\items\DbModel
      */
     private $model;
 
-    /**@var \cebe\yii2openapi\lib\items\ManyToManyRelation|null **/
+    /**@var \phpopenapi\yii2openapi\lib\items\ManyToManyRelation|null **/
     private $relation;
 
     public function __construct(DbModel $model, bool $isFresh = true, ManyToManyRelation $relation = null, $config = [])

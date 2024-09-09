@@ -5,15 +5,15 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\items;
+namespace phpopenapi\yii2openapi\lib\items;
 
 use yii\helpers\VarDumper;
 use \Yii;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
-use cebe\yii2openapi\generator\ApiGenerator;
-use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use yii\base\BaseObject;
-use cebe\yii2openapi\db\ColumnSchema;
+use phpopenapi\yii2openapi\db\ColumnSchema;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use yii\db\mysql\Schema as MySqlSchema;
@@ -374,7 +374,7 @@ class Attribute extends BaseObject
 
     public function handleDecimal(ColumnSchema $columnSchema): void
     {
-        if ($decimalAttributes = \cebe\yii2openapi\lib\ColumnToCode::isDecimalByDbType($columnSchema->dbType)) {
+        if ($decimalAttributes = \phpopenapi\yii2openapi\lib\ColumnToCode::isDecimalByDbType($columnSchema->dbType)) {
             $columnSchema->precision = $decimalAttributes['precision'];
             $columnSchema->scale = $decimalAttributes['scale'];
             $columnSchema->dbType = $decimalAttributes['dbType'];
