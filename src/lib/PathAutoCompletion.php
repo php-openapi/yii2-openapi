@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace phpopenapi\yii2openapi\lib;
+namespace cebe\yii2openapi\lib;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

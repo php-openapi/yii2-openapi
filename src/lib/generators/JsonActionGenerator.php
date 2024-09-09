@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace phpopenapi\yii2openapi\lib\generators;
+namespace cebe\yii2openapi\lib\generators;
 
 use phpopenapi\openapi\spec\Operation;
 use phpopenapi\yii2openapi\lib\items\FractalAction;

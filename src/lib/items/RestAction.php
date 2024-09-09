@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace phpopenapi\yii2openapi\lib\items;
+namespace cebe\yii2openapi\lib\items;
 
 use yii\base\BaseObject;
 use yii\helpers\Inflector;

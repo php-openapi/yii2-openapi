@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace phpopenapi\yii2openapi\lib\openapi;
+namespace cebe\yii2openapi\lib\openapi;
 
 use phpopenapi\openapi\exceptions\UnresolvableReferenceException;
 use phpopenapi\openapi\spec\MediaType;

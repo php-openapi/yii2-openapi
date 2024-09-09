@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace phpopenapi\yii2openapi\generator;
+namespace cebe\yii2openapi\generator;
 
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
