@@ -9,8 +9,8 @@
 /** @noinspection PhpUndefinedFieldInspection */
 namespace phpopenapi\yii2openapi\lib;
 
-use phpopenapi\yii2openapi\lib\items\Attribute;
-use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
 use yii\helpers\VarDumper;
 use function str_replace;
 use const PHP_EOL;

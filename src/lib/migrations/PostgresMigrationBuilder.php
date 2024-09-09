@@ -7,7 +7,7 @@
 
 namespace phpopenapi\yii2openapi\lib\migrations;
 
-use phpopenapi\yii2openapi\lib\items\DbIndex;
+use cebe\yii2openapi\lib\items\DbIndex;
 use yii\db\ColumnSchema;
 use yii\helpers\VarDumper;
 use yii\helpers\ArrayHelper;

@@ -10,7 +10,7 @@ namespace phpopenapi\yii2openapi\lib\items;
 use yii\helpers\Inflector;
 use yii\helpers\VarDumper;
 use function reset;
-use phpopenapi\yii2openapi\lib\traits\ForeignKeyConstraints;
+use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class AttributeRelation
 {

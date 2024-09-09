@@ -2,7 +2,7 @@
 
 namespace tests;
 
-use phpopenapi\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\generator\ApiGenerator;
 use Yii;
 use yii\di\Container;
 use yii\db\mysql\Schema as MySqlSchema;

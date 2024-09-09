@@ -7,7 +7,7 @@
 
 namespace phpopenapi\yii2openapi\lib\items;
 
-use phpopenapi\yii2openapi\lib\ValidationRulesBuilder;
+use cebe\yii2openapi\lib\ValidationRulesBuilder;
 use Yii;
 use yii\base\BaseObject;
 use yii\db\ColumnSchema;

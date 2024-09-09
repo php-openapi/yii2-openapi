@@ -7,18 +7,18 @@
 
 namespace phpopenapi\yii2openapi\lib;
 
-use phpopenapi\yii2openapi\lib\Config;
-use phpopenapi\yii2openapi\lib\CustomSpecAttr;
-use phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException;
-use phpopenapi\yii2openapi\lib\items\Attribute;
-use phpopenapi\yii2openapi\lib\items\AttributeRelation;
-use phpopenapi\yii2openapi\lib\items\DbIndex;
-use phpopenapi\yii2openapi\lib\items\DbModel;
-use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
-use phpopenapi\yii2openapi\lib\items\ManyToManyRelation;
-use phpopenapi\yii2openapi\lib\items\NonDbRelation;
-use phpopenapi\yii2openapi\lib\openapi\ComponentSchema;
-use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\CustomSpecAttr;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\AttributeRelation;
+use cebe\yii2openapi\lib\items\DbIndex;
+use cebe\yii2openapi\lib\items\DbModel;
+use cebe\yii2openapi\lib\items\JunctionSchemas;
+use cebe\yii2openapi\lib\items\ManyToManyRelation;
+use cebe\yii2openapi\lib\items\NonDbRelation;
+use cebe\yii2openapi\lib\openapi\ComponentSchema;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Yii;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;

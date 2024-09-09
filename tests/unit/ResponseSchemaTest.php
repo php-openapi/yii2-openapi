@@ -2,11 +2,11 @@
 
 namespace tests\unit;
 
-use phpopenapi\openapi\Reader;
-use phpopenapi\openapi\spec\OpenApi;
-use phpopenapi\openapi\spec\Operation;
-use phpopenapi\openapi\spec\Reference;
-use phpopenapi\yii2openapi\lib\openapi\ResponseSchema;
+use cebe\openapi\Reader;
+use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Operation;
+use cebe\openapi\spec\Reference;
+use cebe\yii2openapi\lib\openapi\ResponseSchema;
 use tests\TestCase;
 use Yii;
 

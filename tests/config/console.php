@@ -1,7 +1,7 @@
 <?php
 
-use phpopenapi\yii2openapi\Bootstrap;
-use phpopenapi\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\Bootstrap;
+use cebe\yii2openapi\generator\ApiGenerator;
 
 $config = [
     'id' => 'cebe/yii2-openapi',

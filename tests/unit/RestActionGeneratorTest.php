@@ -2,11 +2,11 @@
 
 namespace tests\unit;
 
-use phpopenapi\openapi\Reader;
-use phpopenapi\openapi\spec\OpenApi;
-use phpopenapi\yii2openapi\lib\Config;
-use phpopenapi\yii2openapi\lib\generators\RestActionGenerator;
-use phpopenapi\yii2openapi\lib\items\RestAction;
+use cebe\openapi\Reader;
+use cebe\openapi\spec\OpenApi;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\generators\RestActionGenerator;
+use cebe\yii2openapi\lib\items\RestAction;
 use tests\TestCase;
 use Yii;
 

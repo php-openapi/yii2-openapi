@@ -2,7 +2,7 @@
 
 namespace tests\unit;
 
-use phpopenapi\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\generator\ApiGenerator;
 use tests\TestCase;
 use tests\DbTestCase;
 use Yii;

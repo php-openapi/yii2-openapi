@@ -1,10 +1,10 @@
 <?php
 //Data provider for AttributeResolver test for ref_noobject.yml spec
 
-use phpopenapi\yii2openapi\lib\items\Attribute;
-use phpopenapi\yii2openapi\lib\items\AttributeRelation;
-use phpopenapi\yii2openapi\lib\items\DbModel;
-use phpopenapi\yii2openapi\lib\items\NonDbRelation;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\AttributeRelation;
+use cebe\yii2openapi\lib\items\DbModel;
+use cebe\yii2openapi\lib\items\NonDbRelation;
 
 return [
     'PetStatistic' => new DbModel([

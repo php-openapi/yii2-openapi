@@ -2,12 +2,12 @@
 
 namespace tests\unit;
 
-use phpopenapi\openapi\Reader;
-use phpopenapi\openapi\spec\OpenApi;
-use phpopenapi\yii2openapi\lib\Config;
-use phpopenapi\yii2openapi\lib\items\DbModel;
-use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
-use phpopenapi\yii2openapi\lib\SchemaToDatabase;
+use cebe\openapi\Reader;
+use cebe\openapi\spec\OpenApi;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\items\DbModel;
+use cebe\yii2openapi\lib\items\JunctionSchemas;
+use cebe\yii2openapi\lib\SchemaToDatabase;
 use tests\TestCase;
 use Yii;
 use yii\helpers\VarDumper;

@@ -7,8 +7,8 @@
 
 namespace phpopenapi\yii2openapi\lib\generators;
 
-use phpopenapi\yii2openapi\lib\Config;
-use phpopenapi\yii2openapi\lib\CodeFiles;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\CodeFiles;
 use Yii;
 use yii\gii\CodeFile;
 

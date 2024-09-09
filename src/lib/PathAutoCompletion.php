@@ -11,7 +11,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 use Throwable;
-use phpopenapi\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\Config;
 use Yii;
 use yii\helpers\FileHelper;
 

@@ -7,10 +7,10 @@
 
 namespace phpopenapi\yii2openapi\lib\openapi;
 
-use phpopenapi\openapi\ReferenceContext;
-use phpopenapi\openapi\spec\Reference;
-use phpopenapi\openapi\SpecObjectInterface;
-use phpopenapi\yii2openapi\lib\CustomSpecAttr;
+use cebe\openapi\ReferenceContext;
+use cebe\openapi\spec\Reference;
+use cebe\openapi\SpecObjectInterface;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use Generator;
 use Yii;
 use yii\helpers\Inflector;

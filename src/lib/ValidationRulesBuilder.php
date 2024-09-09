@@ -7,9 +7,9 @@
 
 namespace phpopenapi\yii2openapi\lib;
 
-use phpopenapi\yii2openapi\lib\items\Attribute;
-use phpopenapi\yii2openapi\lib\items\DbModel;
-use phpopenapi\yii2openapi\lib\items\ValidationRule;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\DbModel;
+use cebe\yii2openapi\lib\items\ValidationRule;
 use yii\helpers\VarDumper;
 use yii\validators\DateValidator;
 use function count;

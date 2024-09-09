@@ -9,11 +9,11 @@ namespace phpopenapi\yii2openapi\lib\items;
 
 use yii\helpers\VarDumper;
 use \Yii;
-use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
-use phpopenapi\yii2openapi\generator\ApiGenerator;
-use phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
+use cebe\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use yii\base\BaseObject;
-use phpopenapi\yii2openapi\db\ColumnSchema;
+use cebe\yii2openapi\db\ColumnSchema;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use yii\db\mysql\Schema as MySqlSchema;

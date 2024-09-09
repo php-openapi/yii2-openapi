@@ -2,11 +2,11 @@
 
 namespace tests\unit;
 
-use phpopenapi\yii2openapi\lib\ColumnToCode;
-use phpopenapi\yii2openapi\lib\items\DbModel;
-use phpopenapi\yii2openapi\lib\items\Attribute;
-use phpopenapi\yii2openapi\generator\ApiGenerator;
-use phpopenapi\yii2openapi\lib\migrations\MysqlMigrationBuilder;
+use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\items\DbModel;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
 use tests\DbTestCase;
 use Yii;
 use yii\db\mysql\Schema as MySqlSchema;

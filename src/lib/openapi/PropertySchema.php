@@ -8,18 +8,18 @@
 namespace phpopenapi\yii2openapi\lib\openapi;
 
 use yii\db\ColumnSchema;
-use phpopenapi\yii2openapi\generator\ApiGenerator;
+use cebe\yii2openapi\generator\ApiGenerator;
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
-use phpopenapi\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\Attribute;
 use yii\base\NotSupportedException;
 use BadMethodCallException;
-use phpopenapi\openapi\ReferenceContext;
-use phpopenapi\openapi\spec\Reference;
-use phpopenapi\openapi\SpecObjectInterface;
-use phpopenapi\yii2openapi\lib\CustomSpecAttr;
-use phpopenapi\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\openapi\ReferenceContext;
+use cebe\openapi\spec\Reference;
+use cebe\openapi\SpecObjectInterface;
+use cebe\yii2openapi\lib\CustomSpecAttr;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use Throwable;
 use Yii;
 use yii\db\Schema as YiiDbSchema;
@@ -29,7 +29,7 @@ use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 use function is_int;
 use function strpos;
-use phpopenapi\yii2openapi\lib\traits\ForeignKeyConstraints;
+use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class PropertySchema
 {

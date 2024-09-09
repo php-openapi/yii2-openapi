@@ -2,13 +2,13 @@
 
 namespace tests\unit;
 
-use phpopenapi\yii2openapi\lib\Config;
-use phpopenapi\yii2openapi\lib\generators\MigrationsGenerator;
-use phpopenapi\yii2openapi\lib\items\Attribute;
-use phpopenapi\yii2openapi\lib\items\DbIndex;
-use phpopenapi\yii2openapi\lib\items\DbModel;
-use phpopenapi\yii2openapi\lib\items\MigrationModel;
-use phpopenapi\yii2openapi\lib\migrations\MigrationRecordBuilder;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\generators\MigrationsGenerator;
+use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\items\DbIndex;
+use cebe\yii2openapi\lib\items\DbModel;
+use cebe\yii2openapi\lib\items\MigrationModel;
+use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use tests\TestCase;
 use tests\DbTestCase;
 use Yii;

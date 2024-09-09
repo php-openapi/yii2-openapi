@@ -7,10 +7,10 @@
 
 namespace phpopenapi\yii2openapi\lib\generators;
 
-use phpopenapi\yii2openapi\lib\CodeFiles;
-use phpopenapi\yii2openapi\lib\Config;
-use phpopenapi\yii2openapi\lib\items\FractalAction;
-use phpopenapi\yii2openapi\lib\items\RestAction;
+use cebe\yii2openapi\lib\CodeFiles;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\items\FractalAction;
+use cebe\yii2openapi\lib\items\RestAction;
 use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
