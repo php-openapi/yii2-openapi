@@ -7,8 +7,8 @@
 
 namespace phpopenapi\yii2openapi\lib;
 
-use cebe\openapi\Reader;
-use cebe\openapi\spec\OpenApi;
+use phpopenapi\openapi\Reader;
+use phpopenapi\openapi\spec\OpenApi;
 use Closure;
 use Yii;
 use yii\base\BaseObject;

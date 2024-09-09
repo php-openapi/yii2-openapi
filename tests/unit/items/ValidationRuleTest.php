@@ -2,7 +2,7 @@
 
 namespace tests\unit\items;
 
-use cebe\yii2openapi\lib\items\ValidationRule;
+use phpopenapi\yii2openapi\lib\items\ValidationRule;
 use tests\TestCase;
 use function implode;
 use function strtolower;

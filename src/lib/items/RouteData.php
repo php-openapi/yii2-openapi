@@ -7,7 +7,7 @@
 
 namespace phpopenapi\yii2openapi\lib\items;
 
-use cebe\openapi\spec\PathItem;
+use phpopenapi\openapi\spec\PathItem;
 use yii\base\BaseObject;
 use yii\base\InvalidCallException;
 use yii\helpers\ArrayHelper;

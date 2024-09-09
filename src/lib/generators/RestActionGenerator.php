@@ -7,13 +7,13 @@
 
 namespace phpopenapi\yii2openapi\lib\generators;
 
-use cebe\openapi\spec\Operation;
-use cebe\openapi\spec\PathItem;
-use cebe\openapi\spec\Reference;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\items\RestAction;
-use cebe\yii2openapi\lib\items\RouteData;
-use cebe\yii2openapi\lib\openapi\ResponseSchema;
+use phpopenapi\openapi\spec\Operation;
+use phpopenapi\openapi\spec\PathItem;
+use phpopenapi\openapi\spec\Reference;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\items\RestAction;
+use phpopenapi\yii2openapi\lib\items\RouteData;
+use phpopenapi\yii2openapi\lib\openapi\ResponseSchema;
 use Yii;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;

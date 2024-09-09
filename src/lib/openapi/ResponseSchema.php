@@ -7,13 +7,13 @@
 
 namespace phpopenapi\yii2openapi\lib\openapi;
 
-use cebe\openapi\exceptions\UnresolvableReferenceException;
-use cebe\openapi\spec\MediaType;
-use cebe\openapi\spec\Operation;
-use cebe\openapi\spec\Reference;
-use cebe\openapi\spec\Schema;
-use cebe\openapi\SpecObjectInterface;
-use cebe\yii2openapi\lib\items\JunctionSchemas;
+use phpopenapi\openapi\exceptions\UnresolvableReferenceException;
+use phpopenapi\openapi\spec\MediaType;
+use phpopenapi\openapi\spec\Operation;
+use phpopenapi\openapi\spec\Reference;
+use phpopenapi\openapi\spec\Schema;
+use phpopenapi\openapi\SpecObjectInterface;
+use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
 use function array_keys;
 use function explode;
 use function str_replace;

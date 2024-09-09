@@ -2,11 +2,11 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\lib\items\Attribute;
-use cebe\yii2openapi\lib\items\DbIndex;
-use cebe\yii2openapi\lib\items\DbModel;
-use cebe\yii2openapi\lib\items\ValidationRule;
-use cebe\yii2openapi\lib\ValidationRulesBuilder;
+use phpopenapi\yii2openapi\lib\items\Attribute;
+use phpopenapi\yii2openapi\lib\items\DbIndex;
+use phpopenapi\yii2openapi\lib\items\DbModel;
+use phpopenapi\yii2openapi\lib\items\ValidationRule;
+use phpopenapi\yii2openapi\lib\ValidationRulesBuilder;
 use tests\TestCase;
 use yii\db\Schema;
 

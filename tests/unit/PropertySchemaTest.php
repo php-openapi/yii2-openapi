@@ -2,10 +2,10 @@
 
 namespace tests\unit;
 
-use cebe\openapi\Reader;
-use cebe\openapi\spec\OpenApi;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
-use cebe\yii2openapi\lib\openapi\ComponentSchema;
+use phpopenapi\openapi\Reader;
+use phpopenapi\openapi\spec\OpenApi;
+use phpopenapi\yii2openapi\lib\openapi\PropertySchema;
+use phpopenapi\yii2openapi\lib\openapi\ComponentSchema;
 use tests\DbTestCase;
 use Yii;
 

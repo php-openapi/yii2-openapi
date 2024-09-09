@@ -7,8 +7,8 @@
 
 namespace phpopenapi\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\items\JunctionSchemas;
-use cebe\yii2openapi\lib\openapi\ComponentSchema;
+use phpopenapi\yii2openapi\lib\items\JunctionSchemas;
+use phpopenapi\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
 use yii\helpers\StringHelper;
