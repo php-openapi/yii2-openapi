@@ -1,5 +1,5 @@
 <?php
-use cebe\yii2openapi\lib\items\RestAction;
+use phpopenapi\yii2openapi\lib\items\RestAction;
 
 /**
  * @var string                                         $namespace

@@ -7,9 +7,9 @@
 
 namespace phpopenapi\yii2openapi\lib\generators;
 
-use cebe\yii2openapi\lib\CodeFiles;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\items\Transformer;
+use phpopenapi\yii2openapi\lib\CodeFiles;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\items\Transformer;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Yii;

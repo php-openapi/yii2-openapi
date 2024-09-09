@@ -8,8 +8,8 @@
 namespace phpopenapi\yii2openapi\lib;
 
 use yii\db\ArrayExpression;
-use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
-use cebe\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
 use yii\db\ColumnSchema;
 use yii\db\ColumnSchemaBuilder;
 use yii\db\Expression;

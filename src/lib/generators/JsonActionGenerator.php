@@ -8,9 +8,9 @@
 namespace phpopenapi\yii2openapi\lib\generators;
 
 use cebe\openapi\spec\Operation;
-use cebe\yii2openapi\lib\items\FractalAction;
-use cebe\yii2openapi\lib\items\RouteData;
-use cebe\yii2openapi\lib\openapi\ResponseSchema;
+use phpopenapi\yii2openapi\lib\items\FractalAction;
+use phpopenapi\yii2openapi\lib\items\RouteData;
+use phpopenapi\yii2openapi\lib\openapi\ResponseSchema;
 use Yii;
 use yii\base\BaseObject;
 use yii\helpers\Inflector;

@@ -7,8 +7,8 @@
 
 namespace phpopenapi\yii2openapi\lib\migrations;
 
-use cebe\yii2openapi\generator\ApiGenerator;
-use cebe\yii2openapi\lib\ColumnToCode;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\lib\ColumnToCode;
 use Yii;
 use yii\db\ColumnSchema;
 use yii\db\Schema;

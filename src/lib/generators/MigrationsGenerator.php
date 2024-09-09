@@ -7,13 +7,13 @@
 
 namespace phpopenapi\yii2openapi\lib\generators;
 
-use cebe\yii2openapi\lib\CodeFiles;
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\items\DbModel;
-use cebe\yii2openapi\lib\items\MigrationModel;
-use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
-use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
-use cebe\yii2openapi\lib\migrations\PostgresMigrationBuilder;
+use phpopenapi\yii2openapi\lib\CodeFiles;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\items\DbModel;
+use phpopenapi\yii2openapi\lib\items\MigrationModel;
+use phpopenapi\yii2openapi\lib\migrations\BaseMigrationBuilder;
+use phpopenapi\yii2openapi\lib\migrations\MysqlMigrationBuilder;
+use phpopenapi\yii2openapi\lib\migrations\PostgresMigrationBuilder;
 use Exception;
 use Yii;
 use yii\db\Connection;

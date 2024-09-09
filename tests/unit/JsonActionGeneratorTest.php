@@ -2,10 +2,10 @@
 
 namespace tests\unit;
 
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\generators\JsonActionGenerator;
-use cebe\yii2openapi\lib\items\FractalAction;
-use cebe\yii2openapi\lib\items\RouteData;
+use phpopenapi\yii2openapi\lib\Config;
+use phpopenapi\yii2openapi\lib\generators\JsonActionGenerator;
+use phpopenapi\yii2openapi\lib\items\FractalAction;
+use phpopenapi\yii2openapi\lib\items\RouteData;
 use tests\TestCase;
 
 class JsonActionGeneratorTest extends TestCase

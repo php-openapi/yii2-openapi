@@ -1,5 +1,5 @@
 <?php
-use cebe\yii2openapi\lib\items\FractalAction;
+use phpopenapi\yii2openapi\lib\items\FractalAction;
 
 /**
  * @var string                                            $namespace

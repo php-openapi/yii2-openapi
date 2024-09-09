@@ -7,9 +7,9 @@
 
 namespace phpopenapi\yii2openapi\lib\migrations;
 
-use cebe\yii2openapi\generator\ApiGenerator;
-use cebe\yii2openapi\lib\ColumnToCode;
-use cebe\yii2openapi\lib\items\DbIndex;
+use phpopenapi\yii2openapi\generator\ApiGenerator;
+use phpopenapi\yii2openapi\lib\ColumnToCode;
+use phpopenapi\yii2openapi\lib\items\DbIndex;
 use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\IndexConstraint;
