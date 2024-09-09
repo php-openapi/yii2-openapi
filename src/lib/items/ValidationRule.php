@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\items;
+namespace phpopenapi\yii2openapi\lib\items;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;

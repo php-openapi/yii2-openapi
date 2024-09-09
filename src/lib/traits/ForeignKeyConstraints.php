@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\traits;
+namespace phpopenapi\yii2openapi\lib\traits;
 
 trait ForeignKeyConstraints
 {

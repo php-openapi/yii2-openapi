@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\generators;
+namespace phpopenapi\yii2openapi\lib\generators;
 
 use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\CodeFiles;

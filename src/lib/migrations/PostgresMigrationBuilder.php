@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\lib\migrations;
+namespace phpopenapi\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\lib\items\DbIndex;
 use yii\db\ColumnSchema;

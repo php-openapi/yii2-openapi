@@ -5,7 +5,7 @@
  * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
  */
 
-namespace cebe\yii2openapi\db;
+namespace phpopenapi\yii2openapi\db;
 
 class ColumnSchema extends \yii\db\ColumnSchema
 {
