@@ -56,6 +56,9 @@ class ModelsGenerator
         }
         foreach ($this->models as $model) {
             $className = $model->getClassName();
+            if (!empty($this->config->dbModel['scenarioDefaultDescription'])) {
+                $model->scenarioDefaultDescription = $this->config->dbModel['scenarioDefaultDescription'];
+            }
             if ($model->isNotDb === false) {
                 $this->files->add(new CodeFile(
                     Yii::getAlias("$modelPath/base/$className.php"),

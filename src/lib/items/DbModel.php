@@ -7,6 +7,7 @@
 
 namespace cebe\yii2openapi\lib\items;
 
+use cebe\yii2openapi\lib\helpers\FormatHelper;
 use cebe\yii2openapi\lib\ValidationRulesBuilder;
 use Yii;
 use yii\base\BaseObject;
@@ -27,6 +28,11 @@ use const PHP_EOL;
  */
 class DbModel extends BaseObject
 {
+    /**
+     * @var \cebe\openapi\spec\Schema
+    */
+    public $openapiSchema;
+
     /**
      * @var string primary key attribute name
      */
@@ -75,6 +81,18 @@ class DbModel extends BaseObject
     public $indexes = [];
 
     public $isNotDb = false;
+
+    /**
+     * @var string
+     * Here, you can set your own default description for the scenario.
+     * AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
+     */
+    public $scenarioDefaultDescription = "Scenario {scenarioName}";
+
+    /**
+     * @var array Automatically generated scenarios from the model 'x-scenarios'.
+     */
+    private $_scenarios;
 
     public function getTableAlias():string
     {
@@ -172,5 +190,131 @@ class DbModel extends BaseObject
         return array_filter($this->attributes, static function (Attribute $attribute) {
             return !$attribute->isVirtual;
         });
+    }
+
+    /**
+     * Returns a scenarios array based on the 'x-scenarios'.
+     * Each scenario has the following properties: 'name', 'const', and 'description'.
+     *
+     * When the `getScenarios` function is called for the first time on this model,
+     * the value is stored in `_scenarios` and then returned.
+     * If the `getScenariosByOpenapiSchema` function is called again on this model,
+     * the stored value from `_scenarios` is returned.
+     *
+     * @return array
+     */
+    public function getScenarios(): array
+    {
+        if (isset($this->_scenarios)) {
+            return $this->_scenarios;
+        }
+        $this->_scenarios = $this->getScenariosByOpenapiSchema();
+        return $this->_scenarios;
+    }
+
+    /**
+     * Returns a scenarios array based on the 'x-scenarios'.
+     * Each scenario has the following properties: 'name', 'const', and 'description'.
+     *
+     * Example for 'schema.yaml':
+     * x-scenarios:
+     *   - name: create
+     *     description: My custom description for scenario create
+     *   - name: update
+     *
+     * 1) With default @see $scenarioDefaultDescription = "Scenario {scenarioName}"
+     *
+     * The resulting array:
+     *  [
+     *      [
+     *          'name' => 'create',
+     *          'const' => 'SCENARIO_CREATE',
+     *          'description' => "My custom description for scenario create",
+     *      ],
+     *      [
+     *          'name' => 'update',
+     *          'const' => 'SCENARIO_UPDATE',
+     *          'description' => "Scenario update",
+     *      ],
+     *  ]
+     *
+     * 2) With custom @see $scenarioDefaultDescription = implode("\n", [
+     *      "This Backend-Scenario \"{scenarioName}\" exist in both the frontend model and the backend model.",
+     *      "@see \common\client\models\{modelName}::{scenarioConst}",
+     *  ]);
+     *
+     * For the 'update' scenario, it is an example of a two-line description.
+     * E.g. your modelName is 'Project'.
+     * The resulting array:
+     *  [
+     *      [
+     *          'name' => 'create',
+     *          'const' => 'SCENARIO_CREATE',
+     *          'description' => "My custom description for scenario create",
+     *      ],
+     *      [
+     *          'name' => 'update',
+     *          'const' => 'SCENARIO_UPDATE',
+     *          'description' => "This Backend-Scenario \"update\" exist in both the frontend model and the backend model.\n@see \common\client\models\Project::SCENARIO_UPDATE",
+     *      ],
+     *  ]
+     *
+     * @return array
+     */
+    private function getScenariosByOpenapiSchema(): array
+    {
+        $x_scenarios = $this->openapiSchema->{'x-scenarios'} ?? [];
+        if (empty($x_scenarios) || !is_array($x_scenarios)) {
+            return [];
+        }
+
+        $uniqueNames = [];
+        $scenarios = array_filter($x_scenarios, function ($scenario) use (&$uniqueNames) {
+            $name = $scenario['name'] ?? '';
+
+            // Check if the name is empty, already used, or does not meet the criteria
+            if (
+                empty($name) ||
+                in_array($name, $uniqueNames) ||
+                !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name)
+            ) {
+                return false; // Exclude this item
+            }
+
+            // Add the name to the uniqueNames array and keep the item
+            $uniqueNames[] = $name;
+            return true;
+        });
+
+        foreach ($scenarios as $key => $scenario) {
+            $scenarios[$key]['const'] = 'SCENARIO_' . strtoupper(implode('_', preg_split('/(?=[A-Z])/', $scenario['name'])));
+            $description = !empty($scenario['description']) ?
+                $scenario['description'] : $this->scenarioDefaultDescription;
+            $scenarios[$key]['description'] = FormatHelper::getFormattedDescription(
+                str_replace([
+                    '{scenarioName}',
+                    '{scenarioConst}',
+                    '{modelName}',
+                ], [
+                    $scenario['name'],
+                    $scenarios[$key]['const'],
+                    $this->name,
+                ], $description),
+                5
+            );
+        }
+
+        return $scenarios;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModelClassDescription(): string
+    {
+        if (empty($this->description)) {
+            return ' This is the model class for table "'.$this->tableName.'".';
+        }
+        return FormatHelper::getFormattedDescription($this->description);
     }
 }

@@ -7,6 +7,7 @@
 
 namespace cebe\yii2openapi\lib\items;
 
+use cebe\yii2openapi\lib\helpers\FormatHelper;
 use yii\helpers\VarDumper;
 use \Yii;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
@@ -295,11 +296,16 @@ class Attribute extends BaseObject
         return $this->limits['minLength'];
     }
 
-    public function getFormattedDescription():string
+    /**
+     * @return string
+     */
+    public function getPropertyAnnotation(): string
     {
-        $comment = $this->columnName.' '.$this->description;
-        $type = $this->phpType;
-        return $type.' $'.str_replace("\n", "\n * ", rtrim($comment));
+        $annotation = $this->phpType . ' $' . $this->columnName;
+        if (!empty($this->description)) {
+            $annotation .= FormatHelper::getFormattedDescription($this->description);
+        }
+        return $annotation;
     }
 
     public function toColumnSchema():ColumnSchema
