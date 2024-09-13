@@ -83,16 +83,16 @@ class DbModel extends BaseObject
     public $isNotDb = false;
 
     /**
-     * @var array Automatically generated scenarios from the model 'x-scenarios'.
-     */
-    private array $scenarios;
-
-    /**
      * @var string
      * Here, you can set your own default description for the scenario.
      * AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
      */
-    public string $scenarioDefaultDescription = "Scenario {scenarioName}";
+    public $scenarioDefaultDescription = "Scenario {scenarioName}";
+
+    /**
+     * @var array Automatically generated scenarios from the model 'x-scenarios'.
+     */
+    private $_scenarios;
 
     public function getTableAlias():string
     {
@@ -193,18 +193,72 @@ class DbModel extends BaseObject
     }
 
     /**
+     * Returns a scenarios array based on the 'x-scenarios'.
+     * Each scenario has the following properties: 'name', 'const', and 'description'.
+     *
+     * When the `getScenarios` function is called for the first time on this model,
+     * the value is stored in `_scenarios` and then returned.
+     * If the `getScenariosByOpenapiSchema` function is called again on this model,
+     * the stored value from `_scenarios` is returned.
+     *
      * @return array
      */
     public function getScenarios(): array
     {
-        if (isset($this->scenarios)) {
-            return $this->scenarios;
+        if (isset($this->_scenarios)) {
+            return $this->_scenarios;
         }
-        $this->scenarios = $this->getScenariosByOpenapiSchema();
-        return $this->scenarios;
+        $this->_scenarios = $this->getScenariosByOpenapiSchema();
+        return $this->_scenarios;
     }
 
     /**
+     * Returns a scenarios array based on the 'x-scenarios'.
+     * Each scenario has the following properties: 'name', 'const', and 'description'.
+     *
+     * Example for 'schema.yaml':
+     * x-scenarios:
+     *   - name: create
+     *     description: My custom description for scenario create
+     *   - name: update
+     *
+     * 1) With default @see $scenarioDefaultDescription = "Scenario {scenarioName}"
+     *
+     * The resulting array:
+     *  [
+     *      [
+     *          'name' => 'create',
+     *          'const' => 'SCENARIO_CREATE',
+     *          'description' => "My custom description for scenario create",
+     *      ],
+     *      [
+     *          'name' => 'update',
+     *          'const' => 'SCENARIO_UPDATE',
+     *          'description' => "Scenario update",
+     *      ],
+     *  ]
+     *
+     * 2) With custom @see $scenarioDefaultDescription = implode("\n", [
+     *      "This Backend-Scenario \"{scenarioName}\" exist in both the frontend model and the backend model.",
+     *      "@see \common\client\models\{modelName}::{scenarioConst}",
+     *  ]);
+     *
+     * For the 'update' scenario, it is an example of a two-line description.
+     * E.g. your modelName is 'Project'.
+     * The resulting array:
+     *  [
+     *      [
+     *          'name' => 'create',
+     *          'const' => 'SCENARIO_CREATE',
+     *          'description' => "My custom description for scenario create",
+     *      ],
+     *      [
+     *          'name' => 'update',
+     *          'const' => 'SCENARIO_UPDATE',
+     *          'description' => "This Backend-Scenario \"update\" exist in both the frontend model and the backend model.\n@see \common\client\models\Project::SCENARIO_UPDATE",
+     *      ],
+     *  ]
+     *
      * @return array
      */
     private function getScenariosByOpenapiSchema(): array

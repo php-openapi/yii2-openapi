@@ -136,10 +136,11 @@ class ApiGenerator extends Generator
 
     /**
      * @var array Map for custom dbModels
+     *
+     * @see DbModel::$scenarioDefaultDescription with acceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
      * @example
      *  'dbModel' => [
-     *      AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
-     *      'scenarioDefaultDescription' => " Scenario {scenarioName}",     @see DbModel::$scenarioDefaultDescription
+     *      'scenarioDefaultDescription' => "Scenario {scenarioName}",
      *  ]
      */
     public $dbModel = [];
