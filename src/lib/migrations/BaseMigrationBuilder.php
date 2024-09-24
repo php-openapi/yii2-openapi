@@ -101,7 +101,7 @@ abstract class BaseMigrationBuilder
                 continue;
             }
             $this->migration
-                ->addUpCode($this->recordBuilder->addFk($fkName, $tableAlias, $fkCol, $refTable, $refCol))
+                ->addUpCode($this->recordBuilder->addFk($fkName, $tableAlias, $fkCol, $refTable, $refCol, 'CASCADE'))
                 ->addDownCode($this->recordBuilder->dropFk($fkName, $tableAlias));
             $this->migration->dependencies[] = $refTable;
         }
