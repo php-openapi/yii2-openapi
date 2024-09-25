@@ -164,6 +164,8 @@ class Config extends BaseObject
      */
     private $openApi;
 
+    public $resolvedOpenApi;
+
     /**
      * @return \cebe\openapi\spec\OpenApi
      * @throws \cebe\openapi\exceptions\IOException

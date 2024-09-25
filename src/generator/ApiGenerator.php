@@ -456,6 +456,7 @@ class ApiGenerator extends Generator
                 unset($props[$key]);
             }
             $this->config = new Config($props);
+            $this->config->resolvedOpenApi = $this->getOpenApiWithoutReferences();
             $this->config->setFileRenderer(function ($template, $params) {
                 return $this->render($template, $params);
             });
@@ -511,9 +512,9 @@ class ApiGenerator extends Generator
         if ($this->_openApiWithoutRef === null) {
             $file = Yii::getAlias($this->openApiPath);
             if (StringHelper::endsWith($this->openApiPath, '.json', false)) {
-                $this->_openApiWithoutRef = Reader::readFromJsonFile($file, OpenApi::class, true);
+                $this->_openApiWithoutRef = Reader::readFromJsonFile($file, OpenApi::class, true, true);
             } else {
-                $this->_openApiWithoutRef = Reader::readFromYamlFile($file, OpenApi::class, true);
+                $this->_openApiWithoutRef = Reader::readFromYamlFile($file, OpenApi::class, true, true);
             }
         }
         return $this->_openApiWithoutRef;

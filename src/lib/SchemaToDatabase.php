@@ -81,6 +81,7 @@ class SchemaToDatabase
         $junctions = $this->findJunctionSchemas();
         foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
             $schema = Yii::createObject(ComponentSchema::class, [$openApiSchema, $schemaName]);
+            $resolvedComponentSchema = Yii::createObject(ComponentSchema::class, [$this->config->resolvedOpenApi->components->schemas[$schemaName], $schemaName]);
 
             if (!$this->canGenerateModel($schemaName, $schema)) {
                 continue;
@@ -89,7 +90,7 @@ class SchemaToDatabase
                 $schemaName = $junctions->trimPrefix($schemaName);
             }
             /**@var \cebe\yii2openapi\lib\AttributeResolver $resolver */
-            $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
+            $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config, $resolvedComponentSchema]);
             $models[$schemaName] = $resolver->resolve();
         }
         foreach ($models as  $model) {

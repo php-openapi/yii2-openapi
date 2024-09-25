@@ -10,6 +10,7 @@ use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\SchemaToDatabase;
 use tests\TestCase;
 use Yii;
+use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 use function array_keys;
 
@@ -72,7 +73,14 @@ class SchemaToDatabaseTest extends TestCase
     public function testGenerateModels()
     {
         $schemaFile = Yii::getAlias("@specs/many2many.yaml");
-        $converter = new SchemaToDatabase(new Config(['openApiPath' => $schemaFile]));
+
+        if (StringHelper::endsWith($schemaFile, '.json', false)) {
+            $openapi = Reader::readFromJsonFile($schemaFile, OpenApi::class, true, true);
+        } else {
+            $openapi = Reader::readFromYamlFile($schemaFile, OpenApi::class, true, true);
+        }
+
+        $converter = new SchemaToDatabase(new Config(['openApiPath' => $schemaFile, 'resolvedOpenApi' => $openapi]));
         $result = $converter->prepareModels();
         self::assertNotEmpty($result);
         self::assertArrayHasKey('Post', $result);

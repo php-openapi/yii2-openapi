@@ -1,0 +1,29 @@
+openapi: 3.0.3
+
+info:
+  title: 'Bug: allOf with description #51'
+  version: 1.0.0
+
+components:
+  schemas:
+    Invoice:
+      title: Invoice
+      x-table: invoices
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The PK
+        reference_invoice:
+          allOf:
+            - $ref: '#/components/schemas/Invoice'
+            - x-faker: false
+            - description: This field is only set on invoices of type "cancellation_invoice"
+
+
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK

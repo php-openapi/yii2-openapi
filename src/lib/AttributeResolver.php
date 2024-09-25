@@ -76,10 +76,18 @@ class AttributeResolver
     /** @var Config */
     private $config;
 
-    public function __construct(string $schemaName, ComponentSchema $schema, JunctionSchemas $junctions, ?Config $config = null)
-    {
+    public $resolvedComponentSchema;
+
+    public function __construct(
+        string $schemaName,
+        ComponentSchema $schema,
+        JunctionSchemas $junctions,
+        ?Config $config = null,
+        $resolvedComponentSchema = null
+    ) {
         $this->schemaName = $schemaName;
         $this->componentSchema = $schema;
+        $this->resolvedComponentSchema = $resolvedComponentSchema;
         $this->tableName = $schema->resolveTableName($schemaName);
         $this->junctions = $junctions;
         $this->isJunctionSchema = $junctions->isJunctionSchema($schemaName);
@@ -94,8 +102,17 @@ class AttributeResolver
      */
     public function resolve():DbModel
     {
-        foreach ($this->componentSchema->getProperties() as $property) {
+        foreach ($this->componentSchema->getProperties() as $key => $property) {
             /** @var $property \cebe\yii2openapi\lib\openapi\PropertySchema */
+
+            $resolvedProperty = null;
+            if ($this->resolvedComponentSchema) {
+                foreach ($this->resolvedComponentSchema->getProperties() as $key2 => $prop) {
+                    if ($key === $key2) {
+                        $resolvedProperty = $prop;
+                    }
+                }
+            }
 
             $isRequired = $this->componentSchema->isRequiredProperty($property->getName());
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
@@ -106,9 +123,9 @@ class AttributeResolver
             if ($this->isJunctionSchema) {
                 $this->resolveJunctionTableProperty($property, $isRequired);
             } elseif ($this->hasMany2Many) {
-                $this->resolveHasMany2ManyTableProperty($property, $isRequired);
+                $this->resolveHasMany2ManyTableProperty($property, $isRequired, $resolvedProperty);
             } else {
-                $this->resolveProperty($property, $isRequired, $nullableValue);
+                $this->resolveProperty($property, $isRequired, $nullableValue, $resolvedProperty);
             }
         }
         return Yii::createObject(DbModel::class, [
@@ -169,7 +186,7 @@ class AttributeResolver
      * @throws \cebe\yii2openapi\lib\exceptions\InvalidDefinitionException
      * @throws \yii\base\InvalidConfigException
      */
-    protected function resolveHasMany2ManyTableProperty(PropertySchema $property, bool $isRequired):void
+    protected function resolveHasMany2ManyTableProperty(PropertySchema $property, bool $isRequired, $resolvedProperty = null):void
     {
         if ($this->junctions->isManyToManyProperty($this->schemaName, $property->getName())) {
             return;
@@ -203,7 +220,7 @@ class AttributeResolver
             return;
         }
 
-        $this->resolveProperty($property, $isRequired);
+        $this->resolveProperty($property, $isRequired, $resolvedProperty);
     }
 
     /**
@@ -216,14 +233,15 @@ class AttributeResolver
     protected function resolveProperty(
         PropertySchema $property,
         bool $isRequired,
-        $nullableValue = 'ARG_ABSENT'
+        $nullableValue = 'ARG_ABSENT',
+        $resolvedProperty = null
     ):void {
         if ($nullableValue === 'ARG_ABSENT') {
             $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
         }
         $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
         $attribute->setRequired($isRequired)
-                  ->setDescription($property->getAttr('description', ''))
+                  ->setDescription($resolvedProperty ? $resolvedProperty->getAttr('description', '') : $property->getAttr('description', ''))
                   ->setReadOnly($property->isReadonly())
                   ->setDefault($property->guessDefault())
                   ->setXDbType($property->getAttr(CustomSpecAttr::DB_TYPE))
@@ -262,7 +280,7 @@ class AttributeResolver
             $attribute->setPhpType($fkProperty->guessPhpType())
                       ->setDbType($fkProperty->guessDbType(true))
                       ->setSize($fkProperty->getMaxLength())
-                      ->setDescription($property->getRefSchema()->getDescription())
+                      ->setDescription($resolvedProperty ? $resolvedProperty->getAttr('description', '') : $property->getRefSchema()->getDescription())
                       ->setDefault($fkProperty->guessDefault())
                       ->setLimits($min, $max, $fkProperty->getMinLength());
 

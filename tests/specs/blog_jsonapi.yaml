@@ -690,8 +690,8 @@ components:
               included:
                 type: array
                 items:
-                  allOf:
-                    - $ref: '#/components/schemas/_PostResource'
+#                  allOf: # TODO undo
+                  $ref: '#/components/schemas/_PostResource'
     CategoryCreatedResponse:
       description: Single category info
       headers:
@@ -806,8 +806,8 @@ components:
               included:
                 type: array
                 items:
-                  allOf:
-                    - $ref: '#/components/schemas/_PostResource'
+#                  allOf: # TODO undo
+                  $ref: '#/components/schemas/_PostResource'
     PostListResponse:
       description: List posts with pagination
       content:
