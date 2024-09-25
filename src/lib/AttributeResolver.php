@@ -84,8 +84,7 @@ class AttributeResolver
         JunctionSchemas $junctions,
         ?Config $config = null,
         $resolvedComponentSchema = null
-    )
-    {
+    ) {
         $this->schemaName = $schemaName;
         $this->componentSchema = $schema;
         $this->resolvedComponentSchema = $resolvedComponentSchema;

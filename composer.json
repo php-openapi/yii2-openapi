@@ -59,9 +59,9 @@
 			"type": "composer",
 			"url": "https://asset-packagist.org"
 		},
-        {
-            "type": "vcs",
-            "url": "http://github.com/SOHELAHMED7/php-openapi"
-        }
+		{
+			"type": "vcs",
+			"url": "http://github.com/SOHELAHMED7/php-openapi"
+		}
 	]
 }
