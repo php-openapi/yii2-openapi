@@ -360,4 +360,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/52
+    public function test52BugDependentonAllofWithXFakerFalse()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/52_bug_dependenton_allof_with_x_faker_false/index.php");
+        $this->runGenerator($testFile);
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/52_bug_dependenton_allof_with_x_faker_false/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
