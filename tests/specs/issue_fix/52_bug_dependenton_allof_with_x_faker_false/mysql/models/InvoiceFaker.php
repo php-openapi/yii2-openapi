@@ -31,7 +31,8 @@ class InvoiceFaker extends BaseModelFaker
         $model = new Invoice();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->reference_invoice_2_id = $faker->randomElement(\app\models\Invoice::find()->select("id")->column());
-        $model->user_id = $faker->randomElement(\app\models\Invoice::find()->select("id")->column());
+        $model->user_id = $faker->randomElement(\app\models\User::find()->select("id")->column());
+        $model->fruit_id = $faker->randomElement(\app\models\Fruit::find()->select("id")->column());
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {
@@ -44,6 +45,8 @@ class InvoiceFaker extends BaseModelFaker
     {
         return [
             // just model class names
+            'User',
+            'Fruit',
 
         ];
     }

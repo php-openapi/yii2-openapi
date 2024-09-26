@@ -14,11 +14,15 @@ namespace app\models\base;
  * @property int $reference_invoice_2_id
  * @property int $user_id
  * @property int $user_2_id
+ * @property int $fruit_id
+ * @property int $animal_id
  *
  * @property \app\models\Invoice $referenceInvoice
  * @property \app\models\Invoice $referenceInvoice2
- * @property \app\models\Invoice $user
- * @property \app\models\Invoice $user2
+ * @property \app\models\User $user
+ * @property \app\models\User $user2
+ * @property \app\models\Fruit $fruit
+ * @property \app\models\Animal $animal
  */
 abstract class Invoice extends \yii\db\ActiveRecord
 {
@@ -38,6 +42,10 @@ abstract class Invoice extends \yii\db\ActiveRecord
             'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'User'],
             'user_2_id_integer' => [['user_2_id'], 'integer'],
             'user_2_id_exist' => [['user_2_id'], 'exist', 'targetRelation' => 'User2'],
+            'fruit_id_integer' => [['fruit_id'], 'integer'],
+            'fruit_id_exist' => [['fruit_id'], 'exist', 'targetRelation' => 'Fruit'],
+            'animal_id_integer' => [['animal_id'], 'integer'],
+            'animal_id_exist' => [['animal_id'], 'exist', 'targetRelation' => 'Animal'],
         ];
     }
 
@@ -53,11 +61,21 @@ abstract class Invoice extends \yii\db\ActiveRecord
 
     public function getUser()
     {
-        return $this->hasOne(\app\models\Invoice::class, ['id' => 'user_id']);
+        return $this->hasOne(\app\models\User::class, ['id' => 'user_id']);
     }
 
     public function getUser2()
     {
-        return $this->hasOne(\app\models\Invoice::class, ['id' => 'user_2_id']);
+        return $this->hasOne(\app\models\User::class, ['id' => 'user_2_id']);
+    }
+
+    public function getFruit()
+    {
+        return $this->hasOne(\app\models\Fruit::class, ['id' => 'fruit_id']);
+    }
+
+    public function getAnimal()
+    {
+        return $this->hasOne(\app\models\Animal::class, ['id' => 'animal_id']);
     }
 }
