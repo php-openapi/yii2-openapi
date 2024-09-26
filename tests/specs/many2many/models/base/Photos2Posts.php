@@ -27,9 +27,9 @@ abstract class Photos2Posts extends \yii\db\ActiveRecord
     {
         return [
             'photo_id_integer' => [['photo_id'], 'integer'],
-            'photo_id_exist' => [['photo_id'], 'exist', 'targetRelation' => 'Photo'],
+            'photo_id_exist' => [['photo_id'], 'exist', 'targetRelation' => 'photo'],
             'post_id_integer' => [['post_id'], 'integer'],
-            'post_id_exist' => [['post_id'], 'exist', 'targetRelation' => 'Post'],
+            'post_id_exist' => [['post_id'], 'exist', 'targetRelation' => 'post'],
         ];
     }
 

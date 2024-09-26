@@ -1,0 +1,33 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Extension FK COLUMN NAME cause error in case of column name without underscore \#29
+paths:
+  /:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        user:
+          allOf:
+            - $ref: '#/components/schemas/User'
+            - x-fk-column-name: user
