@@ -13,6 +13,20 @@ components:
           type: integer
         name:
           type: string
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Animal:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
     Invoice:
       title: Invoice
       x-table: invoices
@@ -30,10 +44,16 @@ components:
             - $ref: '#/components/schemas/Invoice'
             - x-faker: true
         user:
-          $ref: '#/components/schemas/Invoice'
+          $ref: '#/components/schemas/User'
         user_2:
           allOf:
-            - $ref: '#/components/schemas/Invoice'
+            - $ref: '#/components/schemas/User'
+            - x-faker: false
+        fruit:
+          $ref: '#/components/schemas/Fruit'
+        animal:
+          allOf:
+            - $ref: '#/components/schemas/Animal'
             - x-faker: false
 
 paths:
