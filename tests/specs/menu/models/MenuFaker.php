@@ -46,7 +46,6 @@ class MenuFaker extends BaseModelFaker
     {
         return [
             // just model class names
-            'Menu',
 
         ];
     }
