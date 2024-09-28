@@ -150,6 +150,60 @@ class ColumnToCode
         $this->resolve();
     }
 
+    private function resolve():void
+    {
+        $dbType = $this->typeWithoutSize(strtolower($this->column->dbType));
+        $type = $this->column->type;
+        $this->resolvePosition();
+        //Primary Keys
+        if (array_key_exists($type, self::PK_TYPE_MAP)) {
+            $this->rawParts['type'] = $type;
+            $this->fluentParts['type'] = self::PK_TYPE_MAP[$type];
+            $this->isPk = true;
+            return;
+        }
+        if (array_key_exists($dbType, self::PK_TYPE_MAP)) {
+            $this->rawParts['type'] = $dbType;
+            $this->fluentParts['type'] = self::PK_TYPE_MAP[$dbType];
+            $this->isPk = true;
+            return;
+        }
+
+        if ($dbType === 'varchar') {
+            $type = $dbType = 'string';
+        }
+        $fluentSize = $this->column->size ? '(' . $this->column->size . ')' : '()';
+        $rawSize = $this->column->size ? '(' . $this->column->size . ')' : '';
+        $this->rawParts['nullable'] = $this->column->allowNull ? 'NULL' : 'NOT NULL';
+        $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
+
+        $this->fluentParts['comment'] = $this->column->comment ? 'comment(\''.$this->column->comment.'\')' : $this->fluentParts['comment'];
+        $this->rawParts['comment'] = $this->column->comment ? 'COMMENT \''.$this->column->comment.'\'' : $this->fluentParts['comment'];
+
+        if (array_key_exists($dbType, self::INT_TYPE_MAP)) {
+            $this->fluentParts['type'] = self::INT_TYPE_MAP[$dbType] . $fluentSize;
+            $this->rawParts['type'] =
+                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
+        } elseif (array_key_exists($type, self::INT_TYPE_MAP)) {
+            $this->fluentParts['type'] = self::INT_TYPE_MAP[$type] . $fluentSize;
+            $this->rawParts['type'] =
+                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
+        } elseif ($this->isEnum()) {
+            $this->resolveEnumType();
+        } elseif ($this->isDecimal()) {
+            $this->fluentParts['type'] = $this->column->dbType;
+            $this->rawParts['type'] = $this->column->dbType;
+        } else {
+            $this->fluentParts['type'] = $type . $fluentSize;
+            $this->rawParts['type'] =
+                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
+        }
+
+        $this->isBuiltinType = $this->raw ? false : $this->getIsBuiltinType($type, $dbType);
+
+        $this->resolveDefaultValue();
+    }
+
     public function getCode(bool $quoted = false):string
     {
         if ($this->isPk) {
@@ -322,56 +376,6 @@ class ColumnToCode
     private function defaultValueArray(array $value):string
     {
         return "'{" . trim(Json::encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT), '[]') . "}'";
-    }
-
-    private function resolve():void
-    {
-        $dbType = $this->typeWithoutSize(strtolower($this->column->dbType));
-        $type = $this->column->type;
-        $this->resolvePosition();
-        //Primary Keys
-        if (array_key_exists($type, self::PK_TYPE_MAP)) {
-            $this->rawParts['type'] = $type;
-            $this->fluentParts['type'] = self::PK_TYPE_MAP[$type];
-            $this->isPk = true;
-            return;
-        }
-        if (array_key_exists($dbType, self::PK_TYPE_MAP)) {
-            $this->rawParts['type'] = $dbType;
-            $this->fluentParts['type'] = self::PK_TYPE_MAP[$dbType];
-            $this->isPk = true;
-            return;
-        }
-
-        if ($dbType === 'varchar') {
-            $type = $dbType = 'string';
-        }
-        $fluentSize = $this->column->size ? '(' . $this->column->size . ')' : '()';
-        $rawSize = $this->column->size ? '(' . $this->column->size . ')' : '';
-        $this->rawParts['nullable'] = $this->column->allowNull ? 'NULL' : 'NOT NULL';
-        $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
-        if (array_key_exists($dbType, self::INT_TYPE_MAP)) {
-            $this->fluentParts['type'] = self::INT_TYPE_MAP[$dbType] . $fluentSize;
-            $this->rawParts['type'] =
-                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
-        } elseif (array_key_exists($type, self::INT_TYPE_MAP)) {
-            $this->fluentParts['type'] = self::INT_TYPE_MAP[$type] . $fluentSize;
-            $this->rawParts['type'] =
-                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
-        } elseif ($this->isEnum()) {
-            $this->resolveEnumType();
-        } elseif ($this->isDecimal()) {
-            $this->fluentParts['type'] = $this->column->dbType;
-            $this->rawParts['type'] = $this->column->dbType;
-        } else {
-            $this->fluentParts['type'] = $type . $fluentSize;
-            $this->rawParts['type'] =
-                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
-        }
-
-        $this->isBuiltinType = $this->raw ? false : $this->getIsBuiltinType($type, $dbType);
-
-        $this->resolveDefaultValue();
     }
 
     /**
