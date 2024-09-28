@@ -360,4 +360,36 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/58
+    public function test58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec()
+    {
+        $this->deleteTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec();
+        $this->createTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec();
+
+        $testFile = Yii::getAlias("@specs/issue_fix/58_create_migration_for_column_position_change_if_a_field_position_is_changed_in_spec/index.php");
+        $this->runGenerator($testFile);
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/58_create_migration_for_column_position_change_if_a_field_position_is_changed_in_spec/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
+        $this->deleteTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec();
+    }
+
+    private function createTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec()
+    {
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'description' => 'text',
+            'name' => 'varchar(255) COMMENT "some-comment"',
+        ])->execute();
+    }
+
+    private function deleteTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec()
+    {
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+    }
 }
