@@ -364,6 +364,8 @@ class IssueFixTest extends DbTestCase
     // https://github.com/php-openapi/yii2-openapi/issues/60
     public function test60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
     {
+        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+        $this->createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
         $testFile = Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/index.php");
         $this->runGenerator($testFile);
         // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
@@ -373,5 +375,20 @@ class IssueFixTest extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
+
+        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+    }
+
+    private function createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
+    {
+        Yii::$app->db->createCommand()->createTable('{{%animals}}', [
+            'id' => 'pk',
+            'name' => 'text comment "the name"',
+        ])->execute();
+    }
+
+    private function deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
+    {
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%animals}}')->execute();
     }
 }

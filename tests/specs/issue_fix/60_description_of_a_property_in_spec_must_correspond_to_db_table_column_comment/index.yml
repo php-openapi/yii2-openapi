@@ -20,6 +20,14 @@ components:
           type: string
           x-db-type: varchar
           description: desc 2
+    Animal:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: integer
+          description: desc
 
 paths:
   '/':
