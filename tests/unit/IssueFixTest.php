@@ -360,4 +360,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/60
+    public function test60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/index.php");
+        $this->runGenerator($testFile);
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

@@ -1,0 +1,27 @@
+openapi: 3.0.3
+
+info:
+  title: 'Description of a property in spec must correspond to DB TABLE COLUMN COMMENT #60'
+  version: 1.0.0
+
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: desc
+        # colour:
+        #   type: string
+        description:
+          type: string
+
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
