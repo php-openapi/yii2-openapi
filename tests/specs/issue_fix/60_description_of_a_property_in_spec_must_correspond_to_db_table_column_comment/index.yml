@@ -18,6 +18,8 @@ components:
         #   type: string
         description:
           type: string
+          x-db-type: varchar
+          description: desc 2
 
 paths:
   '/':

@@ -11,4 +11,3 @@ return [
     'generateMigrations' => true,
     'generateModelFaker' => true, // `generateModels` must be `true` in order to use `generateModelFaker` as `true`
 ];
-

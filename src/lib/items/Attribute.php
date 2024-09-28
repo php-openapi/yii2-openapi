@@ -318,6 +318,7 @@ class Attribute extends BaseObject
             'allowNull' => $this->allowNull(),
             'size' => $this->size > 0 ? $this->size : null,
             'xDbType' => $this->xDbType,
+            'comment' => $this->description,
         ]);
         $column->isPrimaryKey = $this->primary;
         $column->autoIncrement = $this->primary && $this->phpType === 'int';

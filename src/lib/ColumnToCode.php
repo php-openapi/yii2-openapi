@@ -84,9 +84,9 @@ class ColumnToCode
      */
     private $isPk = false;
 
-    private $rawParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null];
+    private $rawParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null, 'comment' => null];
 
-    private $fluentParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null];
+    private $fluentParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null, 'comment' => null];
 
     /**
      * @var bool
@@ -160,7 +160,8 @@ class ColumnToCode
                 $this->fluentParts['type'],
                 $this->fluentParts['nullable'],
                 $this->fluentParts['default'],
-                $this->fluentParts['position']
+                $this->fluentParts['position'],
+                $this->fluentParts['comment'],
             ]);
             array_unshift($parts, '$this');
             return implode('->', array_filter(array_map('trim', $parts)));
@@ -175,9 +176,12 @@ class ColumnToCode
         }
 
         $code = $this->rawParts['type'] . ' ' . $this->rawParts['nullable'] . $default;
-        if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb()) && $this->rawParts['position']) {
-            $code .= ' ' . $this->rawParts['position'];
+
+        if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb())) {
+            $code .= $this->rawParts['position'] ? ' ' . $this->rawParts['position'] : '';
+            $code .= $this->rawParts['comment'] ? ' '.$this->rawParts['comment'] : '';
         }
+
         if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
             return $quoted ? VarDumper::export($this->rawParts['type']) : $this->rawParts['type'];
         }
