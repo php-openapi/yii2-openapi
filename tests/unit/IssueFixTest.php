@@ -377,13 +377,29 @@ class IssueFixTest extends DbTestCase
         // $this->checkFiles($actualFiles, $expectedFiles);
 
         $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+
+
+        $this->changeDbToPgsql();
+        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+        $this->createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+        $this->runGenerator($testFile, 'pgsql');
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
+
+        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
     }
 
     private function createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
     {
         Yii::$app->db->createCommand()->createTable('{{%animals}}', [
             'id' => 'pk',
-            'name' => 'text comment "the name"',
+            'name' => 'text ', # comment "the name"
+            'g' => 'text'
         ])->execute();
     }
 

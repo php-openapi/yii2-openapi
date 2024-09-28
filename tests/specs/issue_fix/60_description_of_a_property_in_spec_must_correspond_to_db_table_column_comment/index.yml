@@ -14,8 +14,10 @@ components:
         name:
           type: string
           description: desc
-        # colour:
-        #   type: string
+        colour:
+          type: string
+          # maxLength: 255
+          # x-db-type: varbinary # TODO
         description:
           type: string
           x-db-type: varchar
@@ -28,6 +30,13 @@ components:
         name:
           type: integer
           description: desc
+        #        description:
+        #          type: string
+        #          x-db-type: varchar
+        #          description: desc 2
+        g:
+          type: string
+          description: desc 3
 
 paths:
   '/':

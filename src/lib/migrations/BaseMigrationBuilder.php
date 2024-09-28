@@ -453,6 +453,9 @@ abstract class BaseMigrationBuilder
         }
 
         Yii::$app->db->createCommand()->createTable($tmpTableName, $column)->execute();
+        if (ApiGenerator::isPostgres()) {
+            Yii::$app->db->createCommand("comment on column $tmpTableName.$columnSchema->name is '$columnSchema->comment'")->execute();
+        }
 
         $table = Yii::$app->db->getTableSchema($tmpTableName);
 

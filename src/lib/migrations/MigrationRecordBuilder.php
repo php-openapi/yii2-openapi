@@ -46,6 +46,8 @@ final class MigrationRecordBuilder
 
     public const ALTER_COLUMN_RAW_PGSQL = MigrationRecordBuilder::INDENT . "\$this->db->createCommand('ALTER TABLE %s ALTER COLUMN \"%s\" SET DATA TYPE %s')->execute();";
 
+    public const PGSQL_COMMENT_ON_COLUMN = MigrationRecordBuilder::INDENT . "\$this->addCommentOnColumn('%s', '%s', '%s');";
+
     /**
      * @var \yii\db\Schema
      */
@@ -344,5 +346,10 @@ final class MigrationRecordBuilder
         $codeColumns = trim($codeColumns);
         $codeColumns = '['.PHP_EOL.self::INDENT.'    '.$codeColumns.PHP_EOL . self::INDENT.']';
         return $codeColumns;
+    }
+
+    public function pgsqlCommentOnColumn($table, string $column, string $comment)
+    {
+        return sprintf(self::PGSQL_COMMENT_ON_COLUMN, $table, $column, $comment);
     }
 }

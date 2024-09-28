@@ -9,7 +9,6 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\lib\items\DbIndex;
 use yii\db\ColumnSchema;
-use yii\helpers\VarDumper;
 use yii\helpers\ArrayHelper;
 
 final class PostgresMigrationBuilder extends BaseMigrationBuilder
@@ -65,7 +64,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
 
         if (!empty(array_intersect(['type', 'size'
                     , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
+            , 'precision', 'scale', 'unsigned', 'comment'
         ], $changed))) {
             $addUsing = $this->isNeedUsingExpression($current->dbType, $desired->dbType);
             $this->migration->addUpCode($this->recordBuilder->alterColumnType($tableName, $desired, $addUsing));
@@ -91,6 +90,15 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
                 $this->migration->addUpCode($upCode)->addDownCode($downCode, true);
             }
         }
+
+        if (in_array('comment', $changed, true)) {
+//            if ($desired->comment) {
+            $this->migration->addUpCode($this->recordBuilder->pgsqlCommentOnColumn($tableName, $desired->name, $desired->comment));
+//            } else {
+//
+//            }
+        }
+
         if ($isChangeToEnum) {
             $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $desired->name, $desired->enumValues), true);
         }
@@ -127,7 +135,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
 
         foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
                     , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
+                     , 'precision', 'scale', 'unsigned', 'comment'
         ] as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
