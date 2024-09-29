@@ -161,6 +161,8 @@ abstract class BaseMigrationBuilder
             }
         }
 
+        $this->addCommentsMigration();
+
         return $this->migration;
     }
 
@@ -274,6 +276,8 @@ abstract class BaseMigrationBuilder
      * @return array|\cebe\yii2openapi\lib\items\DbIndex[]
      */
     abstract protected function findTableIndexes():array;
+
+    abstract public function addCommentsMigration();
 
     protected function buildIndexChanges():void
     {

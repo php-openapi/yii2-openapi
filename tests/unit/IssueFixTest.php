@@ -364,8 +364,9 @@ class IssueFixTest extends DbTestCase
     // https://github.com/php-openapi/yii2-openapi/issues/60
     public function test60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
     {
-        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
-        $this->createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+        // MySQL
+        $this->deleteTableFor60DescriptionOfAProperty();
+        $this->createTableFor60DescriptionOfAProperty();
         $testFile = Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/index.php");
         $this->runGenerator($testFile);
         // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
@@ -375,13 +376,13 @@ class IssueFixTest extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
+        $this->deleteTableFor60DescriptionOfAProperty();
 
-        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
 
-
+        // PgSQL
         $this->changeDbToPgsql();
-        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
-        $this->createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+        $this->deleteTableFor60DescriptionOfAProperty();
+        $this->createTableFor60DescriptionOfAProperty();
         $this->runGenerator($testFile, 'pgsql');
         // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
         //     'recursive' => true,
@@ -390,11 +391,10 @@ class IssueFixTest extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
-
-        $this->deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment();
+        $this->deleteTableFor60DescriptionOfAProperty();
     }
 
-    private function createTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
+    private function createTableFor60DescriptionOfAProperty()
     {
         Yii::$app->db->createCommand()->createTable('{{%animals}}', [
             'id' => 'pk',
@@ -403,7 +403,7 @@ class IssueFixTest extends DbTestCase
         ])->execute();
     }
 
-    private function deleteTableFor60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
+    private function deleteTableFor60DescriptionOfAProperty()
     {
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%animals}}')->execute();
     }

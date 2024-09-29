@@ -14,13 +14,13 @@ components:
         name:
           type: string
           description: desc
-        colour:
-          type: string
+#        colour:
+#          type: string
           # maxLength: 255
           # x-db-type: varbinary # TODO
         description:
-          type: string
-          x-db-type: varchar
+          type: number
+          x-db-type: double precision
           description: desc 2
     Animal:
       type: object

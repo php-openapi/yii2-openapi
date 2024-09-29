@@ -159,4 +159,10 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             $desired->size = $current->size;
         }
     }
+
+    public function addCommentsMigration()
+    {
+        // nothing to do here as comments can be defined in same statement as of alter/add column in MySQL
+        // this method is only for PgSQL
+    }
 }

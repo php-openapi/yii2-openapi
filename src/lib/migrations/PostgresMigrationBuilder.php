@@ -256,4 +256,16 @@ SQL;
             $desired->size = $current->size;
         }
     }
+
+    public function addCommentsMigration()
+    {
+        $tableAlias = $this->model->getTableAlias();
+        foreach ($this->newColumns as $column) {
+            if($column->comment) {
+                $this->migration
+                    ->addUpCode($this->recordBuilder->pgsqlCommentOnColumn($tableAlias, $column->name, $column->comment))
+                ;
+            }
+        }
+    }
 }
