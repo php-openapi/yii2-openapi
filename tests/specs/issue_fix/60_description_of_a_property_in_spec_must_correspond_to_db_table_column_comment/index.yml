@@ -29,14 +29,23 @@ components:
           type: integer
         name:
           type: integer
-          description: desc
+        #          description: desc
         #        description:
         #          type: string
         #          x-db-type: varchar
         #          description: desc 2
         g:
           type: string
-          description: desc 3
+          description: desc for g
+        g2:
+          type: string
+          description: changed comment on g2 col
+        g3:
+          type: string
+          description: the comment on g3 col remains same
+        g4:
+          type: integer
+          description: data type changes but comment remains same
 
 paths:
   '/':

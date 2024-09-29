@@ -14,9 +14,7 @@ use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\IndexConstraint;
 use yii\db\Schema;
-use \Yii;
 use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
 
 final class MysqlMigrationBuilder extends BaseMigrationBuilder
 {
@@ -56,7 +54,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 
         foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
                     , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
+                     , 'precision', 'scale', 'unsigned', 'comment'
         ] as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
@@ -160,7 +158,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         }
     }
 
-    public function addCommentsMigration()
+    public function handleCommentsMigration()
     {
         // nothing to do here as comments can be defined in same statement as of alter/add column in MySQL
         // this method is only for PgSQL

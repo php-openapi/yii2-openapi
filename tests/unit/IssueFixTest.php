@@ -369,6 +369,7 @@ class IssueFixTest extends DbTestCase
         $this->createTableFor60DescriptionOfAProperty();
         $testFile = Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/index.php");
         $this->runGenerator($testFile);
+        $this->runActualMigrations();
         // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
         //     'recursive' => true,
         // ]);
@@ -384,6 +385,7 @@ class IssueFixTest extends DbTestCase
         $this->deleteTableFor60DescriptionOfAProperty();
         $this->createTableFor60DescriptionOfAProperty();
         $this->runGenerator($testFile, 'pgsql');
+        $this->runActualMigrations('pgsql');
         // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
         //     'recursive' => true,
         // ]);
@@ -391,7 +393,7 @@ class IssueFixTest extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
-        $this->deleteTableFor60DescriptionOfAProperty();
+//        $this->deleteTableFor60DescriptionOfAProperty();
     }
 
     private function createTableFor60DescriptionOfAProperty()
@@ -399,8 +401,16 @@ class IssueFixTest extends DbTestCase
         Yii::$app->db->createCommand()->createTable('{{%animals}}', [
             'id' => 'pk',
             'name' => 'text ', # comment "the name"
-            'g' => 'text'
+            'g' => 'text',
+            'g2' => 'text',
+            'g3' => 'text',
+            'g4' => 'text',
         ])->execute();
+
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'name', 'the comment on name col')->execute();
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'g2', 'the comment on g2 col')->execute();
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'g3', 'the comment on g3 col remains same')->execute();
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'g4', 'data type changes but comment remains same')->execute();
     }
 
     private function deleteTableFor60DescriptionOfAProperty()

@@ -46,7 +46,9 @@ final class MigrationRecordBuilder
 
     public const ALTER_COLUMN_RAW_PGSQL = MigrationRecordBuilder::INDENT . "\$this->db->createCommand('ALTER TABLE %s ALTER COLUMN \"%s\" SET DATA TYPE %s')->execute();";
 
-    public const PGSQL_COMMENT_ON_COLUMN = MigrationRecordBuilder::INDENT . "\$this->addCommentOnColumn('%s', '%s', '%s');";
+    public const ADD_COMMENT_ON_COLUMN = MigrationRecordBuilder::INDENT . "\$this->addCommentOnColumn('%s', '%s', '%s');";
+
+    public const DROP_COMMENT_ON_COLUMN = MigrationRecordBuilder::INDENT . "\$this->dropCommentFromColumn('%s', '%s');";
 
     /**
      * @var \yii\db\Schema
@@ -348,8 +350,13 @@ final class MigrationRecordBuilder
         return $codeColumns;
     }
 
-    public function pgsqlCommentOnColumn($table, string $column, string $comment)
+    public function addCommentOnColumn($table, string $column, string $comment)
     {
-        return sprintf(self::PGSQL_COMMENT_ON_COLUMN, $table, $column, $comment);
+        return sprintf(self::ADD_COMMENT_ON_COLUMN, $table, $column, $comment);
+    }
+
+    public function dropCommentOnColumn($table, string $column)
+    {
+        return sprintf(self::DROP_COMMENT_ON_COLUMN, $table, $column);
     }
 }

@@ -161,7 +161,7 @@ abstract class BaseMigrationBuilder
             }
         }
 
-        $this->addCommentsMigration();
+        $this->handleCommentsMigration();
 
         return $this->migration;
     }
@@ -277,7 +277,7 @@ abstract class BaseMigrationBuilder
      */
     abstract protected function findTableIndexes():array;
 
-    abstract public function addCommentsMigration();
+    abstract public function handleCommentsMigration();
 
     protected function buildIndexChanges():void
     {
@@ -457,8 +457,8 @@ abstract class BaseMigrationBuilder
         }
 
         Yii::$app->db->createCommand()->createTable($tmpTableName, $column)->execute();
-        if (ApiGenerator::isPostgres()) {
-            Yii::$app->db->createCommand("comment on column $tmpTableName.$columnSchema->name is '$columnSchema->comment'")->execute();
+        if (ApiGenerator::isPostgres() && $columnSchema->comment) {
+            Yii::$app->db->createCommand("COMMENT ON COLUMN $tmpTableName.$columnSchema->name IS '$columnSchema->comment'")->execute();
         }
 
         $table = Yii::$app->db->getTableSchema($tmpTableName);

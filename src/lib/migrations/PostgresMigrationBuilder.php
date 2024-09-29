@@ -64,7 +64,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
 
         if (!empty(array_intersect(['type', 'size'
                     , 'dbType', 'phpType'
-            , 'precision', 'scale', 'unsigned', 'comment'
+            , 'precision', 'scale', 'unsigned'
         ], $changed))) {
             $addUsing = $this->isNeedUsingExpression($current->dbType, $desired->dbType);
             $this->migration->addUpCode($this->recordBuilder->alterColumnType($tableName, $desired, $addUsing));
@@ -91,12 +91,14 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
             }
         }
 
-        if (in_array('comment', $changed, true)) {
-//            if ($desired->comment) {
-            $this->migration->addUpCode($this->recordBuilder->pgsqlCommentOnColumn($tableName, $desired->name, $desired->comment));
-//            } else {
-//
-//            }
+        if (in_array('comment', $changed, true)) { // TODO
+            if ($desired->comment) {
+                $this->migration->addUpCode($this->recordBuilder->addCommentOnColumn($tableName, $desired->name, $desired->comment));
+                $this->migration->addDownCode($this->recordBuilder->dropCommentOnColumn($tableName, $desired->name));
+            } else {
+                $this->migration->addUpCode($this->recordBuilder->dropCommentOnColumn($tableName, $desired->name));
+                $this->migration->addDownCode($this->recordBuilder->addCommentOnColumn($tableName, $desired->name, $current->comment));
+            }
         }
 
         if ($isChangeToEnum) {
@@ -257,13 +259,16 @@ SQL;
         }
     }
 
-    public function addCommentsMigration()
+    public function handleCommentsMigration()
     {
         $tableAlias = $this->model->getTableAlias();
         foreach ($this->newColumns as $column) {
-            if($column->comment) {
+            if ($column->comment) {
                 $this->migration
-                    ->addUpCode($this->recordBuilder->pgsqlCommentOnColumn($tableAlias, $column->name, $column->comment))
+                    ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
+            } else {
+                $this->migration
+                    ->addUpCode($this->recordBuilder->dropCommentOnColumn($tableAlias, $column->name))
                 ;
             }
         }
