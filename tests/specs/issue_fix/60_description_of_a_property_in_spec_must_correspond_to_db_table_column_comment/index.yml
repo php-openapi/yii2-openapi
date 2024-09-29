@@ -46,6 +46,9 @@ components:
         g4:
           type: integer
           description: data type changes but comment remains same
+        new_col:
+          type: string
+          description: new col added
 
 paths:
   '/':
