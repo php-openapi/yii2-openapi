@@ -21,6 +21,7 @@ class m200000_000003_create_table_pristines extends \yii\db\Migration
             9 => '"col_11" text NULL DEFAULT NULL',
             10 => '"price" decimal(10,2) NULL DEFAULT 0',
         ]);
+        $this->addCommentOnColumn('{{%pristines}}', 'price', 'price in EUR');
     }
 
     public function safeDown()

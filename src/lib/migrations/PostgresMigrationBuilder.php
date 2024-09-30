@@ -266,10 +266,6 @@ SQL;
             if ($column->comment) {
                 $this->migration
                     ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
-            } else {
-                $this->migration
-                    ->addUpCode($this->recordBuilder->dropCommentOnColumn($tableAlias, $column->name))
-                ;
             }
         }
     }

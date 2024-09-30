@@ -14,6 +14,8 @@ class m200000_000005_create_table_domains extends \yii\db\Migration
             0 => '"created_at" timestamp NOT NULL',
         ]);
         $this->addForeignKey('fk_domains_account_id_accounts_id', '{{%domains}}', 'account_id', '{{%accounts}}', 'id');
+        $this->addCommentOnColumn('{{%domains}}', 'name', 'domain or sub-domain name, in DNS syntax, IDN are converted');
+        $this->addCommentOnColumn('{{%domains}}', 'account_id', 'user account');
     }
 
     public function safeDown()

@@ -13,6 +13,7 @@ class m200000_000001_create_table_b123s extends \yii\db\Migration
             'c123_id' => $this->integer()->null()->defaultValue(null)->comment('desc'),
         ]);
         $this->addForeignKey('fk_b123s_c123_id_c123s_id', '{{%b123s}}', 'c123_id', '{{%c123s}}', 'id');
+        $this->addCommentOnColumn('{{%b123s}}', 'c123_id', 'desc');
     }
 
     public function safeDown()
