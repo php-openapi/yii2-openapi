@@ -449,16 +449,16 @@ abstract class BaseMigrationBuilder
         if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
             $allEnumValues = $columnSchema->enumValues;
             $allEnumValues = array_map(function ($aValue) {
-                return "'$aValue'";
+                return $this->db->quoteValue($aValue);
             }, $allEnumValues);
             Yii::$app->db->createCommand(
                 'CREATE TYPE '.$tmpEnumName($columnSchema->name).' AS ENUM('.implode(', ', $allEnumValues).')'
-            )->execute(); // TODO quote value
+            )->execute();
         }
 
         Yii::$app->db->createCommand()->createTable($tmpTableName, $column)->execute();
         if (ApiGenerator::isPostgres() && $columnSchema->comment) {
-            Yii::$app->db->createCommand("COMMENT ON COLUMN $tmpTableName.$columnSchema->name IS '$columnSchema->comment'")->execute(); // TODO quote comment
+            Yii::$app->db->createCommand("COMMENT ON COLUMN $tmpTableName.$columnSchema->name IS {$this->db->quoteValue($columnSchema->comment)}")->execute();
         }
 
         $table = Yii::$app->db->getTableSchema($tmpTableName);

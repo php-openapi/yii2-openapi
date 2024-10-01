@@ -10,8 +10,8 @@ namespace app\models\base;
  * This is the model class for table "fruits".
  *
  * @property int $id
- * @property string $name desc
- * @property double $description desc 2
+ * @property string $name desc with ' quote
+ * @property double $description desc ' 2
  *
  */
 abstract class Fruit extends \yii\db\ActiveRecord

@@ -177,8 +177,8 @@ class ColumnToCode
         $this->rawParts['nullable'] = $this->column->allowNull ? 'NULL' : 'NOT NULL';
         $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
 
-        $this->fluentParts['comment'] = $this->column->comment ? 'comment(\''.$this->column->comment.'\')' : $this->fluentParts['comment'];
-        $this->rawParts['comment'] = $this->column->comment ? 'COMMENT \''.$this->column->comment.'\'' : $this->fluentParts['comment'];
+        $this->fluentParts['comment'] = $this->column->comment ? 'comment('.var_export($this->column->comment, true).')' : $this->fluentParts['comment'];
+        $this->rawParts['comment'] = $this->column->comment ? 'COMMENT '.var_export($this->column->comment, true) : $this->rawParts['comment'];
 
         if (array_key_exists($dbType, self::INT_TYPE_MAP)) {
             $this->fluentParts['type'] = self::INT_TYPE_MAP[$dbType] . $fluentSize;

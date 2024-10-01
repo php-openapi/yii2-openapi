@@ -13,7 +13,7 @@ components:
           type: integer
         name:
           type: string
-          description: desc
+          description: desc with ' quote
 #        colour:
 #          type: string
           # maxLength: 255
@@ -21,7 +21,7 @@ components:
         description:
           type: number
           x-db-type: double precision
-          description: desc 2
+          description: desc ' 2
     Animal:
       type: object
       properties:
