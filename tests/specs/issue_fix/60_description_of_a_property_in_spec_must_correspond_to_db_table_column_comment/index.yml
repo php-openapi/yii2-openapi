@@ -14,10 +14,6 @@ components:
         name:
           type: string
           description: desc with ' quote
-#        colour:
-#          type: string
-          # maxLength: 255
-          # x-db-type: varbinary # TODO
         description:
           type: number
           x-db-type: double precision

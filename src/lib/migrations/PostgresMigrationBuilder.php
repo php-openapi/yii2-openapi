@@ -91,7 +91,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
             }
         }
 
-        if (in_array('comment', $changed, true)) { // TODO
+        if (in_array('comment', $changed, true)) {
             if ($desired->comment) {
                 $this->migration->addUpCode($this->recordBuilder->addCommentOnColumn($tableName, $desired->name, $desired->comment));
                 $this->migration->addDownCode($this->recordBuilder->dropCommentFromColumn($tableName, $desired->name));
