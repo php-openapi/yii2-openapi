@@ -161,6 +161,8 @@ abstract class BaseMigrationBuilder
             }
         }
 
+        $this->handleCommentsMigration();
+
         return $this->migration;
     }
 
@@ -274,6 +276,8 @@ abstract class BaseMigrationBuilder
      * @return array|\cebe\yii2openapi\lib\items\DbIndex[]
      */
     abstract protected function findTableIndexes():array;
+
+    abstract public function handleCommentsMigration();
 
     protected function buildIndexChanges():void
     {
@@ -445,7 +449,7 @@ abstract class BaseMigrationBuilder
         if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
             $allEnumValues = $columnSchema->enumValues;
             $allEnumValues = array_map(function ($aValue) {
-                return "'$aValue'";
+                return $this->db->quoteValue($aValue);
             }, $allEnumValues);
             Yii::$app->db->createCommand(
                 'CREATE TYPE '.$tmpEnumName($columnSchema->name).' AS ENUM('.implode(', ', $allEnumValues).')'
@@ -453,6 +457,9 @@ abstract class BaseMigrationBuilder
         }
 
         Yii::$app->db->createCommand()->createTable($tmpTableName, $column)->execute();
+        if (ApiGenerator::isPostgres() && $columnSchema->comment) {
+            Yii::$app->db->createCommand("COMMENT ON COLUMN $tmpTableName.$columnSchema->name IS {$this->db->quoteValue($columnSchema->comment)}")->execute();
+        }
 
         $table = Yii::$app->db->getTableSchema($tmpTableName);
 

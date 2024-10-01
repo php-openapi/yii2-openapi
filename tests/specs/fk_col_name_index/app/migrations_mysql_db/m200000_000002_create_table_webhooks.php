@@ -10,7 +10,7 @@ class m200000_000002_create_table_webhooks extends \yii\db\Migration
         $this->createTable('{{%webhooks}}', [
             'id' => $this->primaryKey(),
             'name' => $this->string(255)->null()->defaultValue(null),
-            'user_id' => $this->integer()->null()->defaultValue(null),
+            'user_id' => $this->integer()->null()->defaultValue(null)->comment('Test model for model code generation that should not contain id column in rules'),
             'redelivery_of' => $this->integer()->null()->defaultValue(null),
             'rd_abc_2' => $this->integer()->null()->defaultValue(null),
         ]);
