@@ -112,7 +112,7 @@ final class MigrationRecordBuilder
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumn(string $tableAlias, ColumnSchema $column):string
+    public function alterColumn(string $tableAlias, ColumnSchema $column, ?string $position = null):string # TODO
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
@@ -130,7 +130,12 @@ final class MigrationRecordBuilder
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumnType(string $tableAlias, ColumnSchema $column, bool $addUsing = false):string
+    public function alterColumnType(
+        string $tableAlias,
+        ColumnSchema $column,
+        bool $addUsing = false,
+        ?string $position = null
+    ):string # TODO
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, false, false, true, true);
@@ -149,7 +154,12 @@ final class MigrationRecordBuilder
      * This method is only used in Pgsql
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumnTypeFromDb(string $tableAlias, ColumnSchema $column, bool $addUsing = false) :string
+    public function alterColumnTypeFromDb(
+        string $tableAlias,
+        ColumnSchema $column,
+        bool $addUsing = false,
+        ?string $position = null
+    ) :string # TODO
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);

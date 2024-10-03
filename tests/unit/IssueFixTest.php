@@ -384,7 +384,7 @@ class IssueFixTest extends DbTestCase
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
             'description' => 'text',
-            'name' => 'varchar(255) COMMENT "some-comment"',
+            'name' => 'text',
         ])->execute();
     }
 

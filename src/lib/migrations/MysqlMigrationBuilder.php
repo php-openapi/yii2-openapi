@@ -26,14 +26,15 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed):void
     {
         $newColumn = clone $current;
+        $position = $this->findPosition($desired);
         foreach ($changed as $attr) {
             $newColumn->$attr = $desired->$attr;
         }
         if (static::isEnum($newColumn)) {
             $newColumn->dbType = 'enum'; // TODO this is concretely not correct
         }
-        $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn))
-                        ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current));
+        $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn, $position))
+                        ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current, $position));
     }
 
     protected function compareColumns(ColumnSchema $current, ColumnSchema $desired):array
@@ -158,5 +159,15 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         if ($current->type === $desired->type && !$desired->size && $this->isDbDefaultSize($current)) {
             $desired->size = $current->size;
         }
+    }
+
+    /**
+     * TODO
+     * Check if order/position of column is changed
+     * @return void
+     */
+    public function checkOrder()
+    {
+
     }
 }

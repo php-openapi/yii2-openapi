@@ -25,4 +25,11 @@ class ColumnSchema extends \yii\db\ColumnSchema
      * ```
      */
     public $xDbType;
+
+    /**
+     * TODO
+     * Used only for MySQL/MariaDB
+     * @var string|null
+     */
+    public ?string $position = null;
 }

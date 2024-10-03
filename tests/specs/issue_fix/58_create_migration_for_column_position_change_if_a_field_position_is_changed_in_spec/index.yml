@@ -11,13 +11,13 @@ components:
       properties:
         id:
           type: integer
-        name:
-          type: string
-          description: desc
-        # colour:
-        #   type: string
-        description:
-          type: string
+#        name: # TODO
+#          type: string
+#          description: desc
+#        colour:
+#          type: string
+#        description:
+#          type: string
 
 paths:
   '/':
