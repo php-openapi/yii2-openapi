@@ -393,7 +393,7 @@ class IssueFixTest extends DbTestCase
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
 
-    public function test58DeleteLastCol()
+    private function for58($schema, $expected)
     {
         $deleteTable = function () {
             Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
@@ -401,10 +401,260 @@ class IssueFixTest extends DbTestCase
         $createTable = function () {
             Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
                 'id' => 'pk',
-                'description' => 'text not null',
                 'name' => 'text not null',
+                'description' => 'text not null',
+                'colour' => 'text not null',
+                'size' => 'text not null',
             ])->execute();
         };
+
+        $config = [
+            'openApiPath' => 'data://text/plain;base64,'.base64_encode($schema),
+            'generateUrls' => false,
+            'generateModels' => false,
+            'generateControllers' => false,
+            'generateMigrations' => true,
+            'generateModelFaker' => false,
+        ];
+        $tmpConfigFile = Yii::getAlias("@runtime")."/tmp-config.php";
+        file_put_contents($tmpConfigFile, '<?php return '.var_export($config, true).';');
+
+        foreach (['Mysql', 'Mariadb'] as $db) {
+            $this->{"changeDbTo$db"}();
+            $deleteTable();
+            $createTable();
+
+            $dbStr = str_replace('db', '', strtolower($db));
+            $this->runGenerator($tmpConfigFile, $dbStr);
+            $this->runActualMigrations($dbStr, 1);
+            $actual = file_get_contents(Yii::getAlias('@app').'/migrations_'.$dbStr.'_db/m200000_000000_change_table_fruits.php');
+            $this->assertSame($expected, $actual);
+
+            $deleteTable();
+        }
+        FileHelper::unlink($tmpConfigFile);
+    }
+
+    public function test58DeleteLastCol()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->dropColumn('{{%fruits}}', 'size');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull()->after('colour'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58DeleteLast2ConsecutiveCol()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->dropColumn('{{%fruits}}', 'colour');
+        $this->dropColumn('{{%fruits}}', 'size');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull());
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58DeleteAColInBetween()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+        size:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->dropColumn('{{%fruits}}', 'description');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'description', $this->text()->notNull()->after('name'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58Delete2ConsecutiveColInBetween()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false        
+        size:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->dropColumn('{{%fruits}}', 'description');
+        $this->dropColumn('{{%fruits}}', 'colour');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull());
+        $this->addColumn('{{%fruits}}', 'description', $this->text()->notNull()->after('name'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58Delete2NonConsecutiveColInBetween()
+    {
         $schema = <<<YAML
 openapi: 3.0.3
 info:
@@ -419,6 +669,9 @@ components:
           type: integer
         description:
           type: string
+          nullable: false        
+        size:
+          type: string
           nullable: false
 paths:
   '/':
@@ -427,16 +680,6 @@ paths:
         '200':
           description: OK
 YAML;
-        $config = [
-            'openApiPath' => 'data://text/plain;base64,'.base64_encode($schema),
-            'generateUrls' => false,
-            'generateModels' => false,
-            'generateControllers' => false,
-            'generateMigrations' => true,
-            'generateModelFaker' => false,
-        ];
-        $tmpConfigFile = Yii::getAlias("@runtime")."/tmp-config.php";
-        file_put_contents($tmpConfigFile, '<?php return '.var_export($config, true).';');
 
         $expected = <<<'PHP'
 <?php
@@ -449,29 +692,18 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
     public function up()
     {
         $this->dropColumn('{{%fruits}}', 'name');
+        $this->dropColumn('{{%fruits}}', 'colour');
     }
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'name', $this->text()->notNull()->after('description'));
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
+        $this->addColumn('{{%fruits}}', 'name', $this->text()->notNull()->after('id'));
     }
 }
 
 PHP;
 
-        foreach (['Mysql', 'Mariadb'] as $db) {
-            $this->{"changeDbTo$db"}();
-            $deleteTable();
-            $createTable();
-
-            $dbStr = str_replace('db', '', strtolower($db));
-            $this->runGenerator($tmpConfigFile, $dbStr);
-            $this->runActualMigrations($dbStr, 1);
-            $actual = file_get_contents(Yii::getAlias('@app').'/migrations_'.$dbStr.'_db/m200000_000000_change_table_fruits.php');
-            $this->assertSame($expected, $actual);
-            
-            $deleteTable();
-        }
-        FileHelper::unlink($tmpConfigFile);
+        $this->for58($schema, $expected);
     }
 }
