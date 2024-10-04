@@ -392,4 +392,86 @@ class IssueFixTest extends DbTestCase
     {
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
+
+    public function test58DeleteLastCol()
+    {
+        $deleteTable = function () {
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        };
+        $createTable = function () {
+            Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+                'id' => 'pk',
+                'description' => 'text not null',
+                'name' => 'text not null',
+            ])->execute();
+        };
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+        $config = [
+            'openApiPath' => 'data://text/plain;base64,'.base64_encode($schema),
+            'generateUrls' => false,
+            'generateModels' => false,
+            'generateControllers' => false,
+            'generateMigrations' => true,
+            'generateModelFaker' => false,
+        ];
+        $tmpConfigFile = Yii::getAlias("@runtime")."/tmp-config.php";
+        file_put_contents($tmpConfigFile, '<?php return '.var_export($config, true).';');
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->dropColumn('{{%fruits}}', 'name');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'name', $this->text()->notNull()->after('description'));
+    }
+}
+
+PHP;
+
+        foreach (['Mysql', 'Mariadb'] as $db) {
+            $this->{"changeDbTo$db"}();
+            $deleteTable();
+            $createTable();
+
+            $dbStr = str_replace('db', '', strtolower($db));
+            $this->runGenerator($tmpConfigFile, $dbStr);
+            $this->runActualMigrations($dbStr, 1);
+            $actual = file_get_contents(Yii::getAlias('@app').'/migrations_'.$dbStr.'_db/m200000_000000_change_table_fruits.php');
+            $this->assertSame($expected, $actual);
+            
+            $deleteTable();
+        }
+        FileHelper::unlink($tmpConfigFile);
+    }
 }
