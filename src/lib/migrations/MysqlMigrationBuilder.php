@@ -168,6 +168,5 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
      */
     public function checkOrder()
     {
-
     }
 }
