@@ -14,9 +14,7 @@ use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\IndexConstraint;
 use yii\db\Schema;
-use \Yii;
 use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
 
 final class MysqlMigrationBuilder extends BaseMigrationBuilder
 {
@@ -168,5 +166,56 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
      */
     public function checkOrder()
     {
+    }
+
+    // TODO
+    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
+    {
+        $indices = [];
+        if ($haveNames !== $wantNames) {
+            foreach ($wantNames as $key => $name) {
+                if ($name !== $haveNames[$key]) {
+                    $indices[] = $key;
+                }
+            }
+        }
+        for ($i = 0; $i < count($indices) / 2; $i++) {
+            $this->migration->addUpCode($this->recordBuilder->alterColumn());
+        }
+    }
+
+
+    /**
+     * TODO move this method to MysqlMigrationBuilder
+     * Only for MySQL and MariaDB
+     * Given a column, compute its previous column name present in OpenAPI schema
+     * @return ?string
+     * `null` if column is added at last
+     * 'FIRST' if column is added at first position
+     * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
+     */
+    public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
+    {
+        $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
+
+        $key = array_search($column->name, $columnNames);
+        if ($key > 0) {
+            $prevColName = $columnNames[$key - 1];
+
+            if (!$forDrop && !isset($columnNames[$key + 1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
+                return null;
+            }
+
+            if (array_key_exists($prevColName, $this->newColumns)) {
+                return self::POS_AFTER . ' ' . $prevColName;
+            }
+            return null;
+
+        // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
+        } elseif ($key === 0) {
+            return self::POS_FIRST;
+        }
+
+        return null;
     }
 }

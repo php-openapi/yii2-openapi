@@ -516,51 +516,6 @@ abstract class BaseMigrationBuilder
         return false;
     }
 
-    /**
-     * TODO move this method to MysqlMigrationBuilder
-     * Only for MySQL and MariaDB
-     * Given a column, compute its previous column name present in OpenAPI schema
-     * @return ?string
-     * `null` if column is added at last
-     * 'FIRST' if column is added at first position
-     * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
-     */
-    public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
-    {
-        $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
-
-        $key = array_search($column->name, $columnNames);
-        if ($key > 0) {
-            $prevColName = $columnNames[$key-1];
-
-            if (!$forDrop && !isset($columnNames[$key+1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
-                return null;
-            }
-
-            // in case of `down()` code of migration, putting 'after <colName>' in add column statement is erroneous because <colName> may not exist.
-            // Example: From col a, b, c, d, if I drop c and d then their migration code will be generated like:
-            // `up()` code
-            // drop c
-            // drop d
-            // `down()` code
-            // add d after c (c does not exist! Error!) (TODO check if c is present in newColumn)
-            // add c after b (can fix this issue) TODO
-            if ($forDrop) {
-//                return null; // TODO this case can be fixed
-            }
-
-            if (array_key_exists($prevColName, $this->newColumns)) {
-                return self::POS_AFTER . ' ' . $prevColName;
-            }
-            return null;
-
-        // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
-        } elseif ($key === 0) {
-            return self::POS_FIRST;
-        }
-
-        return null;
-    }
 
     public function modifyDesiredFromDbInContextOfDesired(ColumnSchema $desired, ColumnSchema $desiredFromDb): void
     {
@@ -582,19 +537,14 @@ abstract class BaseMigrationBuilder
         $desired->dbType = $desiredFromDb->dbType;
     }
 
-    // TODO
-    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
-    {
-        $indices = [];
-        if ($haveNames !== $wantNames) {
-            foreach ($wantNames as $key => $name) {
-                if ($name !== $haveNames[$key]) {
-                    $indices[] = $key;
-                }
-            }
-        }
-        for ($i = 0; $i < count($indices)/2; $i++) {
-            $this->migration->addUpCode($this->recordBuilder->alterColumn());
-        }
-    }
+    /**
+     * TODO docs
+     */
+    abstract public function handleColumnsPositionsChanges(array $haveNames, array $wantNames);
+
+
+    /**
+     * TODO docs
+     */
+    abstract public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string;
 }
