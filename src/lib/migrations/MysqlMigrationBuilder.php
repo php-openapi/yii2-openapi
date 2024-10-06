@@ -23,16 +23,32 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
      */
     protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed):void
     {
+        $positionCurrent = $positionDesired = null;
+        if (in_array('position', $changed, true)) {
+            $positionCurrent = $this->findPosition($current, true);
+            $positionDesired = $this->findPosition($desired);
+            $key = array_search('position', $changed, true);
+            if ($key !== false) {
+                unset($changed[$key]);
+            }
+        }
         $newColumn = clone $current;
-        $position = $this->findPosition($desired);
+//        $positionCurrent = $this->findPosition($desired, true);
+//        $positionDesired = $this->findPosition($desired);
+//        if ($positionCurrent === $positionDesired) {
+//            $positionCurrent = $positionDesired = null;
+//        } # else {
+//            $position = $positionDesired;
+//            $newColumn->position = $position;
+//        }
         foreach ($changed as $attr) {
             $newColumn->$attr = $desired->$attr;
         }
         if (static::isEnum($newColumn)) {
             $newColumn->dbType = 'enum'; // TODO this is concretely not correct
         }
-        $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn, $position))
-                        ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current, $position));
+        $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn, $positionDesired))
+            ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current, $positionCurrent));
     }
 
     protected function compareColumns(ColumnSchema $current, ColumnSchema $desired):array
@@ -67,6 +83,14 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 }
             }
         }
+
+        $positionCurrent = $this->findPosition($desired, true);
+        $positionDesired = $this->findPosition($desired);
+
+        if ($positionCurrent !== $positionDesired) {
+            $changedAttributes[] = 'position';
+        }
+
         return $changedAttributes;
     }
 
@@ -168,31 +192,8 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     {
     }
 
-    // TODO
-    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
-    {
-        $indices = [];
-        if ($haveNames !== $wantNames) {
-            foreach ($wantNames as $key => $name) {
-                if ($name !== $haveNames[$key]) {
-                    $indices[] = $key;
-                }
-            }
-        }
-        for ($i = 0; $i < count($indices) / 2; $i++) {
-            $this->migration->addUpCode($this->recordBuilder->alterColumn());
-        }
-    }
-
-
     /**
-     * TODO move this method to MysqlMigrationBuilder
-     * Only for MySQL and MariaDB
-     * Given a column, compute its previous column name present in OpenAPI schema
-     * @return ?string
-     * `null` if column is added at last
-     * 'FIRST' if column is added at first position
-     * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
+     * {@inheritDoc}
      */
     public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
     {
@@ -217,5 +218,31 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         }
 
         return null;
+    }
+
+
+    // TODO
+    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
+    {
+        $indices = [];
+        if ($haveNames !== $wantNames) {
+            foreach ($wantNames as $key => $name) {
+                if ($name !== $haveNames[$key]) {
+                    $indices[] = $key;
+                }
+            }
+        }
+        for ($i = 0; $i < count($indices) / 2; $i++) {
+            $this->migration->addUpCode($this->recordBuilder->alterColumn(
+                $this->model->getTableAlias(),
+                $this->newColumns[$wantNames[$indices[$i]]],
+                $this->findPosition($this->newColumns[$wantNames[$indices[$i]]])
+            ))->addDownCode($this->recordBuilder->alterColumn(
+                $this->model->getTableAlias(),
+                $this->tableSchema->columns[$wantNames[$indices[$i]]],
+                $this->findPosition($this->tableSchema->columns[$wantNames[$indices[$i]]], true)
+            ));
+        }
+//        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()));
     }
 }

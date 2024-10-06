@@ -362,10 +362,10 @@ class IssueFixTest extends DbTestCase
     }
 
     // https://github.com/php-openapi/yii2-openapi/issues/58
-    public function test58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec()
+    public function test58CreateMigrationForColumnPositionChange()
     {
-        $this->deleteTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec();
-        $this->createTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec();
+        $this->deleteTableFor58CreateMigrationForColumnPositionChange();
+        $this->createTableFor58CreateMigrationForColumnPositionChange();
 
         $testFile = Yii::getAlias("@specs/issue_fix/58_create_migration_for_column_position_change_if_a_field_position_is_changed_in_spec/index.php");
         $this->runGenerator($testFile);
@@ -376,10 +376,10 @@ class IssueFixTest extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
-        $this->deleteTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec();
+        $this->deleteTableFor58CreateMigrationForColumnPositionChange();
     }
 
-    private function createTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec()
+    private function createTableFor58CreateMigrationForColumnPositionChange()
     {
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
@@ -388,7 +388,7 @@ class IssueFixTest extends DbTestCase
         ])->execute();
     }
 
-    private function deleteTableFor58CreateMigrationForColumnPositionChangeIfAFieldPositionIsChangedInSpec()
+    private function deleteTableFor58CreateMigrationForColumnPositionChange()
     {
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
@@ -409,15 +409,15 @@ class IssueFixTest extends DbTestCase
         };
 
         $config = [
-            'openApiPath' => 'data://text/plain;base64,'.base64_encode($schema),
+            'openApiPath' => 'data://text/plain;base64,' . base64_encode($schema),
             'generateUrls' => false,
             'generateModels' => false,
             'generateControllers' => false,
             'generateMigrations' => true,
             'generateModelFaker' => false,
         ];
-        $tmpConfigFile = Yii::getAlias("@runtime")."/tmp-config.php";
-        file_put_contents($tmpConfigFile, '<?php return '.var_export($config, true).';');
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
 
         foreach (['Mysql', 'Mariadb'] as $db) {
             $this->{"changeDbTo$db"}();
@@ -427,7 +427,7 @@ class IssueFixTest extends DbTestCase
             $dbStr = str_replace('db', '', strtolower($db));
             $this->runGenerator($tmpConfigFile, $dbStr);
             $this->runActualMigrations($dbStr, 1);
-            $actual = file_get_contents(Yii::getAlias('@app').'/migrations_'.$dbStr.'_db/m200000_000000_change_table_fruits.php');
+            $actual = file_get_contents(Yii::getAlias('@app') . '/migrations_' . $dbStr . '_db/m200000_000000_change_table_fruits.php');
             $this->assertSame($expected, $actual);
 
             $deleteTable();
@@ -699,6 +699,328 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
     {
         $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
         $this->addColumn('{{%fruits}}', 'name', $this->text()->notNull()->after('id'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    // ------------
+    public function test58AddAColAtLastPos()
+    {
+        // default position is last so no `AFTER` needed
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+        size:
+          type: string
+          nullable: false
+        weight:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'weight', $this->text()->notNull());
+    }
+
+    public function down()
+    {
+        $this->dropColumn('{{%fruits}}', 'weight');
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58Add2ConsecutiveColAtLastPos()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+        size:
+          type: string
+          nullable: false
+        weight:
+          type: string
+          nullable: false
+        location:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'weight', $this->text()->notNull()->after('size'));
+        $this->addColumn('{{%fruits}}', 'location', $this->text()->notNull());
+    }
+
+    public function down()
+    {
+        $this->dropColumn('{{%fruits}}', 'location');
+        $this->dropColumn('{{%fruits}}', 'weight');
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58AddAColInBetween()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+        weight:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+        size:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'weight', $this->text()->notNull()->after('description'));
+    }
+
+    public function down()
+    {
+        $this->dropColumn('{{%fruits}}', 'weight');
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58Add2ConsecutiveColInBetween()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+        weight:
+          type: string
+          nullable: false
+        location:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+        size:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'weight', $this->text()->notNull()->after('description'));
+        $this->addColumn('{{%fruits}}', 'location', $this->text()->notNull()->after('weight'));
+    }
+
+    public function down()
+    {
+        $this->dropColumn('{{%fruits}}', 'location');
+        $this->dropColumn('{{%fruits}}', 'weight');
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected);
+    }
+
+    public function test58Add2NonConsecutiveColInBetween()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58DeleteLastCol'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+        weight:
+          type: string
+          nullable: false
+        description:
+          type: string
+          nullable: false
+        colour:
+          type: string
+          nullable: false
+        location:
+          type: string
+          nullable: false
+        size:
+          type: string
+          nullable: false
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'weight', $this->text()->notNull()->after('name'));
+        $this->addColumn('{{%fruits}}', 'location', $this->text()->notNull()->after('colour'));
+    }
+
+    public function down()
+    {
+        $this->dropColumn('{{%fruits}}', 'location');
+        $this->dropColumn('{{%fruits}}', 'weight');
     }
 }
 

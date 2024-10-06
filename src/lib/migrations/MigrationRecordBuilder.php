@@ -115,7 +115,7 @@ final class MigrationRecordBuilder
     public function alterColumn(string $tableAlias, ColumnSchema $column, ?string $position = null):string # TODO
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true, $position);
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -123,7 +123,7 @@ final class MigrationRecordBuilder
                 ColumnToCode::escapeQuotes($converter->getCode())
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, true);
+        $converter = $this->columnToCode($tableAlias, $column, true, false, false, false, $position);
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getCode(true));
     }
 

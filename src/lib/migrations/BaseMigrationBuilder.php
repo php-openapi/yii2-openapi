@@ -544,7 +544,14 @@ abstract class BaseMigrationBuilder
 
 
     /**
-     * TODO docs
+     * Only for MySQL and MariaDB
+     * Given a column, compute its previous column name present in OpenAPI schema
+     * @param ColumnSchema $column
+     * @param bool $forDrop
+     * @return ?string
+     * `null` if column is added at last
+     * 'FIRST' if column is added at first position
+     * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
      */
     abstract public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string;
 }
