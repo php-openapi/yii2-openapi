@@ -29,7 +29,16 @@ class ColumnSchema extends \yii\db\ColumnSchema
     /**
      * TODO
      * Used only for MySQL/MariaDB
-     * @var string|null
+     * @var array|null
+     * [
+     *      index => int
+     *      after => ?string
+     *      before => ?string
+     * ]
+     * If `before` is null then column is last
      */
-    public ?string $position = null;
+    public ?array $fromPosition = null;
+    public ?array $toPosition = null;
+
+    public bool $isPositionReallyChanged = false;
 }

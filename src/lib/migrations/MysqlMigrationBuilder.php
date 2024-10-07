@@ -84,10 +84,10 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             }
         }
 
-        $positionCurrent = $this->findPosition($desired, true);
-        $positionDesired = $this->findPosition($desired);
-
-        if ($positionCurrent !== $positionDesired) {
+//        $positionCurrent = $this->findPosition($desired, true);
+//        $positionDesired = $this->findPosition($desired);
+//        if ($positionCurrent !== $positionDesired) {
+        if ($desired->isPositionReallyChanged) {
             $changedAttributes[] = 'position';
         }
 
@@ -244,5 +244,70 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             ));
         }
 //        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()));
+    }
+
+    public function setPositions()
+    {
+        $i = 0;
+        $haveColumns = $this->tableSchema->columns;
+        $onlyColumnNames = array_keys($this->newColumns);
+        foreach ($this->newColumns as $columnName => $column) {
+            /** @var \cebe\yii2openapi\db\ColumnSchema $column */
+            $column->toPosition = [
+                'index' => $i + 1,
+                'after' => $i === 0 ? null : $onlyColumnNames[$i - 1],
+                'before' => $i === (count($onlyColumnNames) - 1) ? null : $onlyColumnNames[$i + 1],
+            ];
+
+            $haveNamesOnlyColNames = array_keys($haveColumns);
+            if (isset($haveColumns[$columnName])) {
+                $index = array_search($columnName, $haveNamesOnlyColNames) + 1;
+                $column->fromPosition = [
+                    'index' => $index,
+                    'after' => $haveNamesOnlyColNames[$index - 2] ?? null,
+                    'before' => $haveNamesOnlyColNames[$index] ?? null,
+                ];
+            }
+
+            $i++;
+        }
+
+        $takenIndices = [];
+        foreach ($this->newColumns as $columnName => $column) {
+            /** @var \cebe\yii2openapi\db\ColumnSchema $column */
+            if (!$column->fromPosition || !$column->toPosition) {
+                continue;
+            }
+            if (
+                is_int(array_search([$column->toPosition['index'], $column->fromPosition['index']], $takenIndices))
+            ) {
+                continue;
+            }
+            if ($column->fromPosition === $column->toPosition) {
+                continue;
+            }
+
+            if ($column->fromPosition['after'] === $column->toPosition['after']) {
+                continue;
+            }
+
+            if ($column->fromPosition['before'] === $column->toPosition['before']) {
+                continue;
+            }
+//            if (!in_array($column->fromPosition['after'], $onlyColumnNames)) {
+//                continue;
+//            }
+//            if (!in_array($column->fromPosition['before'], $onlyColumnNames)) {
+//                continue;
+//            }
+
+            if (!in_array($column->fromPosition['after'], $onlyColumnNames) && !in_array($column->fromPosition['before'], $onlyColumnNames)) {
+                continue;
+            }
+
+
+            $column->isPositionReallyChanged = true;
+            $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
+        }
     }
 }

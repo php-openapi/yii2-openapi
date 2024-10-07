@@ -261,5 +261,10 @@ SQL;
      */
     public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
     {
+        return null;
+    }
+
+    public function setPositions()
+    {
     }
 }
