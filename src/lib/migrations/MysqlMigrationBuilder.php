@@ -294,18 +294,10 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             if ($column->fromPosition['before'] === $column->toPosition['before']) {
                 continue;
             }
-//            if (!in_array($column->fromPosition['after'], $onlyColumnNames)) {
-//                continue;
-//            }
-//            if (!in_array($column->fromPosition['before'], $onlyColumnNames)) {
-//                continue;
-//            }
 
             if (!in_array($column->fromPosition['after'], $onlyColumnNames) && !in_array($column->fromPosition['before'], $onlyColumnNames)) {
                 continue;
             }
-
-
             $column->isPositionReallyChanged = true;
             $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
         }

@@ -369,13 +369,14 @@ class IssueFixTest extends DbTestCase
 
         $testFile = Yii::getAlias("@specs/issue_fix/58_create_migration_for_column_position_change_if_a_field_position_is_changed_in_spec/index.php");
         $this->runGenerator($testFile);
-        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-        //     'recursive' => true,
-        // ]);
-        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/58_create_migration_for_column_position_change_if_a_field_position_is_changed_in_spec/mysql"), [
-        //     'recursive' => true,
-        // ]);
-        // $this->checkFiles($actualFiles, $expectedFiles);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/58_create_migration_for_column_position_change_if_a_field_position_is_changed_in_spec/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 1);
         $this->deleteTableFor58CreateMigrationForColumnPositionChange();
     }
 
@@ -393,19 +394,19 @@ class IssueFixTest extends DbTestCase
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
 
-    private function for58($schema, $expected)
+    private function for58($schema, $expected, $columns = [
+        'id' => 'pk',
+        'name' => 'text not null',
+        'description' => 'text not null',
+        'colour' => 'text not null',
+        'size' => 'text not null',
+    ])
     {
         $deleteTable = function () {
             Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
         };
-        $createTable = function () {
-            Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
-                'id' => 'pk',
-                'name' => 'text not null',
-                'description' => 'text not null',
-                'colour' => 'text not null',
-                'size' => 'text not null',
-            ])->execute();
+        $createTable = function () use ($columns) {
+            Yii::$app->db->createCommand()->createTable('{{%fruits}}', $columns)->execute();
         };
 
         $config = [
@@ -426,15 +427,16 @@ class IssueFixTest extends DbTestCase
 
             $dbStr = str_replace('db', '', strtolower($db));
             $this->runGenerator($tmpConfigFile, $dbStr);
-            $this->runActualMigrations($dbStr, 1);
             $actual = file_get_contents(Yii::getAlias('@app') . '/migrations_' . $dbStr . '_db/m200000_000000_change_table_fruits.php');
             $this->assertSame($expected, $actual);
+            $this->runActualMigrations($dbStr, 1);
 
             $deleteTable();
         }
         FileHelper::unlink($tmpConfigFile);
     }
 
+    // ------------ Delete
     public function test58DeleteLastCol()
     {
         $schema = <<<YAML
@@ -707,7 +709,7 @@ PHP;
         $this->for58($schema, $expected);
     }
 
-    // ------------
+    // ------------ Add
     public function test58AddAColAtLastPos()
     {
         // default position is last so no `AFTER` needed
@@ -1027,5 +1029,84 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 PHP;
 
         $this->for58($schema, $expected);
+    }
+
+    // ------------ Just move columns
+    public function test58MoveColumns()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'text null',
+            'description' => 'text null',
+            'colour' => 'text null',
+            'size' => 'text null',
+            'col_6' => 'text null',
+            'col_7' => 'text null',
+            'col_8' => 'text null',
+            'col_9' => 'text null',
+
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        colour:
+          type: string
+        size:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        col_6:
+          type: string
+        col_7:
+          type: string
+        col_8:
+          type: string
+        col_9:
+          type: string
+        
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('id'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->notNull()->after('colour'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->notNull()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns);
     }
 }
