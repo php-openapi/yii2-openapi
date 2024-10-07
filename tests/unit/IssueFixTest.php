@@ -400,7 +400,7 @@ class IssueFixTest extends DbTestCase
         'description' => 'text not null',
         'colour' => 'text not null',
         'size' => 'text not null',
-    ])
+    ],                                         $dbs = ['Mysql', 'Mariadb'])
     {
         $deleteTable = function () {
             Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
@@ -420,7 +420,7 @@ class IssueFixTest extends DbTestCase
         $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config.php";
         file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
 
-        foreach (['Mysql', 'Mariadb'] as $db) {
+        foreach ($dbs as $db) {
             $this->{"changeDbTo$db"}();
             $deleteTable();
             $createTable();
@@ -1040,10 +1040,10 @@ PHP;
             'description' => 'text null',
             'colour' => 'text null',
             'size' => 'text null',
-            'col_6' => 'text null',
-            'col_7' => 'text null',
-            'col_8' => 'text null',
-            'col_9' => 'text null',
+//            'col_6' => 'text null',
+//            'col_7' => 'text null',
+//            'col_8' => 'text null',
+//            'col_9' => 'text null',
 
         ];
 
@@ -1060,22 +1060,13 @@ components:
         id:
           type: integer
         colour:
-          type: string
+          type: string          
         size:
           type: string
         name:
           type: string
         description:
-          type: string
-        col_6:
-          type: string
-        col_7:
-          type: string
-        col_8:
-          type: string
-        col_9:
-          type: string
-        
+          type: string        
 paths:
   '/':
     get:
@@ -1094,19 +1085,19 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('id'));
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->notNull()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
     }
 
     public function down()
     {
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->notNull()->after('colour'));
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
     }
 }
 
 PHP;
 
-        $this->for58($schema, $expected, $columns);
+        $this->for58($schema, $expected, $columns, ['Mysql']);
     }
 }

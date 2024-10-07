@@ -278,6 +278,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             if (!$column->fromPosition || !$column->toPosition) {
                 continue;
             }
+
             if (
                 is_int(array_search([$column->toPosition['index'], $column->fromPosition['index']], $takenIndices))
             ) {
@@ -287,19 +288,69 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 continue;
             }
 
-            if ($column->fromPosition['after'] === $column->toPosition['after']) {
+            if (!in_array($column->fromPosition['after'], $onlyColumnNames) && !in_array($column->fromPosition['before'], $onlyColumnNames)) { // deleted column
                 continue;
             }
 
-            if ($column->fromPosition['before'] === $column->toPosition['before']) {
+            if ($column->fromPosition['index'] === $column->toPosition['index']) {
                 continue;
             }
 
-            if (!in_array($column->fromPosition['after'], $onlyColumnNames) && !in_array($column->fromPosition['before'], $onlyColumnNames)) {
+            if ($this->checkAfterPosition($column)) {
                 continue;
             }
+            if ($this->checkBeforePosition($column)) {
+                continue;
+            }
+
+//            if ($column->fromPosition['before'] === $column->toPosition['before']
+            ////                && $column->fromPosition['index'] !== $column->toPosition['index']
+//            ) {
+//                continue;
+//            }
+
             $column->isPositionReallyChanged = true;
             $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
         }
+    }
+
+    public function checkAfterPosition($column)
+    {
+        if ($column->fromPosition['after'] === $column->toPosition['after']
+//                && $column->fromPosition['index'] !== $column->toPosition['index']
+        ) {
+            $afterColName = $column->toPosition['after'];
+            $afterCol = $this->newColumns[$afterColName] ?? null;
+            if ($afterCol) {
+                if ($this->checkAfterPosition($afterCol)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function checkBeforePosition($column)
+    {
+        if ($column->fromPosition['before'] === $column->toPosition['before']
+//                && $column->fromPosition['index'] !== $column->toPosition['index']
+        ) {
+            $beforeColName = $column->toPosition['before'];
+            $beforeCol = $this->newColumns[$beforeColName] ?? null;
+            if ($beforeCol) {
+                if ($this->checkBeforePosition($beforeCol)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }
