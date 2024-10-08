@@ -709,6 +709,65 @@ PHP;
         $this->for58($schema, $expected);
     }
 
+    public function test58DeleteLast4Col()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'text null',
+            'description' => 'text null',
+            'colour' => 'text null',
+            'size' => 'text null',
+            'col_6' => 'text null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string        
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns, ['Mysql', 'Mariadb']);
+    }
+
     // ------------ Add
     public function test58AddAColAtLastPos()
     {
@@ -1032,7 +1091,7 @@ PHP;
     }
 
     // ------------ Just move columns
-    public function test58MoveColumns()
+    public function test58MoveLast2Col2PosUp()
     {
         $columns = [
             'id' => 'pk',
@@ -1100,4 +1159,77 @@ PHP;
 
         $this->for58($schema, $expected, $columns, ['Mysql']);
     }
+
+    // -----------
+    public function test58Move1Add1Del1Col()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'text null',
+            'description' => 'text null',
+            'colour' => 'text null',
+            'size' => 'text null',
+//            'col_6' => 'text null',
+//            'col_7' => 'text null',
+//            'col_8' => 'text null',
+//            'col_9' => 'text null',
+
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        colour:
+          type: string        
+        name:
+          type: string
+        description:
+          type: string
+        col_6:
+          type: string
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns, ['Mysql']);
+    }
+
+    // add 1 and del 1 col at same position
+    // add 1 and del 1 col at different position
 }

@@ -185,7 +185,7 @@ abstract class BaseMigrationBuilder
             function (string $unknownColumn) {
                 return $this->tableSchema->columns[$unknownColumn];
             },
-            array_diff($haveNames, $wantNames)
+            array_reverse(array_diff($haveNames, $wantNames), true)
         );
 
         $columnsForChange = array_intersect($wantNames, $haveNames);

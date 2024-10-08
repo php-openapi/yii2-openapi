@@ -197,6 +197,42 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
      */
     public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
     {
+//        if (!$forDrop) {
+//            $columnNames = array_keys($this->newColumns);
+//            $key = array_search($column->name, $columnNames);
+//            if (is_int($key)) {
+//                if ($key > 0) {
+//                    $prevColName = $columnNames[$key - 1];
+//
+//                    // if the perv col is last then no need for `'AFTER <column-name>'` because last is the default position
+//                    if (array_search($prevColName, $columnNames) === (count($columnNames) - 1)) {
+//                        return null;
+//                    }
+//
+//                    return self::POS_AFTER . ' ' . $prevColName;
+//                } elseif ($key === 0) {
+//                    return self::POS_FIRST;
+//                }
+//            }
+//
+//        } else {
+//            $columnNames = array_keys($this->tableSchema->columns);
+//            $key = array_search($column->name, $columnNames);
+//            if (is_int($key)) {
+//                if ($key > 0) {
+//                    $prevColName = $columnNames[$key - 1];
+//
+//                    if (array_search($prevColName, $columnNames) === count($columnNames) - 1) {
+//                        return null;
+//                    }
+//
+//                    return self::POS_AFTER . ' ' . $prevColName;
+//                } elseif ($key === 0) {
+//                    return self::POS_FIRST;
+//                }
+//            }
+//        }
+//        return null;
         $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
 
         $key = array_search($column->name, $columnNames);
@@ -250,22 +286,22 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     {
         $i = 0;
         $haveColumns = $this->tableSchema->columns;
-        $onlyColumnNames = array_keys($this->newColumns);
-        $haveNamesOnlyColNames = array_keys($haveColumns);
-        foreach ($this->newColumns as $columnName => $column) {
+        $wantNames = array_keys($this->newColumns);
+        $haveNames = array_keys($haveColumns);
+        foreach ($this->newColumns as $name => $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
             $column->toPosition = [
                 'index' => $i + 1,
-                'after' => $i === 0 ? null : $onlyColumnNames[$i - 1],
-                'before' => $i === (count($onlyColumnNames) - 1) ? null : $onlyColumnNames[$i + 1],
+                'after' => $i === 0 ? null : $wantNames[$i - 1],
+                'before' => $i === (count($wantNames) - 1) ? null : $wantNames[$i + 1],
             ];
 
-            if (isset($haveColumns[$columnName])) {
-                $index = array_search($columnName, $haveNamesOnlyColNames) + 1;
+            if (isset($haveColumns[$name])) {
+                $index = array_search($name, $haveNames) + 1;
                 $column->fromPosition = [
                     'index' => $index,
-                    'after' => $haveNamesOnlyColNames[$index - 2] ?? null,
-                    'before' => $haveNamesOnlyColNames[$index] ?? null,
+                    'after' => $haveNames[$index - 2] ?? null,
+                    'before' => $haveNames[$index] ?? null,
                 ];
             }
 
@@ -273,28 +309,24 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         }
 
         $takenIndices = [];
-        foreach ($this->newColumns as $columnName => $column) {
+        foreach ($this->newColumns as $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
 
             if (!$column->fromPosition || !$column->toPosition) {
                 continue;
             }
 
-            if (count($onlyColumnNames) !== count($haveNamesOnlyColNames)) {
+            if (count($wantNames) !== count($haveNames)) {
                 // check if only new columns are added without any explicit position change
-                $columnsForCreate = array_diff($onlyColumnNames, $haveNamesOnlyColNames);
-                if ($columnsForCreate) {
-                    if ($haveNamesOnlyColNames === array_values(array_diff($onlyColumnNames, $columnsForCreate))) {
-                        continue;
-                    }
+                $namesForCreate = array_diff($wantNames, $haveNames);
+                if ($namesForCreate && $haveNames === array_values(array_diff($wantNames, $namesForCreate))) {
+                    continue;
                 }
 
                 // check if only existing columns are deleted without any explicit position change
-                $columnsForDrop = array_diff($haveNamesOnlyColNames, $onlyColumnNames);
-                if ($columnsForDrop) {
-                    if ($onlyColumnNames === array_values(array_diff($haveNamesOnlyColNames, $columnsForDrop))) {
-                        continue;
-                    }
+                $namesForDrop = array_diff($haveNames, $wantNames);
+                if ($namesForDrop && $wantNames === array_values(array_diff($haveNames, $namesForDrop))) {
+                    continue;
                 }
             }
 
