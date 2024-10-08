@@ -251,6 +251,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         $i = 0;
         $haveColumns = $this->tableSchema->columns;
         $onlyColumnNames = array_keys($this->newColumns);
+        $haveNamesOnlyColNames = array_keys($haveColumns);
         foreach ($this->newColumns as $columnName => $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
             $column->toPosition = [
@@ -259,7 +260,6 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 'before' => $i === (count($onlyColumnNames) - 1) ? null : $onlyColumnNames[$i + 1],
             ];
 
-            $haveNamesOnlyColNames = array_keys($haveColumns);
             if (isset($haveColumns[$columnName])) {
                 $index = array_search($columnName, $haveNamesOnlyColNames) + 1;
                 $column->fromPosition = [
@@ -275,6 +275,35 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         $takenIndices = [];
         foreach ($this->newColumns as $columnName => $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
+
+            if (count($onlyColumnNames) !== count($haveNamesOnlyColNames)) {
+                // check if only new columns are added without any explicit position change
+                $onlyColumnNamesCopy = $onlyColumnNames;
+                $columnsForCreate = array_diff($onlyColumnNames, $haveNamesOnlyColNames);
+                foreach ($columnsForCreate as $key => $value) {
+                    $at = array_search($value, $onlyColumnNames);
+                    if (is_int($at)) {
+                        unset($onlyColumnNamesCopy[$at]);
+                    }
+                }
+                if ($onlyColumnNamesCopy === $onlyColumnNames) {
+                    continue;
+                }
+
+                $haveNamesOnlyColNamesCopy = $haveNamesOnlyColNames;
+                $columnsForDrop = array_diff($haveNamesOnlyColNames, $onlyColumnNames);
+                foreach ($columnsForDrop as $key => $value) {
+                    $at = array_search($value, $haveNamesOnlyColNames);
+                    if (is_int($at)) {
+                        unset($haveNamesOnlyColNamesCopy[$at]);
+                    }
+                }
+                if ($haveNamesOnlyColNamesCopy === $haveNamesOnlyColNames) {
+                    continue;
+                }
+            }
+
+
             if (!$column->fromPosition || !$column->toPosition) {
                 continue;
             }
@@ -288,20 +317,26 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 continue;
             }
 
-            if (!in_array($column->fromPosition['after'], $onlyColumnNames) && !in_array($column->fromPosition['before'], $onlyColumnNames)) { // deleted column
-                continue;
-            }
+            // TODO this does not look correct
+//            if (!in_array($column->fromPosition['after'], $onlyColumnNames) && !in_array($column->fromPosition['before'], $onlyColumnNames)) { // after and before column are deleted
+//                continue;
+//            }
+
+            // TODO this does not look correct
+//            if (!in_array($column->toPosition['after'], $haveNamesOnlyColNames) && !in_array($column->toPosition['before'], $haveNamesOnlyColNames)) { // after and before column are added just now
+//                continue;
+//            }
 
             if ($column->fromPosition['index'] === $column->toPosition['index']) {
                 continue;
             }
 
-            if ($this->checkAfterPosition($column)) {
-                continue;
-            }
-            if ($this->checkBeforePosition($column)) {
-                continue;
-            }
+            // if ($this->checkAfterPosition($column)) {
+            //     continue;
+            // }
+            // if ($this->checkBeforePosition($column)) {
+            //     continue;
+            // }
 
 //            if ($column->fromPosition['before'] === $column->toPosition['before']
             ////                && $column->fromPosition['index'] !== $column->toPosition['index']
