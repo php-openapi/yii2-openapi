@@ -316,18 +316,16 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 continue;
             }
 
-            if (count($wantNames) !== count($haveNames)) {
-                // check if only new columns are added without any explicit position change
-                $namesForCreate = array_diff($wantNames, $haveNames);
-                if ($namesForCreate && $haveNames === array_values(array_diff($wantNames, $namesForCreate))) {
-                    continue;
-                }
+//            // check if only new columns are added without any explicit position change
+            $namesForCreate = array_diff($wantNames, $haveNames);
+            if ($namesForCreate && $haveNames === array_values(array_diff($wantNames, $namesForCreate))) {
+                continue;
+            }
 
-                // check if only existing columns are deleted without any explicit position change
-                $namesForDrop = array_diff($haveNames, $wantNames);
-                if ($namesForDrop && $wantNames === array_values(array_diff($haveNames, $namesForDrop))) {
-                    continue;
-                }
+            // check if only existing columns are deleted without any explicit position change
+            $namesForDrop = array_diff($haveNames, $wantNames);
+            if ($namesForDrop && $wantNames === array_values(array_diff($haveNames, $namesForDrop))) {
+                continue;
             }
 
             if (is_int(array_search([$column->toPosition['index'], $column->fromPosition['index']], $takenIndices))) {

@@ -530,14 +530,14 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->dropColumn('{{%fruits}}', 'colour');
         $this->dropColumn('{{%fruits}}', 'size');
+        $this->dropColumn('{{%fruits}}', 'colour');
     }
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull());
         $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull());
     }
 }
 
@@ -639,14 +639,14 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->dropColumn('{{%fruits}}', 'description');
         $this->dropColumn('{{%fruits}}', 'colour');
+        $this->dropColumn('{{%fruits}}', 'description');
     }
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull());
         $this->addColumn('{{%fruits}}', 'description', $this->text()->notNull()->after('name'));
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull());
     }
 }
 
@@ -693,14 +693,14 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->dropColumn('{{%fruits}}', 'name');
         $this->dropColumn('{{%fruits}}', 'colour');
+        $this->dropColumn('{{%fruits}}', 'name');
     }
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
         $this->addColumn('{{%fruits}}', 'name', $this->text()->notNull()->after('id'));
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
     }
 }
 
@@ -752,20 +752,24 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->dropColumn('{{%fruits}}', 'col_6');
+        $this->dropColumn('{{%fruits}}', 'size');
+        $this->dropColumn('{{%fruits}}', 'colour');
+        $this->dropColumn('{{%fruits}}', 'description');
     }
 
     public function down()
     {
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
+        $this->addColumn('{{%fruits}}', 'description', $this->text()->null());
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->null());
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->null());
+        $this->addColumn('{{%fruits}}', 'col_6', $this->text()->null());
     }
 }
 
 PHP;
 
-        $this->for58($schema, $expected, $columns, ['Mysql', 'Mariadb']);
+        $this->for58($schema, $expected, $columns, ['Mysql']);
     }
 
     // ------------ Add
@@ -1169,11 +1173,6 @@ PHP;
             'description' => 'text null',
             'colour' => 'text null',
             'size' => 'text null',
-//            'col_6' => 'text null',
-//            'col_7' => 'text null',
-//            'col_8' => 'text null',
-//            'col_9' => 'text null',
-
         ];
 
         $schema = <<<YAML
@@ -1189,7 +1188,7 @@ components:
         id:
           type: integer
         colour:
-          type: string        
+          type: string
         name:
           type: string
         description:
@@ -1214,14 +1213,20 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
+        $this->addColumn('{{%fruits}}', 'col_6', $this->text()->null());
+        $this->dropColumn('{{%fruits}}', 'size');
         $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'name', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'description', $this->text()->null()->after('name'));
     }
 
     public function down()
     {
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'description', $this->text()->null()->after('name'));
+        $this->alterColumn('{{%fruits}}', 'name', $this->text()->null()->after('id'));
         $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->dropColumn('{{%fruits}}', 'col_6');
     }
 }
 
