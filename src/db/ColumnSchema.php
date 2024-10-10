@@ -25,4 +25,20 @@ class ColumnSchema extends \yii\db\ColumnSchema
      * ```
      */
     public $xDbType;
+
+    /**
+     * TODO
+     * Used only for MySQL/MariaDB
+     * @var array|null
+     * [
+     *      index => int
+     *      after => ?string
+     *      before => ?string
+     * ]
+     * If `before` is null then column is last
+     */
+    public ?array $fromPosition = null;
+    public ?array $toPosition = null;
+
+    public bool $isPositionReallyChanged = false;
 }

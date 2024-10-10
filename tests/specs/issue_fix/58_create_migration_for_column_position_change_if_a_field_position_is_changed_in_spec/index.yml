@@ -1,0 +1,24 @@
+openapi: 3.0.3
+
+info:
+  title: 'Create migration for column position change if a field position is changed in spec #58'
+  version: 1.0.0
+
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK

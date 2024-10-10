@@ -14,9 +14,7 @@ use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\IndexConstraint;
 use yii\db\Schema;
-use \Yii;
 use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
 
 final class MysqlMigrationBuilder extends BaseMigrationBuilder
 {
@@ -25,15 +23,32 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
      */
     protected function buildColumnChanges(ColumnSchema $current, ColumnSchema $desired, array $changed):void
     {
+        $positionCurrent = $positionDesired = null;
+        if (in_array('position', $changed, true)) {
+            $positionCurrent = $this->findPosition($current, true);
+            $positionDesired = $this->findPosition($desired);
+            $key = array_search('position', $changed, true);
+            if ($key !== false) {
+                unset($changed[$key]);
+            }
+        }
         $newColumn = clone $current;
+//        $positionCurrent = $this->findPosition($desired, true);
+//        $positionDesired = $this->findPosition($desired);
+//        if ($positionCurrent === $positionDesired) {
+//            $positionCurrent = $positionDesired = null;
+//        } # else {
+//            $position = $positionDesired;
+//            $newColumn->position = $position;
+//        }
         foreach ($changed as $attr) {
             $newColumn->$attr = $desired->$attr;
         }
         if (static::isEnum($newColumn)) {
             $newColumn->dbType = 'enum'; // TODO this is concretely not correct
         }
-        $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn))
-                        ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current));
+        $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn, $positionDesired))
+            ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current, $positionCurrent));
     }
 
     protected function compareColumns(ColumnSchema $current, ColumnSchema $desired):array
@@ -68,6 +83,14 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 }
             }
         }
+
+//        $positionCurrent = $this->findPosition($desired, true);
+//        $positionDesired = $this->findPosition($desired);
+//        if ($positionCurrent !== $positionDesired) {
+        if ($desired->isPositionReallyChanged) {
+            $changedAttributes[] = 'position';
+        }
+
         return $changedAttributes;
     }
 
@@ -158,5 +181,203 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         if ($current->type === $desired->type && !$desired->size && $this->isDbDefaultSize($current)) {
             $desired->size = $current->size;
         }
+    }
+
+    /**
+     * TODO
+     * Check if order/position of column is changed
+     * @return void
+     */
+    public function checkOrder()
+    {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
+    {
+//        if (!$forDrop) {
+//            $columnNames = array_keys($this->newColumns);
+//            $key = array_search($column->name, $columnNames);
+//            if (is_int($key)) {
+//                if ($key > 0) {
+//                    $prevColName = $columnNames[$key - 1];
+//
+//                    // if the perv col is last then no need for `'AFTER <column-name>'` because last is the default position
+//                    if (array_search($prevColName, $columnNames) === (count($columnNames) - 1)) {
+//                        return null;
+//                    }
+//
+//                    return self::POS_AFTER . ' ' . $prevColName;
+//                } elseif ($key === 0) {
+//                    return self::POS_FIRST;
+//                }
+//            }
+//
+//        } else {
+//            $columnNames = array_keys($this->tableSchema->columns);
+//            $key = array_search($column->name, $columnNames);
+//            if (is_int($key)) {
+//                if ($key > 0) {
+//                    $prevColName = $columnNames[$key - 1];
+//
+//                    if (array_search($prevColName, $columnNames) === count($columnNames) - 1) {
+//                        return null;
+//                    }
+//
+//                    return self::POS_AFTER . ' ' . $prevColName;
+//                } elseif ($key === 0) {
+//                    return self::POS_FIRST;
+//                }
+//            }
+//        }
+//        return null;
+        $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
+
+        $key = array_search($column->name, $columnNames);
+        if ($key > 0) {
+            $prevColName = $columnNames[$key - 1];
+
+            if (!$forDrop && !isset($columnNames[$key + 1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
+                return null;
+            }
+
+            if (array_key_exists($prevColName, $this->newColumns)) {
+                return self::POS_AFTER . ' ' . $prevColName;
+            }
+            return null;
+
+        // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
+        } elseif ($key === 0) {
+            return self::POS_FIRST;
+        }
+
+        return null;
+    }
+
+
+    // TODO
+    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
+    {
+        $indices = [];
+        if ($haveNames !== $wantNames) {
+            foreach ($wantNames as $key => $name) {
+                if ($name !== $haveNames[$key]) {
+                    $indices[] = $key;
+                }
+            }
+        }
+        for ($i = 0; $i < count($indices) / 2; $i++) {
+            $this->migration->addUpCode($this->recordBuilder->alterColumn(
+                $this->model->getTableAlias(),
+                $this->newColumns[$wantNames[$indices[$i]]],
+                $this->findPosition($this->newColumns[$wantNames[$indices[$i]]])
+            ))->addDownCode($this->recordBuilder->alterColumn(
+                $this->model->getTableAlias(),
+                $this->tableSchema->columns[$wantNames[$indices[$i]]],
+                $this->findPosition($this->tableSchema->columns[$wantNames[$indices[$i]]], true)
+            ));
+        }
+//        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()));
+    }
+
+    public function setPositions()
+    {
+        $i = 0;
+        $haveColumns = $this->tableSchema->columns;
+        $wantNames = array_keys($this->newColumns);
+        $haveNames = array_keys($haveColumns);
+        foreach ($this->newColumns as $name => $column) {
+            /** @var \cebe\yii2openapi\db\ColumnSchema $column */
+            $column->toPosition = [
+                'index' => $i + 1,
+                'after' => $i === 0 ? null : $wantNames[$i - 1],
+                'before' => $i === (count($wantNames) - 1) ? null : $wantNames[$i + 1],
+            ];
+
+            if (isset($haveColumns[$name])) {
+                $index = array_search($name, $haveNames) + 1;
+                $column->fromPosition = [
+                    'index' => $index,
+                    'after' => $haveNames[$index - 2] ?? null,
+                    'before' => $haveNames[$index] ?? null,
+                ];
+            }
+
+            $i++;
+        }
+
+        $takenIndices = [];
+        foreach ($this->newColumns as $column) {
+            /** @var \cebe\yii2openapi\db\ColumnSchema $column */
+
+            if (!$column->fromPosition || !$column->toPosition) {
+                continue;
+            }
+
+//            // check if only new columns are added without any explicit position change
+            $namesForCreate = array_diff($wantNames, $haveNames);
+            if ($namesForCreate && $haveNames === array_values(array_diff($wantNames, $namesForCreate))) {
+                continue;
+            }
+
+            // check if only existing columns are deleted without any explicit position change
+            $namesForDrop = array_diff($haveNames, $wantNames);
+            if ($namesForDrop && $wantNames === array_values(array_diff($haveNames, $namesForDrop))) {
+                continue;
+            }
+
+            if (is_int(array_search([$column->toPosition['index'], $column->fromPosition['index']], $takenIndices))) {
+                continue;
+            }
+            if ($column->fromPosition === $column->toPosition) {
+                continue;
+            }
+            if ($column->fromPosition['index'] === $column->toPosition['index']) {
+                continue;
+            }
+
+            $column->isPositionReallyChanged = true;
+            $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
+        }
+    }
+
+    public function checkAfterPosition($column)
+    {
+        if ($column->fromPosition['after'] === $column->toPosition['after']
+        ) {
+            $afterColName = $column->toPosition['after'];
+            $afterCol = $this->newColumns[$afterColName] ?? null;
+            if ($afterCol) {
+                if ($this->checkAfterPosition($afterCol)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function checkBeforePosition($column)
+    {
+        if ($column->fromPosition['before'] === $column->toPosition['before']
+        ) {
+            $beforeColName = $column->toPosition['before'];
+            $beforeCol = $this->newColumns[$beforeColName] ?? null;
+            if ($beforeCol) {
+                if ($this->checkBeforePosition($beforeCol)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }
