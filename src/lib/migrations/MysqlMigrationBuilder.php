@@ -25,8 +25,8 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     {
         $positionCurrent = $positionDesired = null;
         if (in_array('position', $changed, true)) {
-            $positionCurrent = $this->findPosition($current, true);
-            $positionDesired = $this->findPosition($desired);
+            $positionDesired = $this->findPosition($desired, false, true);
+            $positionCurrent = $this->findPosition($desired, true, true);
             $key = array_search('position', $changed, true);
             if ($key !== false) {
                 unset($changed[$key]);
@@ -195,8 +195,13 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     /**
      * {@inheritDoc}
      */
-    public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
+    public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string
     {
+//        if ($column instanceof \cebe\yii2openapi\db\ColumnSchema) {
+//            if (!$column->isPositionReallyChanged) {
+//                return null;
+//            }
+//        }
 //        if (!$forDrop) {
 //            $columnNames = array_keys($this->newColumns);
 //            $key = array_search($column->name, $columnNames);
@@ -233,17 +238,24 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 //            }
 //        }
 //        return null;
+
         $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
 
         $key = array_search($column->name, $columnNames);
         if ($key > 0) {
             $prevColName = $columnNames[$key - 1];
-
-            if (!$forDrop && !isset($columnNames[$key + 1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
+            if (($key === count($columnNames) - 1) && !$forAlter) {
                 return null;
             }
 
-            if (array_key_exists($prevColName, $this->newColumns)) {
+//            if (!$forDrop && !isset($columnNames[$key + 1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
+//                return null;
+//            }
+
+            if (array_key_exists($prevColName, $forDrop ? $this->tableSchema->columns : $this->newColumns)) {
+                if (($prevColName === $columnNames[count($columnNames) - 1]) && !$forAlter) {
+                    return null;
+                }
                 return self::POS_AFTER . ' ' . $prevColName;
             }
             return null;

@@ -483,7 +483,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull()->after('colour'));
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull());
     }
 }
 
@@ -646,7 +646,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
     public function down()
     {
         $this->addColumn('{{%fruits}}', 'description', $this->text()->notNull()->after('name'));
-        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull());
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
     }
 }
 
@@ -1225,7 +1225,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
         $this->alterColumn('{{%fruits}}', 'description', $this->text()->null()->after('name'));
         $this->alterColumn('{{%fruits}}', 'name', $this->text()->null()->after('id'));
         $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
-        $this->addColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->null());
         $this->dropColumn('{{%fruits}}', 'col_6');
     }
 }

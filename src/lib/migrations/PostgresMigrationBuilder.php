@@ -259,7 +259,7 @@ SQL;
     /**
      * {@inheritDoc}
      */
-    public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
+    public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string
     {
         return null;
     }
