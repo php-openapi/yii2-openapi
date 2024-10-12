@@ -713,11 +713,11 @@ PHP;
     {
         $columns = [
             'id' => 'pk',
-            'name' => 'text null',
-            'description' => 'text null',
-            'colour' => 'text null',
-            'size' => 'text null',
-            'col_6' => 'text null',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
+            'col_6' => 'bool null',
         ];
 
         $schema = <<<YAML
@@ -733,7 +733,7 @@ components:
         id:
           type: integer
         name:
-          type: string        
+          type: boolean        
 paths:
   '/':
     get:
@@ -760,16 +760,79 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'description', $this->text()->null());
-        $this->addColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
-        $this->addColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
-        $this->addColumn('{{%fruits}}', 'col_6', $this->text()->null());
+        $this->addColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null));
+        $this->addColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
+        $this->addColumn('{{%fruits}}', 'size', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
+        $this->addColumn('{{%fruits}}', 'col_6', $this->tinyInteger(1)->null()->defaultValue(null));
     }
 }
 
 PHP;
 
-        $this->for58($schema, $expected, $columns, ['Mysql']);
+        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
+    }
+
+    public function test58DeleteFirst4Col()
+    {
+        $columns = [
+            'name' => 'boolean null',
+            'description' => 'boolean null',
+            'colour' => 'boolean null',
+            'size' => 'boolean null',
+            'col_6' => 'boolean null',
+            'col_7' => 'boolean null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:        
+        col_6:
+          type: boolean
+        col_7:
+          type: boolean
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->dropColumn('{{%fruits}}', 'size');
+        $this->dropColumn('{{%fruits}}', 'colour');
+        $this->dropColumn('{{%fruits}}', 'description');
+        $this->dropColumn('{{%fruits}}', 'name');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->first());
+        $this->addColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
+        $this->addColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
+        $this->addColumn('{{%fruits}}', 'size', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
     }
 
     // ------------ Add
@@ -1099,10 +1162,10 @@ PHP;
     {
         $columns = [
             'id' => 'pk',
-            'name' => 'text null',
-            'description' => 'text null',
-            'colour' => 'text null',
-            'size' => 'text null',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
         ];
 
         $schema = <<<YAML
@@ -1118,13 +1181,13 @@ components:
         id:
           type: integer
         colour:
-          type: string          
+          type: boolean          
         size:
-          type: string
+          type: boolean
         name:
-          type: string
+          type: boolean
         description:
-          type: string        
+          type: boolean        
 paths:
   '/':
     get:
@@ -1143,31 +1206,31 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
     }
 
     public function down()
     {
-        $this->alterColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
+        $this->alterColumn('{{%fruits}}', 'size', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
     }
 }
 
 PHP;
 
-        $this->for58($schema, $expected, $columns, ['Mysql']);
+        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
     }
 
-    // -----------
+    // ----------- Miscellaneous
     public function test58Move1Add1Del1Col()
     {
         $columns = [
             'id' => 'pk',
-            'name' => 'text null',
-            'description' => 'text null',
-            'colour' => 'text null',
-            'size' => 'text null',
+            'name' => 'boolean null',
+            'description' => 'boolean null',
+            'colour' => 'boolean null',
+            'size' => 'boolean null',
         ];
 
         $schema = <<<YAML
@@ -1183,13 +1246,13 @@ components:
         id:
           type: integer
         colour:
-          type: string
+          type: boolean
         name:
-          type: string
+          type: boolean
         description:
-          type: string
+          type: boolean
         col_6:
-          type: string
+          type: boolean
 paths:
   '/':
     get:
@@ -1208,28 +1271,93 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->addColumn('{{%fruits}}', 'col_6', $this->text()->null());
+        $this->addColumn('{{%fruits}}', 'col_6', $this->boolean()->null()->defaultValue(null));
         $this->dropColumn('{{%fruits}}', 'size');
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('id'));
-        $this->alterColumn('{{%fruits}}', 'name', $this->text()->null()->after('colour'));
-        $this->alterColumn('{{%fruits}}', 'description', $this->text()->null()->after('name'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
+        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
+        $this->alterColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
     }
 
     public function down()
     {
-        $this->alterColumn('{{%fruits}}', 'description', $this->text()->null()->after('name'));
-        $this->alterColumn('{{%fruits}}', 'name', $this->text()->null()->after('id'));
-        $this->alterColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
-        $this->addColumn('{{%fruits}}', 'size', $this->text()->null());
+        $this->alterColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
+        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
+        $this->addColumn('{{%fruits}}', 'size', $this->tinyInteger(1)->null()->defaultValue(null));
         $this->dropColumn('{{%fruits}}', 'col_6');
     }
 }
 
 PHP;
 
-        $this->for58($schema, $expected, $columns, ['Mysql']);
+        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
     }
 
-    // add 1 and del 1 col at same position
+    public function test58Add1Del1ColAtSamePosition()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: boolean
+        description_new:
+          type: boolean
+        colour:
+          type: boolean
+        size:
+          type: boolean
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'description_new', $this->boolean()->null()->defaultValue(null)->after('name'));
+        $this->dropColumn('{{%fruits}}', 'description');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
+        $this->dropColumn('{{%fruits}}', 'description_new');
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns);
+    }
+
+    // TODO add tests cases:
     // add 1 and del 1 col at different position
+    // add 2 and del 1 col at different positions
 }
