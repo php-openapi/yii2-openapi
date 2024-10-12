@@ -14,6 +14,6 @@ class m200000_000003_change_table_dropfirsttwocols extends \yii\db\Migration
     public function down()
     {
         $this->addColumn('{{%dropfirsttwocols}}', 'name', $this->text()->null()->defaultValue(null)->first());
-        $this->addColumn('{{%dropfirsttwocols}}', 'address', $this->text()->null()->defaultValue(null));
+        $this->addColumn('{{%dropfirsttwocols}}', 'address', $this->text()->null()->defaultValue(null)->after('name'));
     }
 }

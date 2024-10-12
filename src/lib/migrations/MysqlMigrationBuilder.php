@@ -28,9 +28,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             $positionDesired = $this->findPosition($desired, false, true);
             $positionCurrent = $this->findPosition($desired, true, true);
             $key = array_search('position', $changed, true);
-            if ($key !== false) {
-                unset($changed[$key]);
-            }
+            unset($changed[$key]);
         }
         $newColumn = clone $current;
 //        $positionCurrent = $this->findPosition($desired, true);
@@ -253,8 +251,12 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 //            }
 
             if (array_key_exists($prevColName, $forDrop ? $this->tableSchema->columns : $this->newColumns)) {
-                if (($prevColName === $columnNames[count($columnNames) - 1]) && !$forAlter) {
-                    return null;
+                if ($forDrop && !$forAlter) {
+                    // if the previous column is the last one in the want names then no need for AFTER
+                    $cols = array_keys($this->newColumns);
+                    if ($prevColName === array_pop($cols)) {
+                        return null;
+                    }
                 }
                 return self::POS_AFTER . ' ' . $prevColName;
             }
@@ -328,15 +330,20 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 continue;
             }
 
-//            // check if only new columns are added without any explicit position change
+            // check if only new columns are added without any explicit position change
             $namesForCreate = array_diff($wantNames, $haveNames);
-            if ($namesForCreate && $haveNames === array_values(array_diff($wantNames, $namesForCreate))) {
+            $wantNamesWoNewCols = array_values(array_diff($wantNames, $namesForCreate));
+            if ($namesForCreate && $haveNames === $wantNamesWoNewCols) {
                 continue;
             }
-
             // check if only existing columns are deleted without any explicit position change
             $namesForDrop = array_diff($haveNames, $wantNames);
-            if ($namesForDrop && $wantNames === array_values(array_diff($haveNames, $namesForDrop))) {
+            $haveNamesWoDropCols = array_values(array_diff($haveNames, $namesForDrop));
+            if ($namesForDrop && $wantNames === $haveNamesWoDropCols) {
+                continue;
+            }
+            // check both above simultaneously
+            if ($namesForCreate && $namesForDrop && ($wantNamesWoNewCols === $haveNamesWoDropCols)) {
                 continue;
             }
 

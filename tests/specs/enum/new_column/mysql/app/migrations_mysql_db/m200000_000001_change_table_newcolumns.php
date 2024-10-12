@@ -14,7 +14,7 @@ class m200000_000001_change_table_newcolumns extends \yii\db\Migration
 
     public function down()
     {
-        $this->addColumn('{{%newcolumns}}', 'delete_col', 'enum("FOUR", "FIVE", "SIX") NULL DEFAULT NULL AFTER id');
+        $this->addColumn('{{%newcolumns}}', 'delete_col', 'enum("FOUR", "FIVE", "SIX") NULL DEFAULT NULL');
         $this->dropColumn('{{%newcolumns}}', 'new_column_x');
         $this->dropColumn('{{%newcolumns}}', 'new_column');
     }

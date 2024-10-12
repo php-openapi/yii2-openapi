@@ -536,7 +536,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
     public function down()
     {
-        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull()->after('description'));
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->notNull());
         $this->addColumn('{{%fruits}}', 'size', $this->text()->notNull());
     }
 }
@@ -761,8 +761,8 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
     public function down()
     {
         $this->addColumn('{{%fruits}}', 'description', $this->text()->null());
-        $this->addColumn('{{%fruits}}', 'colour', $this->text()->null());
-        $this->addColumn('{{%fruits}}', 'size', $this->text()->null());
+        $this->addColumn('{{%fruits}}', 'colour', $this->text()->null()->after('description'));
+        $this->addColumn('{{%fruits}}', 'size', $this->text()->null()->after('colour'));
         $this->addColumn('{{%fruits}}', 'col_6', $this->text()->null());
     }
 }
@@ -1103,11 +1103,6 @@ PHP;
             'description' => 'text null',
             'colour' => 'text null',
             'size' => 'text null',
-//            'col_6' => 'text null',
-//            'col_7' => 'text null',
-//            'col_8' => 'text null',
-//            'col_9' => 'text null',
-
         ];
 
         $schema = <<<YAML
