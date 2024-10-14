@@ -222,8 +222,6 @@ abstract class BaseMigrationBuilder
             $this->buildRelations();
         }
 
-//        $this->handleColumnsPositionsChanges($haveNames, $wantNames);
-
         return $this->migration;
     }
 

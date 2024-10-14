@@ -158,7 +158,7 @@ final class MigrationRecordBuilder
         ColumnSchema $column,
         bool $addUsing = false,
         ?string $position = null
-    ) :string # TODO
+    ) :string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
             $converter = $this->columnToCode($tableAlias, $column, true, false, true, true, $position);

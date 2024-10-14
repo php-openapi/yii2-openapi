@@ -31,14 +31,6 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             unset($changed[$key]);
         }
         $newColumn = clone $current;
-//        $positionCurrent = $this->findPosition($desired, true);
-//        $positionDesired = $this->findPosition($desired);
-//        if ($positionCurrent === $positionDesired) {
-//            $positionCurrent = $positionDesired = null;
-//        } # else {
-//            $position = $positionDesired;
-//            $newColumn->position = $position;
-//        }
         foreach ($changed as $attr) {
             $newColumn->$attr = $desired->$attr;
         }
@@ -82,10 +74,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             }
         }
 
-//        $positionCurrent = $this->findPosition($desired, true);
-//        $positionDesired = $this->findPosition($desired);
-//        if ($positionCurrent !== $positionDesired) {
-        if ($desired->isPositionChanged) {
+        if (property_exists($desired, 'isPositionChanged') && $desired->isPositionChanged) {
             $changedAttributes[] = 'position';
         }
 
@@ -226,6 +215,8 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         $haveColumns = $this->tableSchema->columns;
         $wantNames = array_keys($this->newColumns);
         $haveNames = array_keys($haveColumns);
+
+        // Part 1/2 compute from and to position
         foreach ($this->newColumns as $name => $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
             $column->toPosition = [
@@ -246,6 +237,25 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             $i++;
         }
 
+        // Part 2/2 compute is position is really changed
+
+        // check if only new columns are added without any explicit position change
+        $namesForCreate = array_diff($wantNames, $haveNames);
+        $wantNamesWoNewCols = array_values(array_diff($wantNames, $namesForCreate));
+        if ($namesForCreate && $haveNames === $wantNamesWoNewCols) {
+            return;
+        }
+        // check if only existing columns are deleted without any explicit position change
+        $namesForDrop = array_diff($haveNames, $wantNames);
+        $haveNamesWoDropCols = array_values(array_diff($haveNames, $namesForDrop));
+        if ($namesForDrop && $wantNames === $haveNamesWoDropCols) {
+            return;
+        }
+        // check both above simultaneously
+        if ($namesForCreate && $namesForDrop && ($wantNamesWoNewCols === $haveNamesWoDropCols)) {
+            return;
+        }
+
         $takenIndices = [];
         foreach ($this->newColumns as $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
@@ -253,24 +263,6 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             if (!$column->fromPosition || !$column->toPosition) {
                 continue;
             }
-
-            // check if only new columns are added without any explicit position change
-            $namesForCreate = array_diff($wantNames, $haveNames);
-            $wantNamesWoNewCols = array_values(array_diff($wantNames, $namesForCreate));
-            if ($namesForCreate && $haveNames === $wantNamesWoNewCols) {
-                continue;
-            }
-            // check if only existing columns are deleted without any explicit position change
-            $namesForDrop = array_diff($haveNames, $wantNames);
-            $haveNamesWoDropCols = array_values(array_diff($haveNames, $namesForDrop));
-            if ($namesForDrop && $wantNames === $haveNamesWoDropCols) {
-                continue;
-            }
-            // check both above simultaneously
-            if ($namesForCreate && $namesForDrop && ($wantNamesWoNewCols === $haveNamesWoDropCols)) {
-                continue;
-            }
-
             if (is_int(array_search([$column->toPosition['index'], $column->fromPosition['index']], $takenIndices))) {
                 continue;
             }
@@ -284,43 +276,5 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             $column->isPositionChanged = true;
             $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
         }
-    }
-
-    public function checkAfterPosition($column)
-    {
-        if ($column->fromPosition['after'] === $column->toPosition['after']
-        ) {
-            $afterColName = $column->toPosition['after'];
-            $afterCol = $this->newColumns[$afterColName] ?? null;
-            if ($afterCol) {
-                if ($this->checkAfterPosition($afterCol)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function checkBeforePosition($column)
-    {
-        if ($column->fromPosition['before'] === $column->toPosition['before']
-        ) {
-            $beforeColName = $column->toPosition['before'];
-            $beforeCol = $this->newColumns[$beforeColName] ?? null;
-            if ($beforeCol) {
-                if ($this->checkBeforePosition($beforeCol)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
     }
 }
