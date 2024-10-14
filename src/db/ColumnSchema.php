@@ -27,18 +27,22 @@ class ColumnSchema extends \yii\db\ColumnSchema
     public $xDbType;
 
     /**
-     * TODO
      * Used only for MySQL/MariaDB
      * @var array|null
      * [
-     *      index => int
-     *      after => ?string
-     *      before => ?string
+     *      index => int # position: starts from 1
+     *      after => ?string # after column
+     *      before => ?string # before column
      * ]
      * If `before` is null then column is last
+     * If `after` is null then column is first
+     * If both are null then table has only 1 column
      */
     public ?array $fromPosition = null;
     public ?array $toPosition = null;
 
-    public bool $isPositionReallyChanged = false;
+    /**
+     * From `$this->fromPosition` and `$this->toPosition` we can check if the position is changed or not. This is done in `BaseMigrationBuilder::setColumnsPositions()`
+     */
+    public bool $isPositionChanged = false;
 }

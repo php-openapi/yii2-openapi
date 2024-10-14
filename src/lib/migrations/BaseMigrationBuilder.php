@@ -171,7 +171,7 @@ abstract class BaseMigrationBuilder
     {
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, false, $relation, []]);
         $this->newColumns = $relation->columnSchema ?? $this->model->attributesToColumnSchema();
-        $this->setPositions();
+        $this->setColumnsPositions();
         $wantNames = array_keys($this->newColumns);
         $haveNames = $this->tableSchema->columnNames;
         $columnsForCreate = array_map(
@@ -539,20 +539,17 @@ abstract class BaseMigrationBuilder
     }
 
     /**
-     * TODO docs
-     */
-    abstract public function handleColumnsPositionsChanges(array $haveNames, array $wantNames);
-
-
-    /**
      * Only for MySQL and MariaDB
      * Given a column, compute its previous column name present in OpenAPI schema
      * @param ColumnSchema $column
      * @param bool $forDrop
+     * @param bool $forAlter
      * @return ?string
      * `null` if column is added at last
      * 'FIRST' if column is added at first position
      * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
      */
     abstract public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string;
+
+    abstract public function setColumnsPositions();
 }

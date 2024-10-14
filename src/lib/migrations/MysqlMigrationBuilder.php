@@ -85,7 +85,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 //        $positionCurrent = $this->findPosition($desired, true);
 //        $positionDesired = $this->findPosition($desired);
 //        if ($positionCurrent !== $positionDesired) {
-        if ($desired->isPositionReallyChanged) {
+        if ($desired->isPositionChanged) {
             $changedAttributes[] = 'position';
         }
 
@@ -182,61 +182,10 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     }
 
     /**
-     * TODO
-     * Check if order/position of column is changed
-     * @return void
-     */
-    public function checkOrder()
-    {
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string
     {
-//        if ($column instanceof \cebe\yii2openapi\db\ColumnSchema) {
-//            if (!$column->isPositionReallyChanged) {
-//                return null;
-//            }
-//        }
-//        if (!$forDrop) {
-//            $columnNames = array_keys($this->newColumns);
-//            $key = array_search($column->name, $columnNames);
-//            if (is_int($key)) {
-//                if ($key > 0) {
-//                    $prevColName = $columnNames[$key - 1];
-//
-//                    // if the perv col is last then no need for `'AFTER <column-name>'` because last is the default position
-//                    if (array_search($prevColName, $columnNames) === (count($columnNames) - 1)) {
-//                        return null;
-//                    }
-//
-//                    return self::POS_AFTER . ' ' . $prevColName;
-//                } elseif ($key === 0) {
-//                    return self::POS_FIRST;
-//                }
-//            }
-//
-//        } else {
-//            $columnNames = array_keys($this->tableSchema->columns);
-//            $key = array_search($column->name, $columnNames);
-//            if (is_int($key)) {
-//                if ($key > 0) {
-//                    $prevColName = $columnNames[$key - 1];
-//
-//                    if (array_search($prevColName, $columnNames) === count($columnNames) - 1) {
-//                        return null;
-//                    }
-//
-//                    return self::POS_AFTER . ' ' . $prevColName;
-//                } elseif ($key === 0) {
-//                    return self::POS_FIRST;
-//                }
-//            }
-//        }
-//        return null;
-
         $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
 
         $key = array_search($column->name, $columnNames);
@@ -245,10 +194,6 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             if (($key === count($columnNames) - 1) && !$forAlter) {
                 return null;
             }
-
-//            if (!$forDrop && !isset($columnNames[$key + 1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
-//                return null;
-//            }
 
             if (array_key_exists($prevColName, $forDrop ? $this->tableSchema->columns : $this->newColumns)) {
                 if ($forDrop && !$forAlter) {
@@ -275,33 +220,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         return null;
     }
 
-
-    // TODO
-    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
-    {
-        $indices = [];
-        if ($haveNames !== $wantNames) {
-            foreach ($wantNames as $key => $name) {
-                if ($name !== $haveNames[$key]) {
-                    $indices[] = $key;
-                }
-            }
-        }
-        for ($i = 0; $i < count($indices) / 2; $i++) {
-            $this->migration->addUpCode($this->recordBuilder->alterColumn(
-                $this->model->getTableAlias(),
-                $this->newColumns[$wantNames[$indices[$i]]],
-                $this->findPosition($this->newColumns[$wantNames[$indices[$i]]])
-            ))->addDownCode($this->recordBuilder->alterColumn(
-                $this->model->getTableAlias(),
-                $this->tableSchema->columns[$wantNames[$indices[$i]]],
-                $this->findPosition($this->tableSchema->columns[$wantNames[$indices[$i]]], true)
-            ));
-        }
-//        $this->migration->addUpCode($this->recordBuilder->dropTable($this->model->getTableAlias()));
-    }
-
-    public function setPositions()
+    public function setColumnsPositions()
     {
         $i = 0;
         $haveColumns = $this->tableSchema->columns;
@@ -362,7 +281,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                 continue;
             }
 
-            $column->isPositionReallyChanged = true;
+            $column->isPositionChanged = true;
             $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
         }
     }

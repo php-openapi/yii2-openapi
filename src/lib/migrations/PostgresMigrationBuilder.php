@@ -251,20 +251,12 @@ SQL;
     /**
      * {@inheritDoc}
      */
-    public function handleColumnsPositionsChanges(array $haveNames, array $wantNames)
-    {
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
     public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string
     {
         return null;
     }
 
-    public function setPositions()
+    public function setColumnsPositions()
     {
     }
 }
