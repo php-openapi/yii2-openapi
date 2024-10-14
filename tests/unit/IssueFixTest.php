@@ -430,7 +430,6 @@ class IssueFixTest extends DbTestCase
             $actual = file_get_contents(Yii::getAlias('@app') . '/migrations_' . $dbStr . '_db/m200000_000000_change_table_fruits.php');
             $this->assertSame($expected, $actual);
             $this->runActualMigrations($dbStr, 1);
-
             $deleteTable();
         }
         FileHelper::unlink($tmpConfigFile);
@@ -769,7 +768,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
 PHP;
 
-        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
+        $this->for58($schema, $expected, $columns);
     }
 
     public function test58DeleteFirst4Col()
@@ -832,7 +831,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
 PHP;
 
-        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
+        $this->for58($schema, $expected, $columns);
     }
 
     // ------------ Add
@@ -1219,7 +1218,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
 PHP;
 
-        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
+        $this->for58($schema, $expected, $columns);
     }
 
     // ----------- Miscellaneous
@@ -1290,7 +1289,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 
 PHP;
 
-        $this->for58($schema, $expected, $columns/*, ['Mysql']*/);
+        $this->for58($schema, $expected, $columns);
     }
 
     public function test58Add1Del1ColAtSamePosition()
@@ -1357,7 +1356,141 @@ PHP;
         $this->for58($schema, $expected, $columns);
     }
 
-    // TODO add tests cases:
-    // add 1 and del 1 col at different position
-    // add 2 and del 1 col at different positions
+    public function test58Add3Del2ColAtDiffPos()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        col_6:
+          type: boolean
+        name:
+          type: boolean
+        col_7:
+          type: boolean
+        col_8:
+          type: boolean
+        size:
+          type: boolean
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->addColumn('{{%fruits}}', 'col_6', $this->boolean()->null()->defaultValue(null)->after('id'));
+        $this->addColumn('{{%fruits}}', 'col_7', $this->boolean()->null()->defaultValue(null)->after('name'));
+        $this->addColumn('{{%fruits}}', 'col_8', $this->boolean()->null()->defaultValue(null)->after('col_7'));
+        $this->dropColumn('{{%fruits}}', 'colour');
+        $this->dropColumn('{{%fruits}}', 'description');
+    }
+
+    public function down()
+    {
+        $this->addColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
+        $this->addColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
+        $this->dropColumn('{{%fruits}}', 'col_8');
+        $this->dropColumn('{{%fruits}}', 'col_7');
+        $this->dropColumn('{{%fruits}}', 'col_6');
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns);
+    }
+
+    // This test fails. See description of https://github.com/php-openapi/yii2-openapi/pull/59
+//    public function test58Add3Del2Move3ColAtDiffPos()
+//    {
+//        $columns = [
+//            'id' => 'pk',
+//            'name' => 'bool null',
+//            'description' => 'bool null',
+//            'colour' => 'bool null',
+//            'size' => 'bool null',
+//            'col_6' => 'bool null',
+//        ];
+//
+//        $schema = <<<YAML
+//openapi: 3.0.3
+//info:
+//  title: 'test58MoveColumns'
+//  version: 1.0.0
+//components:
+//  schemas:
+//    Fruit:
+//      type: object
+//      properties:
+//        id:
+//          type: integer
+//        size:
+//          type: boolean
+//        col_9:
+//          type: boolean
+//        name:
+//          type: boolean
+//        col_7:
+//          type: boolean
+//        description:
+//          type: boolean
+//        col_8:
+//          type: boolean
+//paths:
+//  '/':
+//    get:
+//      responses:
+//        '200':
+//          description: OK
+//YAML;
+//
+//        $expected = <<<'PHP'
+//<?php
+//
+///**
+// * Table for Fruit
+// */
+//class m200000_000000_change_table_fruits extends \yii\db\Migration
+//{
+//    public function up()
+//    {
+//    }
+//
+//    public function down()
+//    {
+//    }
+//}
+//
+//PHP;
+//
+//        $this->for58($schema, $expected, $columns);
+//    }
 }

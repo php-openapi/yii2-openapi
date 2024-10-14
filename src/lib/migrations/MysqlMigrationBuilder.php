@@ -258,6 +258,11 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
                         return null;
                     }
                 }
+                if ($forAlter && $forDrop) {
+                    if (!array_key_exists($prevColName, $this->newColumns)) {
+                        return null;
+                    }
+                }
                 return self::POS_AFTER . ' ' . $prevColName;
             }
             return null;
