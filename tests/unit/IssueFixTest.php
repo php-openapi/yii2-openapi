@@ -1273,14 +1273,10 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
         $this->addColumn('{{%fruits}}', 'col_6', $this->boolean()->null()->defaultValue(null));
         $this->dropColumn('{{%fruits}}', 'size');
         $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
-        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
-        $this->alterColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
     }
 
     public function down()
     {
-        $this->alterColumn('{{%fruits}}', 'description', $this->tinyInteger(1)->null()->defaultValue(null)->after('name'));
-        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
         $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
         $this->addColumn('{{%fruits}}', 'size', $this->tinyInteger(1)->null()->defaultValue(null));
         $this->dropColumn('{{%fruits}}', 'col_6');
@@ -1493,4 +1489,192 @@ PHP;
 //
 //        $this->for58($schema, $expected, $columns);
 //    }
+
+    public function test58MoveAColAndChangeItsDataType()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer        
+        description:
+          type: boolean
+        colour:
+          type: integer
+        name:
+          type: boolean
+        size:
+          type: boolean
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'colour', $this->integer()->null()->defaultValue(null));
+        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns);
+    }
+
+    public function test58MoveAColDownwards()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer        
+        description:
+          type: boolean
+        colour:
+          type: boolean
+        name:
+          type: boolean
+        size:
+          type: boolean
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('colour'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns);
+    }
+
+    public function test58MoveAColUpwards()
+    {
+        $columns = [
+            'id' => 'pk',
+            'name' => 'bool null',
+            'description' => 'bool null',
+            'colour' => 'bool null',
+            'size' => 'bool null',
+        ];
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test58MoveColumns'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer        
+        colour:
+          type: boolean
+        name:
+          type: boolean
+        description:
+          type: boolean
+        size:
+          type: boolean
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('description'));
+    }
+}
+
+PHP;
+
+        $this->for58($schema, $expected, $columns);
+    }
 }

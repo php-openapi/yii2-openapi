@@ -256,7 +256,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             return;
         }
 
-        $takenIndices = [];
+        $takenIndices = $redundantIndices = []; # $redundantIndices are the unwanted ones which are created by moving of one or more columns. Example: if a column is moved from 2nd to 8th position then we will consider only one column is moved ignoring index/position change(-1) of 4rd to 8th column (4->3, 5->4 ...). So migration for this unwanted indices changes won't be generated
         foreach ($this->newColumns as $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
 
@@ -275,6 +275,33 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 
             $column->isPositionChanged = true;
             $takenIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
+
+            // -------
+            if (($column->fromPosition['before'] !== $column->toPosition['before']) &&
+                ($column->fromPosition['after'] !== $column->toPosition['after'])
+            ) {
+                $redundantIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
+            }
+        }
+
+        foreach ($this->newColumns as $column) {
+            /** @var \cebe\yii2openapi\db\ColumnSchema $column */
+
+            if (!isset($column->toPosition['index'], $column->fromPosition['index'])) {
+                continue;
+            }
+            $condition = (abs($column->toPosition['index'] - $column->fromPosition['index']) === count($redundantIndices));
+            if (($column->fromPosition['before'] === $column->toPosition['before'])
+                && $condition
+            ) {
+                $column->isPositionChanged = false;
+                continue;
+            }
+            if (($column->fromPosition['after'] === $column->toPosition['after'])
+                && $condition
+            ) {
+                $column->isPositionChanged = false;
+            }
         }
     }
 }
