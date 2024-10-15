@@ -256,7 +256,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             return;
         }
 
-        $takenIndices = $redundantIndices = []; # $redundantIndices are the unwanted ones which are created by moving of one or more columns. Example: if a column is moved from 2nd to 8th position then we will consider only one column is moved ignoring index/position change(-1) of 4rd to 8th column (4->3, 5->4 ...). So migration for this unwanted indices changes won't be generated
+        $takenIndices = $nonRedundantIndices = []; # $nonRedundantIndices are the wanted ones which are created by moving of one or more columns. Example: if a column is moved from 2nd to 8th position then we will consider only one column is moved ignoring index/position change(-1) of 4rd to 8th column (4->3, 5->4 ...). So migration for this unwanted indices changes won't be generated. `$takenIndices` might have redundant indices
         foreach ($this->newColumns as $column) {
             /** @var \cebe\yii2openapi\db\ColumnSchema $column */
 
@@ -280,7 +280,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             if (($column->fromPosition['before'] !== $column->toPosition['before']) &&
                 ($column->fromPosition['after'] !== $column->toPosition['after'])
             ) {
-                $redundantIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
+                $nonRedundantIndices[] = [$column->fromPosition['index'], $column->toPosition['index']];
             }
         }
 
@@ -290,7 +290,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             if (!isset($column->toPosition['index'], $column->fromPosition['index'])) {
                 continue;
             }
-            $condition = (abs($column->toPosition['index'] - $column->fromPosition['index']) === count($redundantIndices));
+            $condition = (abs($column->toPosition['index'] - $column->fromPosition['index']) === count($nonRedundantIndices));
             if (($column->fromPosition['before'] === $column->toPosition['before'])
                 && $condition
             ) {
