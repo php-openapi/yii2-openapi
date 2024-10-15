@@ -49,8 +49,8 @@ namespace <?= $namespace ?>;
  */
 abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
 {
-<?php if($scenarios = $model->getScenarios()):
-foreach($scenarios as $scenario): ?>
+<?php if ($scenarios = $model->getScenarios()):
+foreach ($scenarios as $scenario): ?>
     /**
      *<?= $scenario['description'] ?>
 
@@ -76,7 +76,7 @@ foreach($scenarios as $scenario): ?>
     {
         return <?= var_export($model->getTableAlias()) ?>;
     }
-<?php if($scenarios): ?>
+<?php if ($scenarios): ?>
 
     /**
      * Automatically generated scenarios from the model 'x-scenarios'.
@@ -92,7 +92,7 @@ foreach($scenarios as $scenario): ?>
         $default = parent::scenarios()[self::SCENARIO_DEFAULT];
 
         return [
-<?php foreach($scenarios as $scenario): ?>
+<?php foreach ($scenarios as $scenario): ?>
             self::<?= $scenario['const'] ?> => $default,
 <?php endforeach; ?>
             /**
