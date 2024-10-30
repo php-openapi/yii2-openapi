@@ -360,4 +360,18 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/65
+    // public function test65DefaultValueByConstantAndExpressionInCrudModelsFakerEtc()
+    // {
+    //     $testFile = Yii::getAlias("@specs/issue_fix/65_default_value_by_constant_and_expression_in_crud_models_faker_etc/index.php");
+    //     $this->runGenerator($testFile);
+    //     $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+    //         'recursive' => true,
+    //     ]);
+    //     $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/65_default_value_by_constant_and_expression_in_crud_models_faker_etc/mysql"), [
+    //         'recursive' => true,
+    //     ]);
+    //     // $this->checkFiles($actualFiles, $expectedFiles); // TODO
+    // }
 }

@@ -13,7 +13,6 @@ use Yii;
 use yii\base\BaseObject;
 use yii\db\ColumnSchema;
 use yii\helpers\Inflector;
-use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 use function array_filter;
 use function array_map;
@@ -109,7 +108,8 @@ class DbModel extends BaseObject
         $rules = Yii::createObject(ValidationRulesBuilder::class, [$this])->build();
         $rules = array_map('strval', $rules);
         $rules = VarDumper::export($rules);
-        return str_replace([
+
+        $rules = str_replace([
             PHP_EOL,
             "\'",
             "'[[",
@@ -120,6 +120,15 @@ class DbModel extends BaseObject
             '[[',
             '],'
         ], $rules);
+
+        $rules = str_replace(
+            ["'value' => '-yii-db-expression-starts-", "-yii-db-expression-ends-'"],
+            ["'value' => new \yii\db\Expression", ""],
+            $rules,
+            $count
+        );
+
+        return $rules;
     }
 
     /**
