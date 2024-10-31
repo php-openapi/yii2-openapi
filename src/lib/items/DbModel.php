@@ -121,6 +121,7 @@ class DbModel extends BaseObject
             '],'
         ], $rules);
 
+        // https://github.com/php-openapi/yii2-openapi/issues/65
         $rules = str_replace(
             ["'value' => '-yii-db-expression-starts-", "-yii-db-expression-ends-'"],
             ["'value' => new \yii\db\Expression", ""],
