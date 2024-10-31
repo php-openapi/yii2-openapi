@@ -194,7 +194,7 @@ class ValidationRulesBuilder
 
         $params = [];
         $params['value'] = ($attribute->defaultValue instanceof \yii\db\Expression) ?
-            $this->f($attribute->defaultValue) :
+            $this->wrapDefaultExpression($attribute->defaultValue) :
             $attribute->defaultValue;
         $key = $attribute->columnName . '_default';
         $this->rules[$key] = new ValidationRule([$attribute->columnName], 'default', $params);
@@ -250,7 +250,7 @@ class ValidationRulesBuilder
         }
     }
 
-    private function f($dbExpr) // TODO rename
+    private function wrapDefaultExpression(Expression $dbExpr): Expression
     {
         return new class($dbExpr->expression) extends Expression {
             public function __toString()

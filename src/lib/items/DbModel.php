@@ -125,7 +125,6 @@ class DbModel extends BaseObject
             ["'value' => '-yii-db-expression-starts-", "-yii-db-expression-ends-'"],
             ["'value' => new \yii\db\Expression", ""],
             $rules,
-            $count
         );
 
         return $rules;
