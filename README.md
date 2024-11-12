@@ -317,6 +317,81 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+### `x-route`
+
+To customize route (controller ID/action ID) for a path, use custom key `x-route` with value `<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
+directly under the `paths` key of OpenAPI spec. Example:
+
+```yaml
+paths:
+  /payments/invoice/{invoice}:
+    parameters:
+      - name: invoice
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    post:
+      x-route: 'payments/invoice'
+      summary: Pay Invoice
+      description: Pay for Invoice with given invoice number
+      requestBody:
+        description: Record new payment for an invoice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      responses:
+        '200':
+          description: Successfully paid the invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+```
+
+It won't generate `actionCreateInvoice` in `PaymentsController.php` file, but will generate `actionInvoice` instead in
+same file.
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'POST payments/invoice/<invoice:\d+>' => 'payments/invoice',
+    'payments/invoice/<invoice:\d+>' => 'payments/options',
+```
+
+Also, if same action is needed for HTTP GET and POST then use same value for `x-route`. Example:
+
+```yaml
+paths:
+  /a1/b1:
+    get:
+      x-route: 'abc/xyz'
+      operationId: opnid1
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+    post:
+      x-route: 'abc/xyz'
+      operationId: opnid2
+      summary: create
+      description: create
+      responses:
+        '200':
+          description: The Response
+```
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'GET a1/b1' => 'abc/xyz',
+    'POST a1/b1' => 'abc/xyz',    
+    'a1/b1' => 'abc/options',
+```
+`x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:
