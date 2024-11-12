@@ -10,6 +10,7 @@ namespace cebe\yii2openapi\lib;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ValidationRule;
+use yii\db\Expression;
 use yii\helpers\Inflector;
 use function count;
 use function implode;
@@ -209,12 +210,11 @@ class ValidationRulesBuilder
         if ($attribute->defaultValue === null) {
             return;
         }
-        if ($attribute->defaultValue instanceof \yii\db\Expression) {
-            return;
-        }
 
         $params = [];
-        $params['value'] = $attribute->defaultValue;
+        $params['value'] = ($attribute->defaultValue instanceof \yii\db\Expression) ?
+            $this->wrapDefaultExpression($attribute->defaultValue) :
+            $attribute->defaultValue;
         $key = $attribute->columnName . '_default';
         $this->rules[$key] = new ValidationRule([$attribute->columnName], 'default', $params);
     }
@@ -267,5 +267,15 @@ class ValidationRulesBuilder
 
             $this->typeScope['safe'][$attribute->columnName] = $attribute->columnName;
         }
+    }
+
+    private function wrapDefaultExpression(Expression $dbExpr): Expression
+    {
+        return new class($dbExpr->expression) extends Expression {
+            public function __toString()
+            {
+                return '-yii-db-expression-starts-("' . $this->expression . '")-yii-db-expression-ends-';
+            }
+        };
     }
 }

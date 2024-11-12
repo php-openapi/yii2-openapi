@@ -108,7 +108,8 @@ class DbModel extends BaseObject
         $rules = Yii::createObject(ValidationRulesBuilder::class, [$this])->build();
         $rules = array_map('strval', $rules);
         $rules = VarDumper::export($rules);
-        return str_replace([
+
+        $rules = str_replace([
             PHP_EOL,
             "\'",
             "'[[",
@@ -119,6 +120,15 @@ class DbModel extends BaseObject
             '[[',
             '],'
         ], $rules);
+
+        // https://github.com/php-openapi/yii2-openapi/issues/65
+        $rules = str_replace(
+            ["'value' => '-yii-db-expression-starts-", "-yii-db-expression-ends-'"],
+            ["'value' => new \yii\db\Expression", ""],
+            $rules,
+        );
+
+        return $rules;
     }
 
     /**
