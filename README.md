@@ -398,7 +398,7 @@ User:
 `NOT NULL` in DB migrations is determined by `nullable` and `required` properties of the OpenAPI schema.
 e.g. attribute = 'my_property'.
 
-- If you define attribute neither "required" nor via "nullable", then it is by default `NULL`:
+- If you define attribute neither "required" nor via "nullable", then it is by default `NULL` ([opposite of OpenAPI spec](https://swagger.io/specification/v3/?sbsearch=nullable)):
 
 ```yaml
   ExampleSchema:

@@ -14,7 +14,6 @@ class m200000_000001_change_table_editcolumns extends \yii\db\Migration
         $this->db->createCommand('ALTER TABLE {{%editcolumns}} ALTER COLUMN "name" SET DATA TYPE varchar(254)')->execute();
         $this->alterColumn('{{%editcolumns}}', 'name', "SET DEFAULT 'Horse-2'");
         $this->alterColumn('{{%editcolumns}}', 'string_col', 'text NULL USING "string_col"::text');
-        $this->alterColumn('{{%editcolumns}}', 'string_col', "DROP NOT NULL");
         $this->db->createCommand('ALTER TABLE {{%editcolumns}} ALTER COLUMN "dec_col" SET DATA TYPE decimal(12,2) USING "dec_col"::decimal(12,2)')->execute();
         $this->alterColumn('{{%editcolumns}}', 'dec_col', "SET DEFAULT 3.14");
         $this->alterColumn('{{%editcolumns}}', 'str_col_def', "SET NOT NULL");
@@ -25,6 +24,7 @@ class m200000_000001_change_table_editcolumns extends \yii\db\Migration
         $this->alterColumn('{{%editcolumns}}', 'json_col_2', "SET NOT NULL");
         $this->alterColumn('{{%editcolumns}}', 'json_col_2', "SET DEFAULT '[]'");
         $this->db->createCommand('ALTER TABLE {{%editcolumns}} ALTER COLUMN "numeric_col" SET DATA TYPE double precision USING "numeric_col"::double precision')->execute();
+        $this->alterColumn('{{%editcolumns}}', 'numeric_col', "SET NOT NULL");
     }
 
     public function safeDown()
@@ -39,7 +39,6 @@ class m200000_000001_change_table_editcolumns extends \yii\db\Migration
         $this->dropColumn('{{%editcolumns}}', 'json_col_def_n');
         $this->dropColumn('{{%editcolumns}}', 'first_name');
         $this->alterColumn('{{%editcolumns}}', 'name', "SET DEFAULT 'Horse'");
-        $this->alterColumn('{{%editcolumns}}', 'string_col', "SET NOT NULL");
         $this->alterColumn('{{%editcolumns}}', 'dec_col', "DROP DEFAULT");
         $this->alterColumn('{{%editcolumns}}', 'str_col_def', "DROP NOT NULL");
         $this->alterColumn('{{%editcolumns}}', 'str_col_def', "SET DEFAULT 'hi there'");
@@ -47,5 +46,6 @@ class m200000_000001_change_table_editcolumns extends \yii\db\Migration
         $this->alterColumn('{{%editcolumns}}', 'json_col', "DROP DEFAULT");
         $this->alterColumn('{{%editcolumns}}', 'json_col_2', "DROP NOT NULL");
         $this->alterColumn('{{%editcolumns}}', 'json_col_2', "DROP DEFAULT");
+        $this->alterColumn('{{%editcolumns}}', 'numeric_col', "DROP NOT NULL");
     }
 }
