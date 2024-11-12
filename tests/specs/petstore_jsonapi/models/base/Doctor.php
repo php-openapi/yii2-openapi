@@ -29,10 +29,10 @@ class Doctor extends Model
     {
         return [
             'trim' => [['name', 'surname'], 'trim'],
-            'required' => [['name'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 200],
             'surname_string' => [['surname'], 'string', 'max' => 200],
             'safe' => [['phones'], 'safe'],
+            'required' => [['name'], 'required'],
         ];
     }
 }

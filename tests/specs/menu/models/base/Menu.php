@@ -29,7 +29,6 @@ abstract class Menu extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'required' => [['name'], 'required'],
             'parent_id_integer' => [['parent_id'], 'integer'],
             'parent_id_exist' => [['parent_id'], 'exist', 'targetRelation' => 'Parent'],
             'name_string' => [['name'], 'string', 'min' => 3, 'max' => 100],
@@ -47,6 +46,7 @@ abstract class Menu extends \yii\db\ActiveRecord
                 ],
             ]],
             'safe' => [['args', 'kwargs'], 'safe'],
+            'required' => [['name'], 'required'],
         ];
     }
 
