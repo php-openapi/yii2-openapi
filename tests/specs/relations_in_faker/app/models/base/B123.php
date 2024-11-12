@@ -27,7 +27,7 @@ abstract class B123 extends \yii\db\ActiveRecord
         return [
             'trim' => [['name'], 'trim'],
             'c123_id_integer' => [['c123_id'], 'integer'],
-            'c123_id_exist' => [['c123_id'], 'exist', 'targetRelation' => 'C123'],
+            'c123_id_exist' => [['c123_id'], 'exist', 'targetRelation' => 'c123'],
             'name_string' => [['name'], 'string'],
         ];
     }

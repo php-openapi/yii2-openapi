@@ -7,8 +7,6 @@
 
 namespace cebe\yii2openapi\lib;
 
-use cebe\yii2openapi\lib\Config;
-use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\AttributeRelation;
@@ -22,7 +20,6 @@ use cebe\yii2openapi\lib\openapi\PropertySchema;
 use Yii;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function explode;
 use function strpos;
 use function strtolower;
@@ -268,7 +265,7 @@ class AttributeResolver
 
             $relation = Yii::createObject(
                 AttributeRelation::class,
-                [$property->getName(), $relatedTableName, $relatedClassName]
+                [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
             )
                            ->asHasOne([$fkProperty->getName() => $attribute->columnName]);
             $relation->onUpdateFkConstraint = $property->onUpdateFkConstraint;
@@ -319,7 +316,7 @@ class AttributeResolver
                     $this->relations[$property->getName()] =
                         Yii::createObject(
                             AttributeRelation::class,
-                            [$property->getName(), $relatedTableName, $relatedClassName]
+                            [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
                         )
                            ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
                     return;
@@ -328,7 +325,7 @@ class AttributeResolver
                 $this->relations[$property->getName()] =
                     Yii::createObject(
                         AttributeRelation::class,
-                        [$property->getName(), $relatedTableName, $relatedClassName]
+                        [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
                     )
                        ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
@@ -347,7 +344,7 @@ class AttributeResolver
             $this->relations[$property->getName()] =
                 Yii::createObject(
                     AttributeRelation::class,
-                    [$property->getName(), $relatedTableName, $relatedClassName]
+                    [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
                 )
                    ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->componentSchema->getPkName()]);
             return;
@@ -497,5 +494,15 @@ class AttributeResolver
                   ->setLimits($min, $max, $fkProperty->getMinLength());
         $this->attributes[$property->getName()] =
             $attribute->setFakerStub($this->guessFakerStub($attribute, $fkProperty));
+    }
+
+    public static function relationName(string $propertyName, ?string $fkColumnName): string
+    {
+        $fkColumnName = (string) $fkColumnName;
+        $relationName = $propertyName;
+        if (!str_contains($fkColumnName, '_')) {
+            $relationName = strtolower($fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
+        }
+        return $relationName;
     }
 }

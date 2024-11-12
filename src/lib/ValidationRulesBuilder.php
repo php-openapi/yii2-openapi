@@ -10,6 +10,7 @@ namespace cebe\yii2openapi\lib;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ValidationRule;
+use yii\helpers\Inflector;
 use function count;
 use function implode;
 use function in_array;
@@ -176,10 +177,12 @@ class ValidationRulesBuilder
             } elseif ($attribute->phpType === 'string') {
                 $this->addStringRule($attribute);
             }
+
+            $targetRelation = AttributeResolver::relationName(Inflector::variablize($attribute->camelName()), $attribute->fkColName);
             $this->rules[$attribute->columnName . '_exist'] = new ValidationRule(
                 [$attribute->columnName],
                 'exist',
-                ['targetRelation' => $attribute->camelName()]
+                ['targetRelation' => $targetRelation]
             );
         }
     }

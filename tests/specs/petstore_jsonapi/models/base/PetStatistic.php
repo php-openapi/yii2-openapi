@@ -54,7 +54,7 @@ class PetStatistic extends Model
         return [
             'trim' => [['title', 'summary'], 'trim'],
             'parentPet_id_integer' => [['parentPet_id'], 'integer'],
-            'parentPet_id_exist' => [['parentPet_id'], 'exist', 'targetRelation' => 'ParentPet'],
+            'parentPet_id_exist' => [['parentPet_id'], 'exist', 'targetRelation' => 'parentPet'],
             'title_string' => [['title'], 'string'],
             'dogsCount_integer' => [['dogsCount'], 'integer'],
             'catsCount_integer' => [['catsCount'], 'integer'],
