@@ -118,10 +118,10 @@ final class MigrationRecordBuilder
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumn(string $tableAlias, ColumnSchema $column):string
+    public function alterColumn(string $tableAlias, ColumnSchema $column, ?string $position = null):string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true, $position);
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -129,17 +129,21 @@ final class MigrationRecordBuilder
                 ColumnToCode::escapeQuotes($converter->getCode())
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, true);
+        $converter = $this->columnToCode($tableAlias, $column, true, false, false, false, $position);
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getCode(true));
     }
 
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumnType(string $tableAlias, ColumnSchema $column, bool $addUsing = false):string
-    {
+    public function alterColumnType(
+        string $tableAlias,
+        ColumnSchema $column,
+        bool $addUsing = false,
+        ?string $position = null
+    ):string {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, false, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, false, false, true, true, $position);
             $this->isBuiltInType = $converter->isBuiltinType;
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
@@ -148,7 +152,7 @@ final class MigrationRecordBuilder
                 rtrim(ltrim($converter->getAlterExpression($addUsing), "'"), "'")
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, false);
+        $converter = $this->columnToCode($tableAlias, $column, false, false, false, false, $position);
         $this->isBuiltInType = $converter->isBuiltinType;
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getAlterExpression($addUsing));
     }
@@ -157,10 +161,14 @@ final class MigrationRecordBuilder
      * This method is only used in Pgsql
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumnTypeFromDb(string $tableAlias, ColumnSchema $column, bool $addUsing = false) :string
-    {
+    public function alterColumnTypeFromDb(
+        string $tableAlias,
+        ColumnSchema $column,
+        bool $addUsing = false,
+        ?string $position = null
+    ) :string {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true, $position);
             $this->isBuiltInType = $converter->isBuiltinType;
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
@@ -169,7 +177,7 @@ final class MigrationRecordBuilder
                 rtrim(ltrim($converter->getAlterExpression($addUsing), "'"), "'")
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, true);
+        $converter = $this->columnToCode($tableAlias, $column, true, false, false, false, $position);
         $this->isBuiltInType = $converter->isBuiltinType;
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getAlterExpression($addUsing));
     }

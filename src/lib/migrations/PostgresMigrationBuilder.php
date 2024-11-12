@@ -9,7 +9,6 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\lib\items\DbIndex;
 use yii\db\ColumnSchema;
-use yii\helpers\VarDumper;
 use yii\helpers\ArrayHelper;
 
 final class PostgresMigrationBuilder extends BaseMigrationBuilder
@@ -251,5 +250,17 @@ SQL;
         if ($current->type === $desired->type && !$desired->size && $this->isDbDefaultSize($current)) {
             $desired->size = $current->size;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string
+    {
+        return null;
+    }
+
+    public function setColumnsPositions()
+    {
     }
 }
