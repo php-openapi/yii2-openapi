@@ -13,7 +13,6 @@ use Yii;
 use yii\base\BaseObject;
 use yii\db\ColumnSchema;
 use yii\helpers\Inflector;
-use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 use function array_filter;
 use function array_map;
@@ -316,5 +315,22 @@ class DbModel extends BaseObject
             return ' This is the model class for table "'.$this->tableName.'".';
         }
         return FormatHelper::getFormattedDescription($this->description);
+    }
+
+    /**
+     * Return array of models that this models depends on exclusively used in faker.
+     * Models with `x-faker: false` or with self-reference are excluded
+     */
+    public function fakerDependentModels(): array
+    {
+        $result = [];
+        foreach ($this->attributes as $attribute) {
+            if ($attribute->reference && $attribute->fakerStub) {
+                if ($this->name !== $attribute->reference) { # exclude self-referenced models
+                    $result[] = $attribute->reference;
+                }
+            }
+        }
+        return array_unique($result);
     }
 }

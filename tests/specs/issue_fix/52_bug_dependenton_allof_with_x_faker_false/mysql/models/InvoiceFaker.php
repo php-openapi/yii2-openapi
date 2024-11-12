@@ -4,18 +4,18 @@ namespace app\models;
 use Faker\UniqueGenerator;
 
 /**
- * Fake data generator for Order
- * @method static Order makeOne($attributes = [], ?UniqueGenerator $uniqueFaker = null);
- * @method static Order saveOne($attributes = [], ?UniqueGenerator $uniqueFaker = null);
- * @method static Order[] make(int $number, $commonAttributes = [], ?UniqueGenerator $uniqueFaker = null)
- * @method static Order[] save(int $number, $commonAttributes = [], ?UniqueGenerator $uniqueFaker = null)
+ * Fake data generator for Invoice
+ * @method static Invoice makeOne($attributes = [], ?UniqueGenerator $uniqueFaker = null);
+ * @method static Invoice saveOne($attributes = [], ?UniqueGenerator $uniqueFaker = null);
+ * @method static Invoice[] make(int $number, $commonAttributes = [], ?UniqueGenerator $uniqueFaker = null)
+ * @method static Invoice[] save(int $number, $commonAttributes = [], ?UniqueGenerator $uniqueFaker = null)
  */
-class OrderFaker extends BaseModelFaker
+class InvoiceFaker extends BaseModelFaker
 {
 
     /**
      * @param array|callable $attributes
-     * @return Order|\yii\db\ActiveRecord
+     * @return Invoice|\yii\db\ActiveRecord
      * @example
      *  $model = (new PostFaker())->generateModels(['author_id' => 1]);
      *  $model = (new PostFaker())->generateModels(function($model, $faker, $uniqueFaker) {
@@ -28,9 +28,11 @@ class OrderFaker extends BaseModelFaker
     {
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
-        $model = new Order();
+        $model = new Invoice();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->sentence;
+        $model->reference_invoice_2_id = $faker->randomElement(\app\models\Invoice::find()->select("id")->column());
+        $model->user_id = $faker->randomElement(\app\models\User::find()->select("id")->column());
+        $model->fruit_id = $faker->randomElement(\app\models\Fruit::find()->select("id")->column());
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {
@@ -43,6 +45,8 @@ class OrderFaker extends BaseModelFaker
     {
         return [
             // just model class names
+            'User',
+            'Fruit',
 
         ];
     }
