@@ -327,7 +327,6 @@ class Attribute extends BaseObject
         if ($this->defaultValue !== null) {
             $column->defaultValue = $this->defaultValue;
         } elseif ($column->allowNull) {
-            //@TODO: Need to discuss
             $column->defaultValue = null;
         }
         if (is_array($this->enumValues)) {
