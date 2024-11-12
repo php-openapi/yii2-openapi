@@ -427,12 +427,16 @@ class AttributeResolver
         foreach ($indexes as $index) {
             $unique = false;
             if (strpos($index, ':') !== false) {
-                [$indexType, $props] = explode(':', $index);
+                // [$indexType, $props] = explode(':', $index);
+                // if `$index` is `gin(to_tsvector('english', search::text)):search,prop2`
+                $props = strrchr($index, ':'); # `$props` is now `:search,prop2`
+                $props = substr($props, 1); # search,prop2
+                $indexType = str_replace(':'.$props, '', $index); # `gin(to_tsvector('english', search::text))`
             } else {
                 $props = $index;
                 $indexType = null;
             }
-            if ($indexType === 'unique') {
+            if (strtolower((string) $indexType) === 'unique') {
                 $indexType = null;
                 $unique = true;
             }
