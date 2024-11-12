@@ -27,4 +27,14 @@ abstract class Delivery extends \yii\db\ActiveRecord
             'title_string' => [['title'], 'string'],
         ];
     }
+
+    public function getWebhook()
+    {
+        return $this->hasOne(\app\models\Webhook::class, ['redelivery_of' => 'id'])->inverseOf('redelivery_of');
+    }
+
+    public function getWebhook2()
+    {
+        return $this->hasOne(\app\models\Webhook::class, ['rd_abc_2' => 'id'])->inverseOf('rd2');
+    }
 }

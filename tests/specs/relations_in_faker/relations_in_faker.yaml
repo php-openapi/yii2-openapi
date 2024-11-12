@@ -64,7 +64,7 @@ components:
           nullable: false
 
     Routing:
-      description: rounting specification
+      description: routing specification
       type: object
       required:
         - id

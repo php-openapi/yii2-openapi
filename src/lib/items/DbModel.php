@@ -11,6 +11,7 @@ use cebe\yii2openapi\lib\helpers\FormatHelper;
 use cebe\yii2openapi\lib\ValidationRulesBuilder;
 use Yii;
 use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
 use yii\db\ColumnSchema;
 use yii\helpers\Inflector;
 use yii\helpers\VarDumper;
@@ -20,10 +21,10 @@ use function str_replace;
 use const PHP_EOL;
 
 /**
- * @property-read string                                                $tableAlias
- * @property-read array                                                 $uniqueColumnsList
- * @property-read array[]|array                                         $attributesByType
- * @property-read array|\cebe\yii2openapi\lib\items\AttributeRelation[] $hasOneRelations
+ * @property-read string $tableAlias
+ * @property-read array $uniqueColumnsList
+ * @property-read array[]|array $attributesByType
+ * @property-read array|AttributeRelation[] $hasOneRelations
  */
 class DbModel extends BaseObject
 {
@@ -37,49 +38,48 @@ class DbModel extends BaseObject
      */
     public $pkName;
 
-    /**
-     * @var string model name.
-     */
-    public $name;
+    // model name
+    public string $name;
+
+    // table name. (without brackets and db prefix)
+    public string $tableName;
+
+    // description from the schema.
+    public string $description;
 
     /**
-     * @var string table name. (without brackets and db prefix)
+     * @var array|Attribute[] model attributes.
      */
-    public $tableName;
+    public array $attributes = [];
 
     /**
-     * @var string description from the schema.
+     * @var array|AttributeRelation[] database relations.
      */
-    public $description;
+    public array $relations = [];
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\Attribute[] model attributes.
+     * @var array|NonDbRelation[] non-db relations
      */
-    public $attributes = [];
+    public array $nonDbRelations = [];
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\AttributeRelation[] database relations.
+     * @var array|ManyToManyRelation[] many-to-many relations.
      */
-    public $relations = [];
-
-    /***
-     * @var array|\cebe\yii2openapi\lib\items\NonDbRelation[] non-db relations
-     */
-    public $nonDbRelations = [];
+    public array $many2many = [];
 
     /**
-     * @var array|\cebe\yii2openapi\lib\items\ManyToManyRelation[] many to many relations.
+     * @var array|AttributeRelation[] inverse relations
      */
-    public $many2many = [];
+    public array $inverseRelations = [];
 
-    public $junctionCols = [];
+    public array $junctionCols = [];
 
     /**
-     * @var \cebe\yii2openapi\lib\items\DbIndex[]|array
+     * @var DbIndex[]|array
      */
-    public $indexes = [];
+    public array $indexes = [];
 
-    public $isNotDb = false;
+    public bool $isNotDb = false;
 
     /**
      * @var string
@@ -93,17 +93,21 @@ class DbModel extends BaseObject
      */
     private $_scenarios;
 
-    public function getTableAlias():string
+
+    public function getTableAlias(): string
     {
         return '{{%' . $this->tableName . '}}';
     }
 
-    public function getClassName():string
+    public function getClassName(): string
     {
         return Inflector::id2camel($this->name, '_');
     }
 
-    public function getValidationRules():string
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getValidationRules(): string
     {
         $rules = Yii::createObject(ValidationRulesBuilder::class, [$this])->build();
         $rules = array_map('strval', $rules);
@@ -132,9 +136,9 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return \cebe\yii2openapi\lib\items\AttributeRelation[]|array
+     * @return AttributeRelation[]|array
      */
-    public function getHasOneRelations():array
+    public function getHasOneRelations(): array
     {
         return array_filter(
             $this->relations,
@@ -144,7 +148,7 @@ class DbModel extends BaseObject
         );
     }
 
-    public function getPkAttribute():Attribute
+    public function getPkAttribute(): Attribute
     {
         return $this->attributes[$this->pkName];
     }
@@ -152,7 +156,7 @@ class DbModel extends BaseObject
     /**
      * @return ColumnSchema[]
      */
-    public function attributesToColumnSchema():array
+    public function attributesToColumnSchema(): array
     {
         return $this->isNotDb
             ? []
@@ -169,9 +173,9 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\Attribute[]
+     * @return array|Attribute[]
      */
-    public function getEnumAttributes():array
+    public function getEnumAttributes(): array
     {
         return array_filter(
             $this->attributes,
@@ -182,9 +186,9 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\Attribute[]
+     * @return array|Attribute[]
      */
-    public function virtualAttributes():array
+    public function virtualAttributes(): array
     {
         return array_filter($this->attributes, static function (Attribute $attribute) {
             return $attribute->isVirtual;
@@ -192,9 +196,9 @@ class DbModel extends BaseObject
     }
 
     /**
-     * @return array|\cebe\yii2openapi\lib\items\Attribute[]
+     * @return array|Attribute[]
      */
-    public function dbAttributes():array
+    public function dbAttributes(): array
     {
         return array_filter($this->attributes, static function (Attribute $attribute) {
             return !$attribute->isVirtual;

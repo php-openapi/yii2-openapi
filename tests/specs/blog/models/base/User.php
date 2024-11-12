@@ -44,4 +44,14 @@ abstract class User extends \yii\db\ActiveRecord
             'created_at_default' => [['created_at'], 'default', 'value' => new \yii\db\Expression("(CURRENT_TIMESTAMP)")],
         ];
     }
+
+    public function getPost()
+    {
+        return $this->hasOne(\app\models\Post::class, ['created_by_id' => 'id'])->inverseOf('created_by');
+    }
+
+    public function getComment2()
+    {
+        return $this->hasOne(\app\models\Comment::class, ['author_id' => 'id'])->inverseOf('author');
+    }
 }

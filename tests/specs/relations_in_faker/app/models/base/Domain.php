@@ -42,6 +42,11 @@ abstract class Domain extends \yii\db\ActiveRecord
 
     public function getRoutings()
     {
-        return $this->hasMany(\app\models\Routing::class, ['domain_id' => 'id']);
+        return $this->hasMany(\app\models\Routing::class, ['domain_id' => 'id'])->inverseOf('domain');
+    }
+
+    public function getRouting()
+    {
+        return $this->hasOne(\app\models\Routing::class, ['domain_id' => 'id'])->inverseOf('domain');
     }
 }

@@ -459,4 +459,19 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/25
+    public function test25GenerateInverseRelations()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/25_generate_inverse_relations/index.php");
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 3);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/25_generate_inverse_relations/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

@@ -36,4 +36,14 @@ abstract class B123 extends \yii\db\ActiveRecord
     {
         return $this->hasOne(\app\models\C123::class, ['id' => 'c123_id']);
     }
+
+    public function getA123()
+    {
+        return $this->hasOne(\app\models\A123::class, ['b123_id' => 'id'])->inverseOf('b123');
+    }
+
+    public function getE1232()
+    {
+        return $this->hasOne(\app\models\E123::class, ['b123_id' => 'id'])->inverseOf('b123');
+    }
 }
