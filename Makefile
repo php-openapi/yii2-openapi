@@ -45,6 +45,9 @@ up:
 cli:
 	docker-compose exec --user=$(UID) php bash
 
+cli_root:
+	docker-compose exec --user="root" php bash
+
 cli_mysql:
 	docker-compose exec --user=$(UID) mysql bash
 

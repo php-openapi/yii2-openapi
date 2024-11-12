@@ -408,8 +408,6 @@ class PropertySchema
                 return 'bool';
             case 'number': // can be double and float
                 return $this->getAttr('format') === 'double' ? 'double' : 'float';
-//            case 'array':
-//                return $property->type;
             default:
                 return $this->getAttr('type', 'string');
         }

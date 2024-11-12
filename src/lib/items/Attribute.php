@@ -7,20 +7,14 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-use cebe\yii2openapi\lib\helpers\FormatHelper;
-use yii\helpers\VarDumper;
-use \Yii;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
-use cebe\yii2openapi\generator\ApiGenerator;
-use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
-use yii\base\BaseObject;
 use cebe\yii2openapi\db\ColumnSchema;
-use yii\helpers\Inflector;
-use yii\helpers\StringHelper;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\helpers\FormatHelper;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
+use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
+use yii\helpers\Inflector;
 use function is_array;
 use function strtolower;
 
@@ -308,7 +302,7 @@ class Attribute extends BaseObject
         return $annotation;
     }
 
-    public function toColumnSchema():ColumnSchema
+    public function toColumnSchema(): ColumnSchema
     {
         $column = new ColumnSchema([
             'name' => $this->columnName,
@@ -338,7 +332,11 @@ class Attribute extends BaseObject
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @param string $dbType
+     * @return string
+     * @throws InvalidDefinitionException
+     * @throws NotSupportedException
+     * @throws InvalidConfigException
      */
     private function yiiAbstractTypeForDbSpecificType(string $dbType): string
     {

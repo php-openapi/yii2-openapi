@@ -76,7 +76,9 @@ return $config;
 
 To use the web generator, open `index.php?r=gii` and select the `REST API Generator`.
 
-On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml` should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
+On console, you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml`
+should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see
+also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
 
 Run `./yii gii/api --help` for all options. Example: Disable generation of migrations files `./yii gii/api --generateMigrations=0`
 
@@ -317,6 +319,60 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+### `x-no-relation`
+
+To differentiate a component schema property from one-to-many or many-to-many relation in favour of array(json) of
+related objects, `x-no-relation` (type: boolean, default: false) is used.
+
+```yaml
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+```
+
+This will not generate 'comments' column in database migrations. But it will generate `getComments()` relation in Yii model file.
+
+In order to make it real database column, extension `x-no-relation` can be used.
+
+```yaml
+        comments:
+          type: array
+          x-no-relation: true
+          items:
+            $ref: "#/components/schemas/Comment"
+```
+
+Database column type can be `array`, `json` etc. to store such data.
+
+Now if the Comment schema from the above example is
+
+```yaml
+    Comment:
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+```
+
+then the value for `comments` can be
+
+```json
+[
+  {
+    "id": 1,
+    "content": "Hi there"
+  },
+  {
+    "id": 2,
+    "content": "Hi there 2"
+  }
+]
+```
+
+`x-no-relation` can be only used with OpenAPI schema data type `array`.
+
 ### `x-route`
 
 To customize route (controller ID/action ID) for a path, use custom key `x-route` with value `<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
@@ -399,8 +455,8 @@ There are two ways for define many-to-many relations:
 ### Simple many-to-many without junction model
 
    - property name for many-to-many relation should be equal lower-cased, pluralized related schema name
-     
-   - referenced schema should contains mirrored reference to current schema
+
+- referenced schema should contain mirrored reference to current schema
      
    - migration for junction table can be generated automatically - table name should be [pluralized, lower-cased
  schema_name1]2[pluralized, lower-cased schema name2], in alphabetical order;
@@ -591,12 +647,13 @@ created_at:
 ## Assumptions
 
 When generating code from an OpenAPI description there are many possible ways to achive a fitting result.
-Thus there are some assumptions and limitations that are currently applied to make this work.
+Thus, there are some assumptions and limitations that are currently applied to make this work.
 Here is a (possibly incomplete) list:
 
 - The current implementation works best with OpenAPI description that follows the [JSON:API](https://jsonapi.org/) guidelines.
   - The request and response format/schema is currently not extracted from OpenAPI schema and may need to be adjusted manually if it does not follow JSON:API
-- column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by DB/Yii; so remove it from validation `rules()`
+- column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by
+  DB/Yii; so remove it from validation `rules()`
   - other fields can currently be used as primary keys using the `x-pk` OpenAPI extension (see below) but it may not be work correctly in all cases, please report bugs if you find them.
 
 Other things to keep in mind:
