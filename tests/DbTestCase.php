@@ -184,4 +184,12 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         $this->assertSame($downExitCode, 0);
         $this->assertSame($downOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' reverted.');
     }
+
+    protected function dropFkIfExists(string $table, string $fk): void
+    {
+        $tableSchema = Yii::$app->db->schema->getTableSchema($table);
+        if ($tableSchema && array_key_exists($fk, $tableSchema->foreignKeys)) {
+            Yii::$app->db->createCommand()->dropForeignKey($fk, $table)->execute();
+        }
+    }
 }
