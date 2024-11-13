@@ -243,7 +243,13 @@ class IssueFixTest extends DbTestCase
     public function testCreateMigrationForDropTable132IndependentTablesDropSort()
     {
         $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/case_independent_tables_drop_sort/index.php");
+        $dropTables = function () {
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+        };
 
+        $dropTables();
         Yii::$app->db->createCommand()->createTable('{{%upks}}', [
             'id' => 'upk',
             'name' => 'string(150)',
@@ -268,9 +274,7 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
 
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
-        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+        $dropTables();
     }
 
     // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
