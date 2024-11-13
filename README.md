@@ -4,17 +4,17 @@ REST API application generator for Yii2, openapi 3.0 YAML -> Yii2.
 
 Base on [Gii, the Yii Framework Code Generator](https://www.yiiframework.com/extension/yiisoft/yii2-gii).
 
-[![Latest Stable Version](https://poser.pugx.org/cebe/yii2-openapi/v/stable)](https://packagist.org/packages/cebe/yii2-openapi)
-[![Latest Alpha Version](https://poser.pugx.org/cebe/yii2-openapi/v/unstable)](https://packagist.org/packages/cebe/yii2-openapi)
-[![Total Downloads](https://poser.pugx.org/cebe/yii2-openapi/downloads)](https://packagist.org/packages/cebe/yii2-openapi)
-[![License](https://poser.pugx.org/cebe/yii2-openapi/license)](https://packagist.org/packages/cebe/yii2-openapi)
-![yii2-openapi](https://github.com/cebe/yii2-openapi/workflows/yii2-openapi/badge.svg?branch=wip)
+[![Latest Stable Version](https://poser.pugx.org/php-openapi/yii2-openapi/v/stable)](https://packagist.org/packages/php-openapi/yii2-openapi)
+[![Latest Alpha Version](https://poser.pugx.org/php-openapi/yii2-openapi/v/unstable)](https://packagist.org/packages/php-openapi/yii2-openapi)
+[![Total Downloads](https://poser.pugx.org/php-openapi/yii2-openapi/downloads)](https://packagist.org/packages/php-openapi/yii2-openapi)
+[![License](https://poser.pugx.org/php-openapi/yii2-openapi/license)](https://packagist.org/packages/php-openapi/yii2-openapi)
+![yii2-openapi](https://github.com/php-openapi/yii2-openapi/workflows/yii2-openapi/badge.svg?branch=wip)
 
 ## TLDR; what is this?
 
 A code generator for OpenAPI and Yii Framework based PHP API application.
 
-Input: [OpenAPI 3.0 YAML or JSON](https://github.com/OAI/OpenAPI-Specification#the-openapi-specification) (via [cebe/php-openapi](https://github.com/cebe/php-openapi))
+Input: [OpenAPI 3.0 YAML or JSON](https://github.com/OAI/OpenAPI-Specification#the-openapi-specification) (via [cebe/php-openapi](https://github.com/php-openapi/php-openapi))
 
 Output: Yii Framework Application with Controllers, Models, database schema
 
@@ -41,7 +41,7 @@ Currently available features:
 ## Usage
 
 You can use this package in your existing application or start a new project using the
-[yii2-app-api](https://github.com/cebe/yii2-app-api) application template.
+[yii2-app-api](https://github.com/php-openapi/yii2-app-api) application template.
 For usage of the template, see instructions in the template repo readme.
 
 In your existing Yii application config (works for console as well as web):
@@ -76,7 +76,9 @@ return $config;
 
 To use the web generator, open `index.php?r=gii` and select the `REST API Generator`.
 
-On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml` should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see also [cebe/php-openapi](https://github.com/cebe/php-openapi/) for supported formats).
+On console, you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml`
+should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see
+also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
 
 Run `./yii gii/api --help` for all options. Example: Disable generation of migrations files `./yii gii/api --generateMigrations=0`
 
@@ -212,6 +214,14 @@ Specify table indexes
            default: '{}' 
 ```
 
+If raw DB expression is needed in index, then it must be for only one column. Example:
+
+```yaml
+    x-indexes:
+       - "gin(to_tsvector('english', search::text)):search" # valid
+       - "gin(to_tsvector('english', search::text)):search,column2" # invalid
+```
+
 ### `x-db-default-expression`
 
 Ability to provide default value by database expression
@@ -326,6 +336,134 @@ x-deleted-schemas:
   - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
 ```
 
+### `x-no-relation`
+
+To differentiate a component schema property from one-to-many or many-to-many relation in favour of array(json) of
+related objects, `x-no-relation` (type: boolean, default: false) is used.
+
+```yaml
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+```
+
+This will not generate 'comments' column in database migrations. But it will generate `getComments()` relation in Yii model file.
+
+In order to make it real database column, extension `x-no-relation` can be used.
+
+```yaml
+        comments:
+          type: array
+          x-no-relation: true
+          items:
+            $ref: "#/components/schemas/Comment"
+```
+
+Database column type can be `array`, `json` etc. to store such data.
+
+Now if the Comment schema from the above example is
+
+```yaml
+    Comment:
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+```
+
+then the value for `comments` can be
+
+```json
+[
+  {
+    "id": 1,
+    "content": "Hi there"
+  },
+  {
+    "id": 2,
+    "content": "Hi there 2"
+  }
+]
+```
+
+`x-no-relation` can be only used with OpenAPI schema data type `array`.
+
+### `x-route`
+
+To customize route (controller ID/action ID) for a path, use custom key `x-route` with value `<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
+directly under the `paths` key of OpenAPI spec. Example:
+
+```yaml
+paths:
+  /payments/invoice/{invoice}:
+    parameters:
+      - name: invoice
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    post:
+      x-route: 'payments/invoice'
+      summary: Pay Invoice
+      description: Pay for Invoice with given invoice number
+      requestBody:
+        description: Record new payment for an invoice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      responses:
+        '200':
+          description: Successfully paid the invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+```
+
+It won't generate `actionCreateInvoice` in `PaymentsController.php` file, but will generate `actionInvoice` instead in
+same file.
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'POST payments/invoice/<invoice:\d+>' => 'payments/invoice',
+    'payments/invoice/<invoice:\d+>' => 'payments/options',
+```
+
+Also, if same action is needed for HTTP GET and POST then use same value for `x-route`. Example:
+
+```yaml
+paths:
+  /a1/b1:
+    get:
+      x-route: 'abc/xyz'
+      operationId: opnid1
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+    post:
+      x-route: 'abc/xyz'
+      operationId: opnid2
+      summary: create
+      description: create
+      responses:
+        '200':
+          description: The Response
+```
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'GET a1/b1' => 'abc/xyz',
+    'POST a1/b1' => 'abc/xyz',
+    'a1/b1' => 'abc/options',
+```
+`x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).
 
 ## Many-to-Many relation definition
 
@@ -334,8 +472,8 @@ There are two ways for define many-to-many relations:
 ### Simple many-to-many without junction model
 
    - property name for many-to-many relation should be equal lower-cased, pluralized related schema name
-     
-   - referenced schema should contains mirrored reference to current schema
+
+- referenced schema should contain mirrored reference to current schema
      
    - migration for junction table can be generated automatically - table name should be [pluralized, lower-cased
  schema_name1]2[pluralized, lower-cased schema name2], in alphabetical order;
@@ -408,7 +546,7 @@ User:
 `NOT NULL` in DB migrations is determined by `nullable` and `required` properties of the OpenAPI schema.
 e.g. attribute = 'my_property'.
 
-- If you define attribute neither "required" nor via "nullable", then it is by default `NULL`:
+- If you define attribute neither "required" nor via "nullable", then it is by default `NULL` ([opposite of OpenAPI spec](https://swagger.io/specification/v3/?sbsearch=nullable)):
 
 ```yaml
   ExampleSchema:
@@ -526,12 +664,13 @@ created_at:
 ## Assumptions
 
 When generating code from an OpenAPI description there are many possible ways to achive a fitting result.
-Thus there are some assumptions and limitations that are currently applied to make this work.
+Thus, there are some assumptions and limitations that are currently applied to make this work.
 Here is a (possibly incomplete) list:
 
 - The current implementation works best with OpenAPI description that follows the [JSON:API](https://jsonapi.org/) guidelines.
   - The request and response format/schema is currently not extracted from OpenAPI schema and may need to be adjusted manually if it does not follow JSON:API
-- column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by DB/Yii; so remove it from validation `rules()`
+- column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by
+  DB/Yii; so remove it from validation `rules()`
   - other fields can currently be used as primary keys using the `x-pk` OpenAPI extension (see below) but it may not be work correctly in all cases, please report bugs if you find them.
 
 Other things to keep in mind:

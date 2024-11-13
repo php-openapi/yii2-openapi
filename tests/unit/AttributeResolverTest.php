@@ -114,6 +114,7 @@ class AttributeResolverTest extends DbTestCase
         $model = $resolver->resolve();
         $fixture = require Yii::getAlias('@fixtures/non-db.php');
         $testModel = $fixture['personWatch'];
+        $testModel->openapiSchema = $model->openapiSchema;
         self::assertEquals($testModel, $model);
     }
 
@@ -126,6 +127,7 @@ class AttributeResolverTest extends DbTestCase
         $model = $resolver->resolve();
         $fixture = require Yii::getAlias('@fixtures/non-db.php');
         $testModel = $fixture['PetStatistic'];
+        $testModel->openapiSchema = $model->openapiSchema;
         self::assertEquals($testModel, $model);
     }
 }

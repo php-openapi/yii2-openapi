@@ -33,7 +33,7 @@ class CommentFaker extends BaseModelFaker
         $model->post_id = $faker->randomElement(\app\models\Post::find()->select("id")->column());
         $model->user_id = $faker->randomElement(\app\models\User::find()->select("id")->column());
         $model->message = $faker->sentence;
-        $model->meta_data = substr($faker->text(300), 0, 300);
+        $model->meta_data = substr($faker->optional(0.92, 'type==\'ticket\' && status==\'closed\'')->text(300), 0, 300);
         $model->created_at = $faker->dateTimeThisYear('now', 'UTC')->format('Y-m-d H:i:s');
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

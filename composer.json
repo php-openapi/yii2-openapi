@@ -1,5 +1,5 @@
 {
-	"name": "cebe/yii2-openapi",
+	"name": "php-openapi/yii2-openapi",
 	"description": "Generate full REST API application from OpenAPI 3 specification.",
 	"keywords": ["yii2", "rest", "openapi"],
 	"homepage": "https://github.com/cebe/yii2-openapi#readme",
@@ -19,19 +19,20 @@
 	},
 	"require": {
 		"php": "^7.4 || ^8.0",
-		"cebe/php-openapi": "^1.5.0",
+		"cebe/php-openapi": "^1.7.0",
 		"yiisoft/yii2": "~2.0.48",
 		"yiisoft/yii2-gii": "~2.0.0 | ~2.1.0 | ~2.2.0| ~2.3.0",
 		"laminas/laminas-code": ">=3.4 <=4.13",
-		"insolita/yii2-fractal": "^1.0.0",
+		"php-openapi/yii2-fractal": "^1.0.0",
 		"fakerphp/faker": "^1.9",
-		"sam-it/yii2-mariadb": "^2.0"
+		"sam-it/yii2-mariadb": "^2.0",
+		"symfony/var-exporter": "^5.4",
+		"symfony/polyfill-php80": "^1.30"
 	},
 	"require-dev": {
 		"cebe/indent": "*",
 		"friendsofphp/php-cs-fixer": "~2.16",
 		"phpunit/phpunit": "^8.0",
-		"symfony/polyfill-php80": "^1.16",
 		"yiisoft/yii2-gii": ">=2.1.0"
 	},
 	"autoload": {

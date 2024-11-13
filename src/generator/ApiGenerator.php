@@ -10,6 +10,7 @@ namespace cebe\yii2openapi\generator;
 use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\yii2openapi\lib\items\DbModel;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use cebe\yii2openapi\lib\Config;
@@ -20,11 +21,14 @@ use cebe\yii2openapi\lib\generators\ModelsGenerator;
 use cebe\yii2openapi\lib\generators\RestActionGenerator;
 use cebe\yii2openapi\lib\generators\TransformersGenerator;
 use cebe\yii2openapi\lib\generators\UrlRulesGenerator;
+use cebe\yii2openapi\lib\items\FractalAction;
+use cebe\yii2openapi\lib\items\RestAction;
 use cebe\yii2openapi\lib\PathAutoCompletion;
 use cebe\yii2openapi\lib\SchemaToDatabase;
 use Exception;
 use Yii;
 use yii\db\mysql\Schema as MySqlSchema;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\gii\CodeFile;
 use yii\gii\Generator;
@@ -135,6 +139,17 @@ class ApiGenerator extends Generator
      * @var array List of model names to exclude.
      */
     public $excludeModels = [];
+
+    /**
+     * @var array Map for custom dbModels
+     *
+     * @see DbModel::$scenarioDefaultDescription with acceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
+     * @example
+     *  'dbModel' => [
+     *      'scenarioDefaultDescription' => "Scenario {scenarioName}",
+     *  ]
+     */
+    public $dbModel = [];
 
     /**
      * @var array Map for custom controller names not based on model name for exclusive cases
@@ -477,6 +492,7 @@ class ApiGenerator extends Generator
         $urlRulesGenerator = Yii::createObject(UrlRulesGenerator::class, [$config, $actions]);
         $files = $urlRulesGenerator->generate();
 
+        $actions = static::removeDuplicateActions($actions); // in case of non-crud actions having custom route `x-route` set
         $controllersGenerator = Yii::createObject(ControllersGenerator::class, [$config, $actions]);
         $files->merge($controllersGenerator->generate());
 
@@ -524,5 +540,32 @@ class ApiGenerator extends Generator
     public static function isMariaDb(): bool
     {
         return strpos(Yii::$app->db->schema->getServerVersion(), 'MariaDB') !== false;
+    }
+
+    /**
+     * @param RestAction[]|FractalAction[] $actions
+     * @return RestAction[]|FractalAction[]
+     * https://github.com/cebe/yii2-openapi/issues/84
+     */
+    public static function removeDuplicateActions(array $actions): array
+    {
+        $actions = array_filter($actions, function ($action) {
+            /** @var $action RestAction|FractalAction */
+            if ($action instanceof RestAction && $action->isDuplicate) {
+                return false;
+            }
+            return true;
+        });
+
+        $actions = array_map(function ($action) {
+            /** @var $action RestAction|FractalAction */
+            if ($action instanceof RestAction && $action->zeroParams) {
+                $action->idParam = null;
+                $action->params = [];
+            }
+            return $action;
+        }, $actions);
+
+        return $actions;
     }
 }

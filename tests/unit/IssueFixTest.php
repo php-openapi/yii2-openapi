@@ -535,4 +535,118 @@ class IssueFixTest extends DbTestCase
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/29
+    public function test29ExtensionFkColumnNameCauseErrorInCaseOfColumnNameWithoutUnderscore()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/index.php");
+        $this->runGenerator($testFile);
+         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+             'recursive' => true,
+         ]);
+         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
+             'recursive' => true,
+         ]);
+         $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/30
+    public function test30AddValidationRulesByAttributeNameOrPattern()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/30_add_validation_rules_by_attribute_name_or_pattern/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/52
+    public function test52BugDependentonAllofWithXFakerFalse()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/52_bug_dependenton_allof_with_x_faker_false/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/52_bug_dependenton_allof_with_x_faker_false/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/53
+    public function test53BugInversedReferenceRequireCascade()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/53_bug_inversed_reference_require_cascade/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/53_bug_inversed_reference_require_cascade/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+
+    // https://github.com/cebe/yii2-openapi/issues/144
+    public function test144MethodsNamingForNonCrudActions()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/144_methods_naming_for_non_crud_actions/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/144_methods_naming_for_non_crud_actions/app"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/cebe/yii2-openapi/issues/84
+    public function test84HowToGenerateControllerCodeWithDistinctMethodNamesInCaseOfPrefixInPaths()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/84_how_to_generate_controller_code_with_distinct_method_names_in_case_of_prefix_in_paths/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/84_how_to_generate_controller_code_with_distinct_method_names_in_case_of_prefix_in_paths/app"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/20
+    public function test20ConsiderOpenApiSpecExamplesInFakeCodeGeneration()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/20_consider_openapi_spec_examples_in_faker_code_generation/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/25
+    public function test25GenerateInverseRelations()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/25_generate_inverse_relations/index.php");
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 3);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/25_generate_inverse_relations/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

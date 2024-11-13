@@ -13,6 +13,8 @@ use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
+use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\items\AttributeRelation;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
 use cebe\yii2openapi\lib\openapi\ComponentSchema;
@@ -67,10 +69,7 @@ use function count;
  */
 class SchemaToDatabase
 {
-    /**
-     * @var Config
-     */
-    protected $config;
+    protected Config $config;
 
     public function __construct(Config $config)
     {
@@ -88,7 +87,12 @@ class SchemaToDatabase
      */
     public function prepareModels(): array
     {
+        /** @var DbModel[] $models */
         $models = [];
+
+        /** @var AttributeResolver[] $resolvers */
+        $resolvers = [];
+
         $openApi = $this->config->getOpenApi();
         $junctions = $this->findJunctionSchemas();
         foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
@@ -102,7 +106,20 @@ class SchemaToDatabase
             }
             /** @var AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
-            $models[$schemaName] = $resolver->resolve();
+
+            // $models[$schemaName] = $resolver->resolve();
+            $resolvers[$schemaName] = $resolver;
+            $models[$schemaName] = $resolvers[$schemaName]->resolve();
+        }
+
+        // handle inverse relation
+        foreach ($resolvers as $aResolver) {
+            foreach ($aResolver->inverseRelations as $name => $relations) {
+                foreach ($relations as $relation) {
+                    /** @var AttributeRelation $relation */
+                    $models[$name]->inverseRelations[] = $relation;
+                }
+            }
         }
 
         foreach ($models as $model) {
@@ -114,8 +131,6 @@ class SchemaToDatabase
                 $relation->relatedPkAttribute = $models[$relation->relatedSchemaName]->getPkAttribute();
             }
         }
-
-        // TODO generate inverse relations
 
         // for drop table/schema https://github.com/cebe/yii2-openapi/issues/132
         $modelsToDrop = [];
@@ -133,7 +148,7 @@ class SchemaToDatabase
      * @throws TypeErrorException
      * @throws UnresolvableReferenceException
      * @throws Exception
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException|InvalidDefinitionException
      */
     public function findJunctionSchemas(): JunctionSchemas
     {

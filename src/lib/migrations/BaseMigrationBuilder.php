@@ -102,7 +102,7 @@ abstract class BaseMigrationBuilder
                 continue;
             }
             $this->migration
-                ->addUpCode($this->recordBuilder->addFk($fkName, $tableAlias, $fkCol, $refTable, $refCol))
+                ->addUpCode($this->recordBuilder->addFk($fkName, $tableAlias, $fkCol, $refTable, $refCol, 'CASCADE'))
                 ->addDownCode($this->recordBuilder->dropFk($fkName, $tableAlias));
             $this->migration->dependencies[] = $refTable;
         }
@@ -173,6 +173,7 @@ abstract class BaseMigrationBuilder
         $this->migration = Yii::createObject(MigrationModel::class, [$this->model, false, $relation, []]);
         $this->newColumns = $relation->columnSchema ?? $this->model->attributesToColumnSchema();
 
+        $this->setColumnsPositions();
         $wantNames = array_keys($this->newColumns);
         $haveNames = $this->tableSchema->columnNames;
         $columnsForCreate = array_map(
@@ -186,7 +187,7 @@ abstract class BaseMigrationBuilder
             function (string $unknownColumn) {
                 return $this->tableSchema->columns[$unknownColumn];
             },
-            array_diff($haveNames, $wantNames)
+            array_reverse(array_diff($haveNames, $wantNames), true)
         );
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
@@ -263,12 +264,12 @@ abstract class BaseMigrationBuilder
     {
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
+            $position = $this->findPosition($column, true);
             if ($column->isPrimaryKey && !$column->autoIncrement) {
                 $pkName = 'pk_' . $this->model->tableName . '_' . $column->name;
                 $this->migration->addDownCode($this->recordBuilder->addPrimaryKey($tableName, [$column->name], $pkName))
                                 ->addUpCode($this->recordBuilder->dropPrimaryKey($tableName, [$column->name], $pkName));
             }
-            $position = $this->findPosition($column, true);
             $this->migration->addDownCode($this->recordBuilder->addDbColumn($tableName, $column, $position))
                             ->addUpCode($this->recordBuilder->dropColumn($tableName, $column->name));
         }
@@ -530,47 +531,6 @@ abstract class BaseMigrationBuilder
         return false;
     }
 
-    /**
-     * Given a column, compute its previous column name present in OpenAPI schema
-     * @return ?string
-     * `null` if column is added at last
-     * 'FIRST' if column is added at first position
-     * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
-     */
-    public function findPosition(ColumnSchema $column, bool $forDrop = false): ?string
-    {
-        $columnNames = array_keys($forDrop ? $this->tableSchema->columns : $this->newColumns);
-
-        $key = array_search($column->name, $columnNames);
-        if ($key > 0) {
-            $prevColName = $columnNames[$key-1];
-
-            if (!isset($columnNames[$key+1])) { // if new col is added at last then no need to add 'AFTER' SQL part. This is checked as if next column is present or not
-                return null;
-            }
-
-            // in case of `down()` code of migration, putting 'after <colName>' in add column statmenet is erroneous because <colName> may not exist.
-            // Example: From col a, b, c, d, if I drop c and d then their migration code will be generated like:
-            // `up()` code
-            // drop c
-            // drop d
-            // `down()` code
-            // add d after c (c does not exist! Error!)
-            // add c
-            if ($forDrop) {
-                return null;
-            }
-
-
-            return self::POS_AFTER . ' ' . $prevColName;
-
-        // if no `$columnSchema` is found, previous column does not exist. This happens when 'after column' is not yet added in migration or added after currently undertaken column
-        } elseif ($key === 0) {
-            return self::POS_FIRST;
-        }
-
-        return null;
-    }
 
     public function modifyDesiredFromDbInContextOfDesired(ColumnSchema $desired, ColumnSchema $desiredFromDb): void
     {
@@ -606,4 +566,19 @@ abstract class BaseMigrationBuilder
                 )
             );
     }
+
+    /**
+     * Only for MySQL and MariaDB
+     * Given a column, compute its previous column name present in OpenAPI schema
+     * @param ColumnSchema $column
+     * @param bool $forDrop
+     * @param bool $forAlter
+     * @return ?string
+     * `null` if column is added at last
+     * 'FIRST' if column is added at first position
+     * 'AFTER <columnName>' if column is added in between e.g. if 'email' is added after 'username' then 'AFTER username'
+     */
+    abstract public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string;
+
+    abstract public function setColumnsPositions();
 }
