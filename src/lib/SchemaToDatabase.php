@@ -289,14 +289,14 @@ class SchemaToDatabase
 
             $table = Yii::$app->db->schema->getTableSchema("{{%$tableName}}", true);
             if ($table) {
-                $dbModelHere = new DbModel([
+                $localDbModel = new DbModel([
                     'pkName' => $table->primaryKey[0],
                     'name' => $schemaName,
                     'tableName' => $tableName,
                     'attributes' => static::attributesFromColumnSchemas(static::enhanceColumnSchemas($table->columns)),
                     'drop' => true
                 ]);
-                $dbModelsToDrop[$key] = $dbModelHere;
+                $dbModelsToDrop[$key] = $localDbModel;
             }
         }
         return $dbModelsToDrop;
