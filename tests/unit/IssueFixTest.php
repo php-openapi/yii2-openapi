@@ -366,6 +366,7 @@ class IssueFixTest extends DbTestCase
    {
        $this->changeDbToPgsql();
        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+       $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
        $this->createTablesForCreateMigrationForDropTable132ForPgsql();
        $this->runGenerator($testFile, 'pgsql');
        $this->runActualMigrations('pgsql', 8);
@@ -435,18 +436,19 @@ class IssueFixTest extends DbTestCase
 
     private function deleteTablesForCreateMigrationForDropTable132ForPgsql()
     {
-        Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
+        $this->dropFkIfExists('{{%pristines}}', 'name');
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
-        Yii::$app->db->createCommand()->dropForeignKey('name2', '{{%fruits}}')->execute();
+
+        $this->dropFkIfExists('{{%fruits}}', 'name2');
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
 
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
-        Yii::$app->db->createCommand('DROP TYPE mood')->execute();
-        Yii::$app->db->createCommand('DROP TYPE enum_itt_upks_e2')->execute();
+        Yii::$app->db->createCommand('DROP TYPE IF EXISTS mood')->execute();
+        Yii::$app->db->createCommand('DROP TYPE IF EXISTS enum_itt_upks_e2')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
 
-        Yii::$app->db->createCommand()->dropForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}')->execute();
+        $this->dropFkIfExists('{{%the_mango_table_name}}', 'animal_fruit_fk');
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_mango_table_name}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_animal_table_name}}')->execute();
     }
