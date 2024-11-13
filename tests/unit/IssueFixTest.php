@@ -288,10 +288,10 @@ class IssueFixTest extends DbTestCase
         $this->runActualMigrations('mysql', 8);
 
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-           'recursive' => true,
+            'recursive' => true,
         ]);
         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/mysql"), [
-           'recursive' => true,
+            'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
 
@@ -366,25 +366,25 @@ class IssueFixTest extends DbTestCase
     // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
     // https://github.com/cebe/yii2-openapi/issues/132
     // For PgSQL
-   public function testCreateMigrationForDropTable132ForPgsql()
-   {
-       $this->changeDbToPgsql();
-       $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
-       $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
-       $this->createTablesForCreateMigrationForDropTable132ForPgsql();
-       $this->runGenerator($testFile, 'pgsql');
-       $this->runActualMigrations('pgsql', 8);
+    public function testCreateMigrationForDropTable132ForPgsql()
+    {
+        $this->changeDbToPgsql();
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
+        $this->createTablesForCreateMigrationForDropTable132ForPgsql();
+        $this->runGenerator($testFile, 'pgsql');
+        $this->runActualMigrations('pgsql', 8);
 
-       $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-           'recursive' => true,
-       ]);
-       $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/pgsql"), [
-           'recursive' => true,
-       ]);
-       $this->checkFiles($actualFiles, $expectedFiles);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
 
-       $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
-   }
+        $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
+    }
 
     private function createTablesForCreateMigrationForDropTable132ForPgsql()
     {
@@ -549,13 +549,13 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/index.php");
         $this->runGenerator($testFile);
-         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-             'recursive' => true,
-         ]);
-         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
-             'recursive' => true,
-         ]);
-         $this->checkFiles($actualFiles, $expectedFiles);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 
     // https://github.com/php-openapi/yii2-openapi/issues/30

@@ -27,4 +27,9 @@ abstract class Animal extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    public function getInvoice()
+    {
+        return $this->hasOne(\app\models\Invoice::class, ['animal_id' => 'id'])->inverseOf('animal');
+    }
 }
