@@ -278,6 +278,7 @@ class IssueFixTest extends DbTestCase
     public function testCreateMigrationForDropTable132()
     {
         $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        $this->deleteTablesForCreateMigrationForDropTable132();
         $this->createTablesForCreateMigrationForDropTable132();
         $this->runGenerator($testFile);
         $this->runActualMigrations('mysql', 8);
@@ -343,16 +344,29 @@ class IssueFixTest extends DbTestCase
 
     private function deleteTablesForCreateMigrationForDropTable132()
     {
-        Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
+        $tableSchema = Yii::$app->db->schema->getTableSchema('{{%pristines}}');
+        if ($tableSchema && array_key_exists('name', $tableSchema->foreignKeys)) {
+            Yii::$app->db->createCommand()->dropForeignKey('name', '{{%pristines}}')->execute();
+        }
+
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
-        Yii::$app->db->createCommand()->dropForeignKey('name2', '{{%fruits}}')->execute();
+
+        $tableSchema = Yii::$app->db->schema->getTableSchema('{{%fruits}}');
+        if ($tableSchema && array_key_exists('name2', $tableSchema->foreignKeys)) {
+            Yii::$app->db->createCommand()->dropForeignKey('name2', '{{%fruits}}')->execute();
+        }
+
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
 
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
 
-        Yii::$app->db->createCommand()->dropForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}')->execute();
+        $tableSchema = Yii::$app->db->schema->getTableSchema('{{%the_mango_table_name}}');
+        if ($tableSchema && array_key_exists('animal_fruit_fk', $tableSchema->foreignKeys)) {
+            Yii::$app->db->createCommand()->dropForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}')->execute();
+        }
+
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_mango_table_name}}')->execute();
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_animal_table_name}}')->execute();
     }
