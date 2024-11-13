@@ -8,9 +8,11 @@
 namespace cebe\yii2openapi\lib\items;
 
 use cebe\yii2openapi\db\ColumnSchema;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\helpers\FormatHelper;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
+use Yii;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
