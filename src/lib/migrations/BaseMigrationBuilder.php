@@ -209,7 +209,13 @@ abstract class BaseMigrationBuilder
                                 ->addDownCode($builder->addPrimaryKey($tableName, $this->model->junctionCols));
             }
         }
+
+        if (!$relation) {
+            $this->buildIndexChanges();
+        }
+
         $this->buildColumnsDrop($columnsForDrop);
+
         foreach ($columnsForChange as $commonColumn) {
             $current = $this->tableSchema->columns[$commonColumn];
             /** @var \cebe\yii2openapi\db\ColumnSchema|\yii\db\ColumnSchema $desired */
@@ -224,9 +230,7 @@ abstract class BaseMigrationBuilder
             }
             $this->buildColumnChanges($current, $desired, $changedAttributes);
         }
-        if (!$relation) {
-            $this->buildIndexChanges();
-        }
+
         if ($relation) {
             $this->buildRelationsForJunction($relation);
         } else {

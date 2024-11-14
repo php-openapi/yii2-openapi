@@ -4,6 +4,7 @@ namespace tests;
 
 use cebe\yii2openapi\generator\ApiGenerator;
 use Yii;
+use yii\db\IndexConstraint;
 use yii\di\Container;
 use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
@@ -167,8 +168,8 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.' --interactive=0', $upOutput, $upExitCode);
         $last = count($upOutput) - 1;
         $lastThird = count($upOutput) - 3;
-        $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$last], 'Migrated up successfully.');
+        $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' applied.');
         // 1 migration was applied.
         // 2 migrations were applied.
@@ -191,5 +192,19 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         if ($tableSchema && array_key_exists($fk, $tableSchema->foreignKeys)) {
             Yii::$app->db->createCommand()->dropForeignKey($fk, $table)->execute();
         }
+    }
+
+    protected function indexExists(string $indexName): bool
+    {
+        $indices = Yii::$app->db->schema->schemaIndexes;
+        foreach ($indices as $subIndices) {
+            foreach ($subIndices as $index) {
+                /** @var IndexConstraint $index */
+                if ($index->name === $indexName) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

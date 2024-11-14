@@ -544,6 +544,43 @@ class IssueFixTest extends DbTestCase
         $this->checkFiles($actualFiles, $expectedFiles);
     }
 
+    // https://github.com/php-openapi/yii2-openapi/issues/3
+    public function test3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes()
+    {
+        $this->dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
+        $this->createTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
+        $testFile = Yii::getAlias("@specs/issue_fix/3_bug_add_remove_property_and_at_the_same_time_change_it_at_x_indexes/index.php");
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 1);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/3_bug_add_remove_property_and_at_the_same_time_change_it_at_x_indexes/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
+    }
+
+    private function createTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes()
+    {
+        Yii::$app->db->createCommand()->createTable('{{%addresses}}', [
+            'id' => 'pk',
+            'name' => 'varchar(64)',
+            'shortName' => 'varchar(64)',
+            'postalCode' => 'varchar(64)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createIndex('addresses_shortName_postalCode_key', '{{%addresses}}', ["shortName", "postalCode"], true)->execute();
+    }
+
+    private function dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes()
+    {
+        if ($this->indexExists('addresses_shortName_postalCode_key')) {
+            Yii::$app->db->createCommand()->dropIndex('addresses_shortName_postalCode_key', '{{%addresses}}')->execute();
+        }
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%addresses}}')->execute();
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/29
     public function test29ExtensionFkColumnNameCauseErrorInCaseOfColumnNameWithoutUnderscore()
     {
