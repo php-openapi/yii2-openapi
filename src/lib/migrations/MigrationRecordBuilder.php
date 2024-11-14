@@ -72,7 +72,7 @@ final class MigrationRecordBuilder
     {
         $codeColumns = [];
         foreach ($columns as $columnName => $cebeDbColumnSchema) {
-            if (is_string($cebeDbColumnSchema->xDbType) && !empty($cebeDbColumnSchema->xDbType)) {
+            if (!empty($cebeDbColumnSchema->xDbType) && is_string($cebeDbColumnSchema->xDbType)) {
                 $name = static::quote($columnName);
                 $codeColumns[] = $name.' '.$this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
             } else {

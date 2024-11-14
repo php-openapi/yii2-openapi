@@ -7,6 +7,9 @@
 
 namespace cebe\yii2openapi\generator;
 
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
@@ -22,6 +25,7 @@ use cebe\yii2openapi\lib\items\FractalAction;
 use cebe\yii2openapi\lib\items\RestAction;
 use cebe\yii2openapi\lib\PathAutoCompletion;
 use cebe\yii2openapi\lib\SchemaToDatabase;
+use Exception;
 use Yii;
 use yii\db\mysql\Schema as MySqlSchema;
 use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
@@ -190,7 +194,7 @@ class ApiGenerator extends Generator
     private $_openApiWithoutRef;
 
     /**
-     * @var \cebe\yii2openapi\lib\Config $config
+     * @var Config $config
      **/
     private $config;
 
@@ -297,11 +301,11 @@ class ApiGenerator extends Generator
 
     /**
      * @param $attribute
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      */
-    public function validateSpec($attribute):void
+    public function validateSpec($attribute): void
     {
         if ($this->ignoreSpecErrors) {
             return;
@@ -313,7 +317,7 @@ class ApiGenerator extends Generator
         }
     }
 
-    public function validateUrlPrefixes($attribute):void
+    public function validateUrlPrefixes($attribute): void
     {
         if (empty($this->urlPrefixes)) {
             return;
@@ -441,7 +445,7 @@ class ApiGenerator extends Generator
         );
     }
 
-    public function makeConfig():Config
+    public function makeConfig(): Config
     {
         if (!$this->config) {
             $props = get_object_vars($this);
@@ -471,11 +475,12 @@ class ApiGenerator extends Generator
      * Please refer to [[\yii\gii\generators\controller\Generator::generate()]] as an example
      * on how to implement this method.
      * @return CodeFile[] a list of code files to be created.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function generate():array
+    public function generate(): array
     {
         $config = $this->makeConfig();
+
         $actionsGenerator = $this->useJsonApi
             ? Yii::createObject(JsonActionGenerator::class, [$config])
             : Yii::createObject(RestActionGenerator::class, [$config]);
@@ -504,12 +509,12 @@ class ApiGenerator extends Generator
     }
 
     /**
-     * @return \cebe\openapi\spec\OpenApi
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @return OpenApi
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      */
-    protected function getOpenApiWithoutReferences():OpenApi
+    protected function getOpenApiWithoutReferences(): OpenApi
     {
         if ($this->_openApiWithoutRef === null) {
             $file = Yii::getAlias($this->openApiPath);
@@ -522,17 +527,17 @@ class ApiGenerator extends Generator
         return $this->_openApiWithoutRef;
     }
 
-    public static function isPostgres():bool
+    public static function isPostgres(): bool
     {
         return Yii::$app->db->schema instanceof PgSqlSchema;
     }
 
-    public static function isMysql():bool
+    public static function isMysql(): bool
     {
         return (Yii::$app->db->schema instanceof MySqlSchema && !static::isMariaDb());
     }
 
-    public static function isMariaDb():bool
+    public static function isMariaDb(): bool
     {
         return strpos(Yii::$app->db->schema->getServerVersion(), 'MariaDB') !== false;
     }

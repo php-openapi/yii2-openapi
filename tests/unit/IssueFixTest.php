@@ -157,41 +157,6 @@ class IssueFixTest extends DbTestCase
         ])->execute();
     }
 
-    // Stub -> https://github.com/cebe/yii2-openapi/issues/132
-    // public function testCreateTableInDownCode()
-    // {
-    //     $testFile = Yii::getAlias("@specs/issue_fix/create_table_in_down_code/create_table_in_down_code.php");
-    //     $this->deleteTablesForCreateTableInDownCode();
-    //     $this->createTableForCreateTableInDownCode();
-    //     $this->runGenerator($testFile, 'mysql');
-    //     // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-    //     //     'recursive' => true,
-    //     // ]);
-    //     // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/create_table_in_down_code/mysql/app"), [
-    //     //     'recursive' => true,
-    //     // ]);
-    //     // $this->checkFiles($actualFiles, $expectedFiles);
-    //     // $this->runActualMigrations('mysql', 1);
-    // }
-
-    // private function deleteTablesForCreateTableInDownCode()
-    // {
-    //     Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
-    //     Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%animals}}')->execute();
-    // }
-
-    // private function createTableForCreateTableInDownCode()
-    // {
-    //     Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
-    //         'id' => 'pk',
-    //         'colourName' => 'varchar(255)',
-    //     ])->execute();
-    //     Yii::$app->db->createCommand()->createTable('{{%animals}}', [
-    //         'id' => 'pk',
-    //         'colourName' => 'varchar(255)',
-    //     ])->execute();
-    // }
-
     // fix https://github.com/cebe/yii2-openapi/issues/143
     // timestamp_143
     public function testTimestampIssue143()
@@ -272,6 +237,224 @@ class IssueFixTest extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/pull/4#discussion_r1688225258
+    public function testCreateMigrationForDropTable132IndependentTablesDropSort()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/case_independent_tables_drop_sort/index.php");
+        $dropTables = function () {
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+            Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+        };
+
+        $dropTables();
+        Yii::$app->db->createCommand()->createTable('{{%upks}}', [
+            'id' => 'upk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%bigpks}}', [
+            'id' => 'bigpk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%ubigpks}}', [
+            'id' => 'ubigpk',
+            'name' => 'string(150)',
+        ])->execute();
+
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 4);
+
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/case_independent_tables_drop_sort/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+
+        $dropTables();
+    }
+
+    // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
+    // https://github.com/cebe/yii2-openapi/issues/132
+    public function testCreateMigrationForDropTable132()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        $this->deleteTablesForCreateMigrationForDropTable132();
+        $this->createTablesForCreateMigrationForDropTable132();
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 8);
+
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+
+        $this->deleteTablesForCreateMigrationForDropTable132();
+    }
+
+    private function createTablesForCreateMigrationForDropTable132()
+    {
+        Yii::$app->db->createCommand()->createTable('{{%upks}}', [
+            'id' => 'upk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%bigpks}}', [
+            'id' => 'bigpk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%ubigpks}}', [
+            'id' => 'ubigpk',
+            'name' => 'string(150)',
+            'size' => "ENUM('x-small', 'small', 'medium', 'large', 'x-large') NOT NULL DEFAULT 'x-small'",
+            'd SMALLINT UNSIGNED ZEROFILL',
+            'e' => 'MEDIUMINT UNSIGNED ZEROFILL',
+            'f' => 'decimal(12,4)',
+            'dp' => 'double precision',
+            'dp2' => 'double precision(10, 4)'
+        ])->execute();
+
+        // ---
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+            'food_of' => 'int'
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
+            'id' => 'pk',
+            'name' => 'string(151)',
+            'fruit_id' => 'int', // FK
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('name', '{{%pristines}}', 'fruit_id', '{{%fruits}}', 'id')->execute();
+
+        // ---
+        Yii::$app->db->createCommand()->createTable('{{%the_animal_table_name}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('name2', '{{%fruits}}', 'food_of', '{{%the_animal_table_name}}', 'id')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%the_mango_table_name}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+            'food_of' => 'int'
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}', 'food_of', '{{%the_animal_table_name}}', 'id')->execute();
+    }
+
+    private function deleteTablesForCreateMigrationForDropTable132()
+    {
+        $this->dropFkIfExists('{{%pristines}}', 'name');
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
+
+        $this->dropFkIfExists('{{%fruits}}', 'name2');
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
+
+        $this->dropFkIfExists('{{%the_mango_table_name}}', 'animal_fruit_fk');
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_mango_table_name}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_animal_table_name}}')->execute();
+    }
+
+    // Create migration for drop table if a entire schema is deleted from OpenAPI spec #132
+    // https://github.com/cebe/yii2-openapi/issues/132
+    // For PgSQL
+    public function testCreateMigrationForDropTable132ForPgsql()
+    {
+        $this->changeDbToPgsql();
+        $testFile = Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/132_create_migration_for_drop_table.php");
+        $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
+        $this->createTablesForCreateMigrationForDropTable132ForPgsql();
+        $this->runGenerator($testFile, 'pgsql');
+        $this->runActualMigrations('pgsql', 8);
+
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/132_create_migration_for_drop_table/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+
+        $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
+    }
+
+    private function createTablesForCreateMigrationForDropTable132ForPgsql()
+    {
+        Yii::$app->db->createCommand('CREATE TYPE mood AS ENUM (\'sad\', \'ok\', \'happy\')')->execute();
+        Yii::$app->db->createCommand('CREATE TYPE enum_itt_upks_e2 AS ENUM (\'sad2\', \'ok2\', \'happy2\')')->execute();
+
+        Yii::$app->db->createCommand()->createTable('{{%upks}}', [
+            'id' => 'upk',
+            'name' => 'string(150)',
+            'current_mood' => 'mood',
+            'e2' => 'enum_itt_upks_e2',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%bigpks}}', [
+            'id' => 'bigpk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%ubigpks}}', [
+            'id' => 'ubigpk',
+            'name' => 'string(150)',
+            'f' => 'decimal(12,4)',
+            'g5' => 'text[]',
+            'g6' => 'text[][]',
+            'g7' => 'numeric(10,7)',
+            'dp double precision',
+        ])->execute();
+
+        // ---
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+            'food_of' => 'int'
+        ])->execute();
+        Yii::$app->db->createCommand()->createTable('{{%pristines}}', [
+            'id' => 'pk',
+            'name' => 'string(151)',
+            'fruit_id' => 'int', // FK
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('name', '{{%pristines}}', 'fruit_id', '{{%fruits}}', 'id')->execute();
+
+        // ---
+        Yii::$app->db->createCommand()->createTable('{{%the_animal_table_name}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('name2', '{{%fruits}}', 'food_of', '{{%the_animal_table_name}}', 'id')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%the_mango_table_name}}', [
+            'id' => 'pk',
+            'name' => 'string(150)',
+            'food_of' => 'int'
+        ])->execute();
+        Yii::$app->db->createCommand()->addForeignKey('animal_fruit_fk', '{{%the_mango_table_name}}', 'food_of', '{{%the_animal_table_name}}', 'id')->execute();
+    }
+
+    private function deleteTablesForCreateMigrationForDropTable132ForPgsql()
+    {
+        $this->dropFkIfExists('{{%pristines}}', 'name');
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%pristines}}')->execute();
+
+        $this->dropFkIfExists('{{%fruits}}', 'name2');
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%upks}}')->execute();
+        Yii::$app->db->createCommand('DROP TYPE IF EXISTS mood')->execute();
+        Yii::$app->db->createCommand('DROP TYPE IF EXISTS enum_itt_upks_e2')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%bigpks}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%ubigpks}}')->execute();
+
+        $this->dropFkIfExists('{{%the_mango_table_name}}', 'animal_fruit_fk');
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_mango_table_name}}')->execute();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%the_animal_table_name}}')->execute();
     }
 
     public function test162BugDollarrefWithXFaker()
@@ -366,13 +549,13 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/index.php");
         $this->runGenerator($testFile);
-         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-             'recursive' => true,
-         ]);
-         $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
-             'recursive' => true,
-         ]);
-         $this->checkFiles($actualFiles, $expectedFiles);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/29_extension_fk_column_name_cause_error_in_case_of_column_name_without_underscore/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 
     // https://github.com/php-openapi/yii2-openapi/issues/30

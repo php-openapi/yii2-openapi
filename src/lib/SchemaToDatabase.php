@@ -10,7 +10,9 @@ namespace cebe\yii2openapi\lib;
 use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\AttributeRelation;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\JunctionSchemas;
@@ -18,6 +20,10 @@ use cebe\yii2openapi\lib\openapi\ComponentSchema;
 use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
+use yii\db\ColumnSchema;
+use yii\db\Schema;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use function count;
 
@@ -57,7 +63,7 @@ use function count;
  *                  minLength: #(numeric value, can be applied for validation rules)
  *                  default: #(int|string, default value, used for database migration and model rules)
  *                  x-db-type: #(Custom database type like JSON, JSONB, CHAR, VARCHAR, UUID, etc )
- *                  x-faker: #(custom faker generator, for ex '$faker->gender')
+ *                  x-faker: #(custom faker generator, for ex '$faker->gender'; PHP code as string)
  *                  description: #(optional, used for comment)
  */
 class SchemaToDatabase
@@ -97,7 +103,7 @@ class SchemaToDatabase
             if ($junctions->isJunctionSchema($schemaName)) {
                 $schemaName = $junctions->trimPrefix($schemaName);
             }
-            /**@var AttributeResolver $resolver */
+            /** @var AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
 
             // $models[$schemaName] = $resolver->resolve();
@@ -125,7 +131,14 @@ class SchemaToDatabase
             }
         }
 
-        return $models;
+        // for drop table/schema https://github.com/cebe/yii2-openapi/issues/132
+        $modelsToDrop = [];
+        if (isset($this->config->getOpenApi()->{CustomSpecAttr::DELETED_SCHEMAS})) {
+            $tablesToDrop = $this->config->getOpenApi()->{CustomSpecAttr::DELETED_SCHEMAS}; // for removed (components) schemas
+            $modelsToDrop = static::dbModelsForDropTable($tablesToDrop);
+        }
+
+        return ArrayHelper::merge($models, $modelsToDrop);
     }
 
     /**
@@ -243,5 +256,124 @@ class SchemaToDatabase
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param array $schemasToDrop . Example structure:
+     * ```
+     * array(2) {
+     * [0]=>
+     *  string(5) "Fruit"
+     * [1]=>
+     * array(1) {
+     *  ["Mango"]=>
+     *      string(10) "the_mango_custom_table_name"
+     *  }
+     * }
+     * ```
+     * @return DbModel[]
+     */
+    public static function dbModelsForDropTable(array $schemasToDrop): array
+    {
+        $dbModelsToDrop = [];
+        foreach ($schemasToDrop as $key => $value) {
+            if (is_string($value)) { // schema name
+                $schemaName = $value;
+                $tableName = static::resolveTableName($schemaName);
+            } elseif (is_array($value)) {
+                $schemaName = array_key_first($value);
+                $tableName = $value[$schemaName];
+            } else {
+                throw new \Exception('Malformed list of schemas to delete');
+            }
+
+            $table = Yii::$app->db->schema->getTableSchema("{{%$tableName}}", true);
+            if ($table) {
+                $localDbModel = new DbModel([
+                    'pkName' => $table->primaryKey[0],
+                    'name' => $schemaName,
+                    'tableName' => $tableName,
+                    'attributes' => static::attributesFromColumnSchemas(static::enhanceColumnSchemas($table->columns)),
+                    'drop' => true
+                ]);
+                $dbModelsToDrop[$key] = $localDbModel;
+            }
+        }
+        return $dbModelsToDrop;
+    }
+
+    public static function resolveTableName(string $schemaName): string
+    {
+        return Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
+    }
+
+    /**
+     * @return Attribute[]
+     */
+    public static function attributesFromColumnSchemas(array $columnSchemas): array
+    {
+        $attributes = [];
+        foreach ($columnSchemas as $columnName => $columnSchema) {
+            /** @var $columnName string */
+            /** @var $columnSchema ColumnSchema */
+            unset($attribute);
+            $attribute = new Attribute($columnSchema->name, [
+                'phpType' => $columnSchema->phpType,
+                'dbType' => $columnSchema->dbType,
+                'fkColName' => $columnSchema->name,
+
+                'required' => !$columnSchema->allowNull && ($columnSchema->defaultValue === null),
+                'nullable' => $columnSchema->allowNull,
+                'size' => $columnSchema->size,
+
+                'primary' => $columnSchema->isPrimaryKey,
+                'enumValues' => $columnSchema->enumValues,
+                'defaultValue' => $columnSchema->defaultValue,
+                'description' => $columnSchema->comment,
+            ]);
+            $attributes[] = $attribute;
+        }
+        return $attributes;
+    }
+
+    public static function enhanceColumnSchemas(array $columnSchemas)
+    {
+        foreach ($columnSchemas as $columnSchema) {
+            // PgSQL array
+            if (property_exists($columnSchema, 'dimension') && $columnSchema->dimension !== 0) {
+                for ($i = 0; $i < $columnSchema->dimension; $i++) {
+                    $columnSchema->dbType .= '[]';
+                }
+            }
+
+            if (ApiGenerator::isPostgres() && $columnSchema->type === Schema::TYPE_DECIMAL) {
+                $columnSchema->dbType .= '('.$columnSchema->precision.','.$columnSchema->scale.')';
+            }
+
+            // generate PK using `->primaryKeys()` or similar methods instead of separate SQL statement which sets only PK to a column of table
+            // https://github.com/cebe/yii2-openapi/issues/132
+            if (in_array($columnSchema->phpType, [
+                    'integer',
+                    'string' # https://github.com/yiisoft/yii2/issues/14663
+                ])
+                && $columnSchema->isPrimaryKey === true && $columnSchema->autoIncrement
+            ) {
+                str_ireplace(['BIGINT', 'int8', 'bigserial', 'serial8'], 'nothing', $columnSchema->dbType, $count); # can be refactored if https://github.com/yiisoft/yii2/issues/20209 is fixed
+                if ($count) {
+                    if ($columnSchema->unsigned) {
+                        $columnSchema->dbType = Schema::TYPE_UBIGPK;
+                    } else {
+                        $columnSchema->dbType = Schema::TYPE_BIGPK;
+                    }
+                } else {
+                    if ($columnSchema->unsigned) {
+                        $columnSchema->dbType = Schema::TYPE_UPK;
+                    } else {
+                        $columnSchema->dbType = Schema::TYPE_PK;
+                    }
+                }
+            }
+        }
+        return $columnSchemas;
     }
 }

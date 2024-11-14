@@ -8,9 +8,11 @@
 namespace cebe\yii2openapi\lib\items;
 
 use cebe\yii2openapi\db\ColumnSchema;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\helpers\FormatHelper;
 use cebe\yii2openapi\lib\openapi\PropertySchema;
+use Yii;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
@@ -48,8 +50,8 @@ class Attribute extends BaseObject
     /**
      * @var string
      * Contains foreign key column name
-     * @example 'redelivery_of'
-     * See usage docs in README for more info
+     * @example 'redelivery_of' instead of 'redelivery_of_id'
+     * @see `x-fk-column-name` in README.md
      */
     public $fkColName;
 
@@ -119,6 +121,8 @@ class Attribute extends BaseObject
      **/
     public $fakerStub;
 
+    public $tableName; // required for PgSQL enum
+
     /**
      * @var bool
      **/
@@ -140,6 +144,12 @@ class Attribute extends BaseObject
     public function setDbType(string $dbType):Attribute
     {
         $this->dbType = $dbType;
+        return $this;
+    }
+
+    public function setTableName(string $tableName): Attribute
+    {
+        $this->tableName = $tableName;
         return $this;
     }
 
@@ -325,6 +335,9 @@ class Attribute extends BaseObject
         }
         if (is_array($this->enumValues)) {
             $column->enumValues = $this->enumValues;
+            if (ApiGenerator::isPostgres() && empty($this->xDbType)) {
+                $column->dbType = 'enum_'.Yii::$app->db->tablePrefix.$this->tableName.'_' . $column->name;
+            }
         }
         $this->handleDecimal($column);
 

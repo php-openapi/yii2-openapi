@@ -50,7 +50,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesired($desired);
         $this->modifyDesiredInContextOfCurrent($current, $desired);
 
-        // Why this is needed? Often manually created ColumnSchem instance have dbType 'varchar' with size 255 and ColumnSchema fetched from db have 'varchar(255)'. So varchar !== varchar(255). such normal mistake was leading to errors. So desired column is saved in temporary table and it is fetched from that temp. table and then compared with current ColumnSchema
+        // Why this is needed? Often manually created ColumnSchema instance have dbType 'varchar' with size 255 and ColumnSchema fetched from db have 'varchar(255)'. So varchar !== varchar(255). such normal mistake was leading to errors. So desired column is saved in temporary table and it is fetched from that temp. table and then compared with current ColumnSchema
         $desiredFromDb = $this->tmpSaveNewCol($tableAlias, $desired);
 
         $this->modifyDesiredInContextOfDesiredFromDb($desired, $desiredFromDb);
@@ -131,6 +131,8 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             return \yii\db\mysql\ColumnSchemaBuilder::class;
         } elseif (ApiGenerator::isMariaDb()) {
             return \SamIT\Yii2\MariaDb\ColumnSchemaBuilder::class;
+        } else {
+            throw new \Exception('Unknown database');
         }
     }
 
@@ -144,7 +146,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 
     public function modifyDesired(ColumnSchema $desired): void
     {
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
+        /** @var $desired \cebe\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
         if ($desired->phpType === 'int' && $desired->defaultValue !== null) {
             $desired->defaultValue = (int)$desired->defaultValue;
         }
@@ -158,7 +160,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
     public function modifyDesiredInContextOfCurrent(ColumnSchema $current, ColumnSchema $desired): void
     {
         /** @var $current \yii\db\mysql\ColumnSchema */
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
+        /** @var $desired \cebe\yii2openapi\db\ColumnSchema|\yii\db\mysql\ColumnSchema */
         if ($current->dbType === 'tinyint(1)' && $desired->type === 'boolean') {
             if (is_bool($desired->defaultValue) || is_string($desired->defaultValue)) {
                 $desired->defaultValue = (int)$desired->defaultValue;

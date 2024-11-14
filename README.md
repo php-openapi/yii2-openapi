@@ -319,6 +319,23 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+
+### `x-deleted-schemas`
+
+This is root level key used to generate "drop table" migration for the deleted component schema. If a component schema (DB model) is removed from OpenAPI spec then its following entities should be also deleted from the code:
+
+ - DB table (migrations)
+ - model
+ - faker
+
+So to generate appropriate migration for the removed schema, explicitly setting schema name or schema name + custom table name is required in this key. Only then the migrations will be generated. It should be set as:
+
+```yaml
+x-deleted-schemas:
+  - Fruit # Example: table name is evaluated to `itt_fruits`, if `itt_` is prefix set in DB config
+  - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
+```
+
 ### `x-no-relation`
 
 To differentiate a component schema property from one-to-many or many-to-many relation in favour of array(json) of
@@ -443,7 +460,7 @@ paths:
 Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
 ```php
     'GET a1/b1' => 'abc/xyz',
-    'POST a1/b1' => 'abc/xyz',    
+    'POST a1/b1' => 'abc/xyz',
     'a1/b1' => 'abc/options',
 ```
 `x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).

@@ -35,17 +35,17 @@ abstract class Invoice extends \yii\db\ActiveRecord
     {
         return [
             'reference_invoice_id_integer' => [['reference_invoice_id'], 'integer'],
-            'reference_invoice_id_exist' => [['reference_invoice_id'], 'exist', 'targetRelation' => 'ReferenceInvoice'],
+            'reference_invoice_id_exist' => [['reference_invoice_id'], 'exist', 'targetRelation' => 'referenceInvoice'],
             'reference_invoice_2_id_integer' => [['reference_invoice_2_id'], 'integer'],
-            'reference_invoice_2_id_exist' => [['reference_invoice_2_id'], 'exist', 'targetRelation' => 'ReferenceInvoice2'],
+            'reference_invoice_2_id_exist' => [['reference_invoice_2_id'], 'exist', 'targetRelation' => 'referenceInvoice2'],
             'user_id_integer' => [['user_id'], 'integer'],
-            'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'User'],
+            'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'user'],
             'user_2_id_integer' => [['user_2_id'], 'integer'],
-            'user_2_id_exist' => [['user_2_id'], 'exist', 'targetRelation' => 'User2'],
+            'user_2_id_exist' => [['user_2_id'], 'exist', 'targetRelation' => 'user2'],
             'fruit_id_integer' => [['fruit_id'], 'integer'],
-            'fruit_id_exist' => [['fruit_id'], 'exist', 'targetRelation' => 'Fruit'],
+            'fruit_id_exist' => [['fruit_id'], 'exist', 'targetRelation' => 'fruit'],
             'animal_id_integer' => [['animal_id'], 'integer'],
-            'animal_id_exist' => [['animal_id'], 'exist', 'targetRelation' => 'Animal'],
+            'animal_id_exist' => [['animal_id'], 'exist', 'targetRelation' => 'animal'],
         ];
     }
 
@@ -77,5 +77,15 @@ abstract class Invoice extends \yii\db\ActiveRecord
     public function getAnimal()
     {
         return $this->hasOne(\app\models\Animal::class, ['id' => 'animal_id']);
+    }
+
+    public function getInvoice()
+    {
+        return $this->hasOne(\app\models\Invoice::class, ['reference_invoice_id' => 'id'])->inverseOf('reference_invoice');
+    }
+
+    public function getInvoice2()
+    {
+        return $this->hasOne(\app\models\Invoice::class, ['reference_invoice_2_id' => 'id'])->inverseOf('reference_invoice_2');
     }
 }

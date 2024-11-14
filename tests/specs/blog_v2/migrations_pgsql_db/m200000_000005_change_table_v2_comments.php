@@ -33,7 +33,7 @@ class m200000_000005_change_table_v2_comments extends \yii\db\Migration
         $this->alterColumn('{{%v2_comments}}', 'message', "SET DEFAULT '[]'");
         $this->alterColumn('{{%v2_comments}}', 'meta_data', "SET NOT NULL");
         $this->alterColumn('{{%v2_comments}}', 'meta_data', "SET DEFAULT '[]'");
-        $this->addForeignKey('fk_v2_comments_post_id_v2_posts_uid', '{{%v2_comments}}', 'uid', 'v2_posts', 'post_id');
-        $this->addForeignKey('fk_v2_comments_author_id_v2_users_id', '{{%v2_comments}}', 'id', 'v2_users', 'author_id');
+        $this->addForeignKey('fk_v2_comments_post_id_v2_posts_uid', '{{%v2_comments}}', 'post_id', 'itt_v2_posts', 'uid');
+        $this->addForeignKey('fk_v2_comments_author_id_v2_users_id', '{{%v2_comments}}', 'author_id', 'itt_v2_users', 'id');
     }
 }

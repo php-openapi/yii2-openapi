@@ -23,11 +23,11 @@
 		"yiisoft/yii2": "~2.0.48",
 		"yiisoft/yii2-gii": "~2.0.0 | ~2.1.0 | ~2.2.0| ~2.3.0",
 		"laminas/laminas-code": ">=3.4 <=4.13",
-		"php-openapi/yii2-fractal": "^1.0.0",
+		"php-openapi/yii2-fractal": "^1.4",
 		"fakerphp/faker": "^1.9",
 		"sam-it/yii2-mariadb": "^2.0",
 		"symfony/var-exporter": "^5.4",
-		"symfony/polyfill-php80": "^1.30"
+		"symfony/polyfill-php80": "^1.31"
 	},
 	"require-dev": {
 		"cebe/indent": "*",

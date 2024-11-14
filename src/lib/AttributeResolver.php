@@ -139,7 +139,8 @@ class AttributeResolver
                 ->asReference($junkAttribute['relatedClassName'])
                 ->setPhpType($junkAttribute['phpType'])
                 ->setDbType($junkAttribute['dbType'])
-                ->setForeignKeyColumnName($property->fkColName);
+                ->setForeignKeyColumnName($property->fkColName)
+                ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
             $relation = Yii::createObject(AttributeRelation::class, [
                 $property->getName(),
                 $junkAttribute['relatedTableName'],
@@ -205,7 +206,7 @@ class AttributeResolver
      */
     protected function resolveProperty(
         PropertySchema $property,
-        bool $isRequired,
+        bool           $isRequired,
         $nullableValue = 'ARG_ABSENT'
     ): void {
         if ($nullableValue === 'ARG_ABSENT') {
@@ -227,7 +228,8 @@ class AttributeResolver
                   ->setNullable($nullableValue)
                   ->setIsPrimary($property->isPrimaryKey())
                   ->setForeignKeyColumnName($property->fkColName)
-                  ->setFakerStub($this->guessFakerStub($attribute, $property));
+                  ->setFakerStub($this->guessFakerStub($attribute, $property))
+                  ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
@@ -374,9 +376,9 @@ class AttributeResolver
      * @throws InvalidConfigException|InvalidDefinitionException
      */
     protected function catchManyToMany(
-        string $propertyName,
-        string $relatedSchemaName,
-        string $relatedTableName,
+        string          $propertyName,
+        string          $relatedSchemaName,
+        string          $relatedTableName,
         ComponentSchema $refSchema
     ): bool {
         if (strtolower(Inflector::id2camel($propertyName, '_'))
