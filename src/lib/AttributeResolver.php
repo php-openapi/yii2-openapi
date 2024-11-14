@@ -140,7 +140,8 @@ class AttributeResolver
                 ->setPhpType($junkAttribute['phpType'])
                 ->setDbType($junkAttribute['dbType'])
                 ->setForeignKeyColumnName($property->fkColName)
-                ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
+//                ->setTableName($this->componentSchema->resolveTableName($this->schemaName))
+                ;
             $relation = Yii::createObject(AttributeRelation::class, [
                 $property->getName(),
                 $junkAttribute['relatedTableName'],
@@ -229,7 +230,8 @@ class AttributeResolver
                   ->setIsPrimary($property->isPrimaryKey())
                   ->setForeignKeyColumnName($property->fkColName)
                   ->setFakerStub($this->guessFakerStub($attribute, $property))
-                  ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
+//                  ->setTableName($this->componentSchema->resolveTableName($this->schemaName))
+                  ;
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
