@@ -547,6 +547,7 @@ class IssueFixTest extends DbTestCase
     // https://github.com/php-openapi/yii2-openapi/issues/3
     public function test3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes()
     {
+        $this->dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
         $this->createTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
         $testFile = Yii::getAlias("@specs/issue_fix/3_bug_add_remove_property_and_at_the_same_time_change_it_at_x_indexes/index.php");
         $this->runGenerator($testFile);
@@ -574,8 +575,10 @@ class IssueFixTest extends DbTestCase
 
     private function dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes()
     {
-        Yii::$app->db->createCommand()->dropIndex('addresses_shortName_postalCode_key', '{{%addresses}}')->execute();
-        Yii::$app->db->createCommand()->dropTable('{{%addresses}}')->execute();
+        if ($this->indexExists('addresses_shortName_postalCode_key')) {
+            Yii::$app->db->createCommand()->dropIndex('addresses_shortName_postalCode_key', '{{%addresses}}')->execute();
+        }
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%addresses}}')->execute();
     }
 
     // https://github.com/php-openapi/yii2-openapi/issues/29

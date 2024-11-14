@@ -4,6 +4,7 @@ namespace tests;
 
 use cebe\yii2openapi\generator\ApiGenerator;
 use Yii;
+use yii\db\IndexConstraint;
 use yii\di\Container;
 use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
@@ -191,5 +192,19 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         if ($tableSchema && array_key_exists($fk, $tableSchema->foreignKeys)) {
             Yii::$app->db->createCommand()->dropForeignKey($fk, $table)->execute();
         }
+    }
+
+    protected function indexExists(string $indexName): bool
+    {
+        $indices = Yii::$app->db->schema->schemaIndexes;
+        foreach ($indices as $subIndices) {
+            foreach ($subIndices as $index) {
+                /** @var IndexConstraint $index */
+                if ($index->name === $indexName) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
