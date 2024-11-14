@@ -180,8 +180,16 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.'/down --interactive=0 '.$number, $downOutput, $downExitCode);
         $last = count($downOutput) - 1;
         $lastThird = count($downOutput) - 3;
-        $this->assertSame($downExitCode, 0);
         $this->assertSame($downOutput[$last], 'Migrated down successfully.');
+        $this->assertSame($downExitCode, 0);
         $this->assertSame($downOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' reverted.');
+    }
+
+    protected function dropFkIfExists(string $table, string $fk): void
+    {
+        $tableSchema = Yii::$app->db->schema->getTableSchema($table);
+        if ($tableSchema && array_key_exists($fk, $tableSchema->foreignKeys)) {
+            Yii::$app->db->createCommand()->dropForeignKey($fk, $table)->execute();
+        }
     }
 }

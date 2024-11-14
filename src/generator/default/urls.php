@@ -1,3 +1,8 @@
+<?php
+
+use yii\helpers\VarDumper;
+
+?>
 <?= '<?php' ?>
 
 /**
@@ -5,5 +10,6 @@
  *
  * This file is auto generated.
  */
-<?php $rules = \yii\helpers\VarDumper::export($urls);?>
+<?php /** @var array $urls */
+$rules = VarDumper::export($urls); ?>
 return <?= str_replace('\\\\', '\\', $rules); ?>;

@@ -9,6 +9,6 @@ return [
     ],
     'generateControllers' => true,
     'generateMigrations' => false,
-    'generateModelFaker' => false, // `generateModels` must be `true` in orde to use `generateModelFaker` as `true`
+    'generateModelFaker' => false, // `generateModels` must be `true` in order to use `generateModelFaker` as `true`
 ];
 

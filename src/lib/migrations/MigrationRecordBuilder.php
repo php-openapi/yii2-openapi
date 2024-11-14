@@ -51,6 +51,12 @@ final class MigrationRecordBuilder
      */
     private $dbSchema;
 
+    /**
+     * @var bool
+     * Only required for PgSQL alter column for set null/set default related statement
+     */
+    public $isBuiltInType = false;
+
     public function __construct(Schema $dbSchema)
     {
         $this->dbSchema = $dbSchema;
@@ -66,7 +72,7 @@ final class MigrationRecordBuilder
     {
         $codeColumns = [];
         foreach ($columns as $columnName => $cebeDbColumnSchema) {
-            if (is_string($cebeDbColumnSchema->xDbType) && !empty($cebeDbColumnSchema->xDbType)) {
+            if (!empty($cebeDbColumnSchema->xDbType) && is_string($cebeDbColumnSchema->xDbType)) {
                 $name = static::quote($columnName);
                 $codeColumns[] = $name.' '.$this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
             } else {
@@ -112,10 +118,10 @@ final class MigrationRecordBuilder
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumn(string $tableAlias, ColumnSchema $column):string
+    public function alterColumn(string $tableAlias, ColumnSchema $column, ?string $position = null):string
     {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true, $position);
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -123,17 +129,22 @@ final class MigrationRecordBuilder
                 ColumnToCode::escapeQuotes($converter->getCode())
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, true);
+        $converter = $this->columnToCode($tableAlias, $column, true, false, false, false, $position);
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getCode(true));
     }
 
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumnType(string $tableAlias, ColumnSchema $column, bool $addUsing = false):string
-    {
+    public function alterColumnType(
+        string $tableAlias,
+        ColumnSchema $column,
+        bool $addUsing = false,
+        ?string $position = null
+    ):string {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, false, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, false, false, true, true, $position);
+            $this->isBuiltInType = $converter->isBuiltinType;
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -141,7 +152,8 @@ final class MigrationRecordBuilder
                 rtrim(ltrim($converter->getAlterExpression($addUsing), "'"), "'")
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, false);
+        $converter = $this->columnToCode($tableAlias, $column, false, false, false, false, $position);
+        $this->isBuiltInType = $converter->isBuiltinType;
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getAlterExpression($addUsing));
     }
 
@@ -149,10 +161,15 @@ final class MigrationRecordBuilder
      * This method is only used in Pgsql
      * @throws \yii\base\InvalidConfigException
      */
-    public function alterColumnTypeFromDb(string $tableAlias, ColumnSchema $column, bool $addUsing = false) :string
-    {
+    public function alterColumnTypeFromDb(
+        string $tableAlias,
+        ColumnSchema $column,
+        bool $addUsing = false,
+        ?string $position = null
+    ) :string {
         if (property_exists($column, 'xDbType') && is_string($column->xDbType) && !empty($column->xDbType)) {
-            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true);
+            $converter = $this->columnToCode($tableAlias, $column, true, false, true, true, $position);
+            $this->isBuiltInType = $converter->isBuiltinType;
             return sprintf(
                 ApiGenerator::isPostgres() ? self::ALTER_COLUMN_RAW_PGSQL : self::ALTER_COLUMN_RAW,
                 $tableAlias,
@@ -160,7 +177,8 @@ final class MigrationRecordBuilder
                 rtrim(ltrim($converter->getAlterExpression($addUsing), "'"), "'")
             );
         }
-        $converter = $this->columnToCode($tableAlias, $column, true);
+        $converter = $this->columnToCode($tableAlias, $column, true, false, false, false, $position);
+        $this->isBuiltInType = $converter->isBuiltinType;
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, $converter->getAlterExpression($addUsing));
     }
 
@@ -227,6 +245,7 @@ final class MigrationRecordBuilder
                 $onUpdate
             );
         }
+        throw new \Exception('Cannot add foreign key');
     }
 
     public function addUniqueIndex(string $tableAlias, string $indexName, array $columns):string
@@ -242,11 +261,20 @@ final class MigrationRecordBuilder
     public function addIndex(string $tableAlias, string $indexName, array $columns, ?string $using = null):string
     {
         $indexType = $using === null ? 'false' : "'".ColumnToCode::escapeQuotes($using)."'";
+
+        if ($using && (stripos($using, '(') !== false) && ApiGenerator::isPostgres()) {
+            // if `$using` is `gin(to_tsvector('english', search::text))`
+            $r = explode('(', $using, 2);
+            $indexType = "'".$r[0]."'"; # `gin`
+            $columnDbIndexExpression = substr($r[1], 0, -1); # to_tsvector('english', search::text)
+            $columns = [ColumnToCode::escapeQuotes($columnDbIndexExpression)];
+        }
+
         return sprintf(
             self::ADD_INDEX,
             $indexName,
             $tableAlias,
-            count($columns) === 1 ? "'{$columns[0]}'" : '["'.implode('", "', $columns).'"]',
+            count($columns) === 1 ? "'". $columns[0]."'" : '["'.implode('", "', $columns).'"]',
             $indexType
         );
     }

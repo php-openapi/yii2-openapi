@@ -110,6 +110,17 @@ class Config extends BaseObject
     public $excludeModels = [];
 
     /**
+     * @var array Map for custom dbModels
+     *
+     * @see DbModel::$scenarioDefaultDescription with acceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
+     * @example
+     *  'dbModel' => [
+     *      'scenarioDefaultDescription' => "Scenario {scenarioName}",
+     *  ]
+     */
+    public $dbModel = [];
+
+    /**
      * @var array Map for custom controller names not based on model name for exclusive cases
      * @example
      *  'controllerModelMap' => [

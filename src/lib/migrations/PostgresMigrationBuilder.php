@@ -9,7 +9,6 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\lib\items\DbIndex;
 use yii\db\ColumnSchema;
-use yii\helpers\VarDumper;
 use yii\helpers\ArrayHelper;
 
 final class PostgresMigrationBuilder extends BaseMigrationBuilder
@@ -18,6 +17,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
      * @param array|ColumnSchema[] $columns
      * @throws \yii\base\InvalidConfigException
      */
+    #[\Override]
     protected function buildColumnsCreation(array $columns):void
     {
         foreach ($columns as $column) {
@@ -35,6 +35,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
      * @param array|ColumnSchema[] $columns
      * @throws \yii\base\InvalidConfigException
      */
+    #[\Override]
     protected function buildColumnsDrop(array $columns):void
     {
         foreach ($columns as $column) {
@@ -62,16 +63,20 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
             // This action require several steps and can't be applied during single transaction
             return;
         }
-
+        $forUp = $forDown = false;
         if (!empty(array_intersect(['type', 'size'
                     , 'dbType', 'phpType'
                     , 'precision', 'scale', 'unsigned'
         ], $changed))) {
             $addUsing = $this->isNeedUsingExpression($current->dbType, $desired->dbType);
             $this->migration->addUpCode($this->recordBuilder->alterColumnType($tableName, $desired, $addUsing));
+            $forUp = $this->recordBuilder->isBuiltInType;
             $this->migration->addDownCode($this->recordBuilder->alterColumnTypeFromDb($tableName, $current, $addUsing));
+            $forDown = $this->recordBuilder->isBuiltInType;
         }
-        if (in_array('allowNull', $changed, true)) {
+        if (in_array('allowNull', $changed, true)
+            && ($forUp === false || $forDown === false)
+        ) {
             if ($desired->allowNull === true) {
                 $this->migration->addUpCode($this->recordBuilder->dropColumnNotNull($tableName, $desired));
                 $this->migration->addDownCode($this->recordBuilder->setColumnNotNull($tableName, $current), true);
@@ -80,6 +85,9 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
                 $this->migration->addDownCode($this->recordBuilder->dropColumnNotNull($tableName, $current), true);
             }
         }
+
+        $this->recordBuilder->isBuiltInType = $forUp = $forDown = false;
+
         if (in_array('defaultValue', $changed, true)) {
             $upCode = $desired->defaultValue === null
                 ? $this->recordBuilder->dropColumnDefault($tableName, $desired)
@@ -96,9 +104,6 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         }
         if ($isChangeFromEnum) {
             $this->migration->addUpCode($this->recordBuilder->dropEnum($tableName, $current->name));
-        }
-
-        if ($isChangeFromEnum) {
             $this->migration
                 ->addDownCode($this->recordBuilder->createEnum($tableName, $current->name, $current->enumValues));
         }
@@ -230,7 +235,7 @@ SQL;
 
     public function modifyDesired(ColumnSchema $desired): void
     {
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
+        /** @var $desired \cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
         if (in_array($desired->phpType, ['int', 'integer']) && $desired->defaultValue !== null) {
             $desired->defaultValue = (int)$desired->defaultValue;
         }
@@ -243,9 +248,21 @@ SQL;
     public function modifyDesiredInContextOfCurrent(ColumnSchema $current, ColumnSchema $desired): void
     {
         /** @var $current \yii\db\pgsql\ColumnSchema */
-        /** @var $desired cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
+        /** @var $desired \cebe\yii2openapi\db\ColumnSchema|\yii\db\pgsql\ColumnSchema */
         if ($current->type === $desired->type && !$desired->size && $this->isDbDefaultSize($current)) {
             $desired->size = $current->size;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string
+    {
+        return null;
+    }
+
+    public function setColumnsPositions()
+    {
     }
 }

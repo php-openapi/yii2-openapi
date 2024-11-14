@@ -1,0 +1,38 @@
+openapi: 3.0.3
+
+info:
+  title: '53_bug_inversed_reference_require_cascade'
+  version: 1.0.0
+
+components:
+  schemas:
+    Document:
+      title: Document
+      properties:
+        id:
+          type: integer
+        labels:
+          type: array
+          readOnly: true
+          description: Inversed reference for detect junction table documents2labels
+          items:
+            $ref: '#/components/schemas/Label'
+
+    Label:
+      title: Label
+      properties:
+        id:
+          type: integer
+        documents:
+          type: array
+          readOnly: true
+          description: Inversed reference for detect junction table documents2labels
+          items:
+            $ref: '#/components/schemas/Document'
+
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
