@@ -9,6 +9,7 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\items\DbIndex;
 use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
@@ -59,10 +60,14 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesiredInContextOfCurrent($current, $desiredFromDb);
         $this->modifyDesiredFromDbInContextOfDesired($desired, $desiredFromDb);
 
-        foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
-                    , 'dbType', 'phpType'
-                     , 'precision', 'scale', 'unsigned', 'comment'
-        ] as $attr) {
+        $properties = ['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
+            , 'dbType', 'phpType'
+            , 'precision', 'scale', 'unsigned'#, 'comment'
+        ];
+        if (!empty($this->config->getOpenApi()->{CustomSpecAttr::DESC_IS_COMMENT})) {
+            $properties[] = 'comment';
+        }
+        foreach ($properties as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
                     $changedAttributes[] = $attr;

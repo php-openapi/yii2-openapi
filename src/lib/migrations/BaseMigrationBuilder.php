@@ -9,6 +9,7 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ManyToManyRelation;
 use cebe\yii2openapi\lib\items\MigrationModel;
@@ -53,6 +54,8 @@ abstract class BaseMigrationBuilder
      */
     protected $recordBuilder;
 
+    public ?Config $config = null;
+
     /**
      * MigrationBuilder constructor.
      * @param \yii\db\Connection                  $db
@@ -60,12 +63,13 @@ abstract class BaseMigrationBuilder
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\base\NotSupportedException
      */
-    public function __construct(Connection $db, DbModel $model)
+    public function __construct(Connection $db, DbModel $model, ?Config $config = null)
     {
         $this->db = $db;
         $this->model = $model;
         $this->tableSchema = $db->getTableSchema($model->getTableAlias(), true);
         $this->recordBuilder = Yii::createObject(MigrationRecordBuilder::class, [$db->getSchema()]);
+        $this->config = $config;
     }
 
     /**
