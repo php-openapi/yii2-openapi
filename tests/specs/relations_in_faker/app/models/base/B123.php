@@ -27,7 +27,7 @@ abstract class B123 extends \yii\db\ActiveRecord
         return [
             'trim' => [['name'], 'trim'],
             'c123_id_integer' => [['c123_id'], 'integer'],
-            'c123_id_exist' => [['c123_id'], 'exist', 'targetRelation' => 'C123'],
+            'c123_id_exist' => [['c123_id'], 'exist', 'targetRelation' => 'c123'],
             'name_string' => [['name'], 'string'],
         ];
     }
@@ -35,5 +35,15 @@ abstract class B123 extends \yii\db\ActiveRecord
     public function getC123()
     {
         return $this->hasOne(\app\models\C123::class, ['id' => 'c123_id']);
+    }
+
+    public function getA123()
+    {
+        return $this->hasOne(\app\models\A123::class, ['b123_id' => 'id'])->inverseOf('b123');
+    }
+
+    public function getE1232()
+    {
+        return $this->hasOne(\app\models\E123::class, ['b123_id' => 'id'])->inverseOf('b123');
     }
 }

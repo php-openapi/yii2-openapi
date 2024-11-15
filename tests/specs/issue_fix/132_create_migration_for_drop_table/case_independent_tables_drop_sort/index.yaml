@@ -1,0 +1,31 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 132_create_migration_for_drop_table \#132
+
+x-deleted-schemas:
+  - Upk
+  - Bigpk
+  - Ubigpk
+
+paths:
+  /:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+
+components:
+  schemas:
+    Foo: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-deleted-schemas`
+      type: object
+      description: 132_create_migration_for_drop_table
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+        factor:
+          type: integer

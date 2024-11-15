@@ -128,7 +128,7 @@ foreach ($scenarios as $scenario): ?>
     public function get<?= $relation->getCamelName() ?>()
     {
         return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
-            echo $relation->linkToString()?>);
+            echo $relation->linkToString()?>)<?= $relation->getInverse() ? '->inverseOf(\''.$relation->getInverse().'\')' : '' ?>;
     }
 <?php endforeach; ?>
 <?php foreach ($model->many2many as $relation): ?>
@@ -144,4 +144,12 @@ foreach ($scenarios as $scenario): ?>
 <?php endif;?>
     }
 <?php endforeach; ?>
+<?php $i = 1; foreach ($model->inverseRelations as $relationName => $relation): ?>
+
+    public function get<?= $relation->getCamelName().($i===1 ? '' : $i) ?>()
+    {
+        return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
+    echo $relation->linkToString() ?>)->inverseOf('<?= $relation->getInverse() ?>');
+    }
+<?php $i++; endforeach; ?>
 }

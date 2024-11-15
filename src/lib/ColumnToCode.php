@@ -69,7 +69,7 @@ class ColumnToCode
      * @var bool
      * Built In Type means the \cebe\yii2openapi\lib\items\Attribute::$type or \cebe\yii2openapi\lib\items\Attribute::$dbType is in list of Yii abstract data type list or not. And if is found we can use \yii\db\SchemaBuilderTrait methods to build migration instead of putting raw SQL
      */
-    private $isBuiltinType = false;
+    public $isBuiltinType = false;
 
     /**
      * @var bool
@@ -392,6 +392,7 @@ class ColumnToCode
         if ($this->isEnum()) {
             return false;
         }
+
         if ($this->fromDb === true) {
             return isset(
                 (new ColumnSchemaBuilder(''))->categoryMap[$type]
@@ -406,8 +407,9 @@ class ColumnToCode
     private function resolveEnumType():void
     {
         if (ApiGenerator::isPostgres()) {
-            $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            // $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
+            // $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            $this->rawParts['type'] = '"'.$this->column->dbType.'"';
             return;
         }
         $this->rawParts['type'] = 'enum(' . self::mysqlEnumToString($this->column->enumValues) . ')';
@@ -473,7 +475,7 @@ class ColumnToCode
 
     private function isDefaultAllowed():bool
     {
-        // default expression with parenthases is allowed
+        // default expression with parentheses is allowed
         if ($this->column->defaultValue instanceof \yii\db\Expression) {
             return true;
         }

@@ -27,9 +27,9 @@ abstract class PostsAttaches extends \yii\db\ActiveRecord
     {
         return [
             'attach_id_integer' => [['attach_id'], 'integer'],
-            'attach_id_exist' => [['attach_id'], 'exist', 'targetRelation' => 'Attach'],
+            'attach_id_exist' => [['attach_id'], 'exist', 'targetRelation' => 'attach'],
             'target_id_integer' => [['target_id'], 'integer'],
-            'target_id_exist' => [['target_id'], 'exist', 'targetRelation' => 'Target'],
+            'target_id_exist' => [['target_id'], 'exist', 'targetRelation' => 'target'],
         ];
     }
 

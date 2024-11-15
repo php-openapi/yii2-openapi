@@ -28,4 +28,9 @@ abstract class Store extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    public function getPet()
+    {
+        return $this->hasOne(\app\mymodels\Pet::class, ['store_id' => 'id'])->inverseOf('store');
+    }
 }

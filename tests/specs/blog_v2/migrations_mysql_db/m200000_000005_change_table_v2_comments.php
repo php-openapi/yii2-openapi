@@ -27,9 +27,9 @@ class m200000_000005_change_table_v2_comments extends \yii\db\Migration
         $this->alterColumn('{{%v2_comments}}', 'meta_data', 'json NOT NULL');
         $this->alterColumn('{{%v2_comments}}', 'message', 'json NOT NULL');
         $this->alterColumn('{{%v2_comments}}', 'post_id', $this->bigInteger()->notNull());
-        $this->addColumn('{{%v2_comments}}', 'author_id', $this->integer()->notNull());
+        $this->addColumn('{{%v2_comments}}', 'author_id', $this->integer()->notNull()->after('post_id'));
         $this->dropColumn('{{%v2_comments}}', 'user_id');
-        $this->addForeignKey('fk_v2_comments_author_id_v2_users_id', '{{%v2_comments}}', 'id', 'v2_users', 'author_id');
-        $this->addForeignKey('fk_v2_comments_post_id_v2_posts_uid', '{{%v2_comments}}', 'uid', 'v2_posts', 'post_id');
+        $this->addForeignKey('fk_v2_comments_author_id_v2_users_id', '{{%v2_comments}}', 'author_id', 'itt_v2_users', 'id');
+        $this->addForeignKey('fk_v2_comments_post_id_v2_posts_uid', '{{%v2_comments}}', 'post_id', 'itt_v2_posts', 'uid');
     }
 }
