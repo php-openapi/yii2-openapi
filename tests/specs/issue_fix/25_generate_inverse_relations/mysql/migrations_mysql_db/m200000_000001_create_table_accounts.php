@@ -9,7 +9,7 @@ class m200000_000001_create_table_accounts extends \yii\db\Migration
     {
         $this->createTable('{{%accounts}}', [
             'id' => $this->primaryKey(),
-            'name' => $this->string(128)->notNull(),
+            'name' => $this->string(128)->notNull()->comment('account name'),
             'paymentMethodName' => $this->text()->null(),
             'user_id' => $this->integer()->null()->defaultValue(null),
             'user2_id' => $this->integer()->null()->defaultValue(null),

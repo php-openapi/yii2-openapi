@@ -14,7 +14,6 @@ class m200000_000000_change_table_v2_posts extends \yii\db\Migration
         $this->alterColumn('{{%v2_posts}}', 'category_id', $this->bigInteger()->notNull()->comment('Category of posts'));
         $this->alterColumn('{{%v2_posts}}', 'active', $this->tinyInteger(1)->notNull());
         $this->alterColumn('{{%v2_posts}}', 'created_by_id', $this->bigInteger()->null()->defaultValue(null)->comment('The User'));
-        $this->dropIndex('v2_posts_slug_key', '{{%v2_posts}}');
     }
 
     public function down()
