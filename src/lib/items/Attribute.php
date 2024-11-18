@@ -7,19 +7,16 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-use yii\helpers\VarDumper;
-use \Yii;
-use cebe\yii2openapi\lib\openapi\PropertySchema;
+use cebe\yii2openapi\db\ColumnSchema;
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\helpers\FormatHelper;
+use cebe\yii2openapi\lib\openapi\PropertySchema;
+use Yii;
 use yii\base\BaseObject;
-use cebe\yii2openapi\db\ColumnSchema;
-use yii\helpers\Inflector;
-use yii\helpers\StringHelper;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
+use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
+use yii\helpers\Inflector;
 use function is_array;
 use function strtolower;
 
@@ -53,8 +50,8 @@ class Attribute extends BaseObject
     /**
      * @var string
      * Contains foreign key column name
-     * @example 'redelivery_of'
-     * See usage docs in README for more info
+     * @example 'redelivery_of' instead of 'redelivery_of_id'
+     * @see `x-fk-column-name` in README.md
      */
     public $fkColName;
 
@@ -124,6 +121,8 @@ class Attribute extends BaseObject
      **/
     public $fakerStub;
 
+    public $tableName; // required for PgSQL enum
+
     /**
      * @var bool
      **/
@@ -145,6 +144,12 @@ class Attribute extends BaseObject
     public function setDbType(string $dbType):Attribute
     {
         $this->dbType = $dbType;
+        return $this;
+    }
+
+    public function setTableName(string $tableName): Attribute
+    {
+        $this->tableName = $tableName;
         return $this;
     }
 
@@ -295,14 +300,19 @@ class Attribute extends BaseObject
         return $this->limits['minLength'];
     }
 
-    public function getFormattedDescription():string
+    /**
+     * @return string
+     */
+    public function getPropertyAnnotation(): string
     {
-        $comment = $this->columnName.' '.$this->description;
-        $type = $this->phpType;
-        return $type.' $'.str_replace("\n", "\n * ", rtrim($comment));
+        $annotation = $this->phpType . ' $' . $this->columnName;
+        if (!empty($this->description)) {
+            $annotation .= FormatHelper::getFormattedDescription($this->description);
+        }
+        return $annotation;
     }
 
-    public function toColumnSchema():ColumnSchema
+    public function toColumnSchema(): ColumnSchema
     {
         $column = new ColumnSchema([
             'name' => $this->columnName,
@@ -321,11 +331,13 @@ class Attribute extends BaseObject
         if ($this->defaultValue !== null) {
             $column->defaultValue = $this->defaultValue;
         } elseif ($column->allowNull) {
-            //@TODO: Need to discuss
             $column->defaultValue = null;
         }
         if (is_array($this->enumValues)) {
             $column->enumValues = $this->enumValues;
+            if (ApiGenerator::isPostgres() && empty($this->xDbType)) {
+                $column->dbType = 'enum_'.Yii::$app->db->tablePrefix.$this->tableName.'_' . $column->name;
+            }
         }
         $this->handleDecimal($column);
 
@@ -333,7 +345,11 @@ class Attribute extends BaseObject
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @param string $dbType
+     * @return string
+     * @throws InvalidDefinitionException
+     * @throws NotSupportedException
+     * @throws InvalidConfigException
      */
     private function yiiAbstractTypeForDbSpecificType(string $dbType): string
     {

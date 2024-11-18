@@ -56,6 +56,9 @@ class ModelsGenerator
         }
         foreach ($this->models as $model) {
             $className = $model->getClassName();
+            if (!empty($this->config->dbModel['scenarioDefaultDescription'])) {
+                $model->scenarioDefaultDescription = $this->config->dbModel['scenarioDefaultDescription'];
+            }
             if ($model->isNotDb === false) {
                 $this->files->add(new CodeFile(
                     Yii::getAlias("$modelPath/base/$className.php"),
@@ -69,12 +72,6 @@ class ModelsGenerator
                     )
                 ));
                 if ($this->config->generateModelFaker) {
-                    $deps = []; # list of all models that this model is dependent on
-                    foreach ($model->hasOneRelations as $key => $hasOneRelation) {
-                        $deps[] = $model->hasOneRelations[$key]->getClassName();
-                    }
-                    $deps = array_unique($deps);
-
                     $this->files->add(new CodeFile(
                         Yii::getAlias("$fakerPath/{$className}Faker.php"),
                         $this->config->render(
@@ -83,7 +80,7 @@ class ModelsGenerator
                                 'model' => $model,
                                 'modelNamespace' => $this->config->modelNamespace,
                                 'namespace' => $this->config->fakerNamespace,
-                                'deps' => $deps,
+                                'deps' => $model->fakerDependentModels(),
                             ]
                         )
                     ));
