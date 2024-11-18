@@ -88,6 +88,8 @@ class DbModel extends BaseObject
      */
     public $scenarioDefaultDescription = "Scenario {scenarioName}";
 
+    public bool $descriptionIsComment = false;
+
     /**
      * @var array Automatically generated scenarios from the model 'x-scenarios'.
      */

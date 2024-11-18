@@ -66,6 +66,8 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         ];
         if (!empty($this->config->getOpenApi()->{CustomSpecAttr::DESC_IS_COMMENT})) {
             $properties[] = 'comment';
+        } elseif ($this->model->descriptionIsComment) { // TODO
+            $properties[] = 'comment';
         }
         foreach ($properties as $attr) {
             if ($attr === 'defaultValue') {

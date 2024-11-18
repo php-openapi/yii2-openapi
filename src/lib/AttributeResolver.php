@@ -117,6 +117,7 @@ class AttributeResolver
                 //For valid primary keys for junction tables
                 'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
                 'isNotDb' => $this->componentSchema->isNonDb(),
+                'descriptionIsComment' => $this->componentSchema->{CustomSpecAttr::DESC_IS_COMMENT},
             ],
         ]);
     }
