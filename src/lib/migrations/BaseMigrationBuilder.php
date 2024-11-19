@@ -507,7 +507,8 @@ abstract class BaseMigrationBuilder
     public function newColStr(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): string
     {
         $ctc = new ColumnToCode(\Yii::$app->db->schema, $tableAlias, $columnSchema, false, false, true);
-        return ColumnToCode::undoEscapeQuotes($ctc->getCode());
+//        return ColumnToCode::undoEscapeQuotes($ctc->getCode());
+        return $ctc->getCode();
     }
 
     public static function isEnum(\yii\db\ColumnSchema $columnSchema): bool
