@@ -117,7 +117,7 @@ class AttributeResolver
                 //For valid primary keys for junction tables
                 'junctionCols' => $this->isJunctionSchema ? $this->junctions->junctionCols($this->schemaName) : [],
                 'isNotDb' => $this->componentSchema->isNonDb(),
-                'descriptionIsComment' => !empty(($this->componentSchema->{CustomSpecAttr::DESC_IS_COMMENT})) ? $this->componentSchema->{CustomSpecAttr::DESC_IS_COMMENT} : false,
+                'descriptionIsComment' => !empty(($this->componentSchema->getSchema()->{CustomSpecAttr::DESC_IS_COMMENT}))
             ],
         ]);
     }
@@ -226,6 +226,7 @@ class AttributeResolver
                   ->setDefault($property->guessDefault())
                   ->setXDbType($property->getAttr(CustomSpecAttr::DB_TYPE))
                   ->setXDbDefaultExpression($property->getAttr(CustomSpecAttr::DB_DEFAULT_EXPRESSION))
+                  ->setXDescriptionIsComment($property->getAttr(CustomSpecAttr::DESC_IS_COMMENT))
                   ->setNullable($nullableValue)
                   ->setIsPrimary($property->isPrimaryKey())
                   ->setForeignKeyColumnName($property->fkColName)

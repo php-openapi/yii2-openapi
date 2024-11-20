@@ -64,9 +64,17 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             , 'dbType', 'phpType'
             , 'precision', 'scale', 'unsigned'#, 'comment'
         ];
-        if (!empty($this->config->getOpenApi()->{CustomSpecAttr::DESC_IS_COMMENT})) {
-            $properties[] = 'comment';
-        } elseif ($this->model->descriptionIsComment) { // TODO
+        $comment = false;
+        if ($this->model->attributes[$desired->name]->xDescriptionIsComment) {
+            $comment = true;
+        }
+        if ($this->model->descriptionIsComment) {
+            $comment = true;
+        }
+        if ($this->config && !empty($this->config->getOpenApi()->{CustomSpecAttr::DESC_IS_COMMENT})) {
+            $comment = true;
+        }
+        if ($comment) {
             $properties[] = 'comment';
         }
         foreach ($properties as $attr) {
