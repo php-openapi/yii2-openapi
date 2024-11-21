@@ -66,7 +66,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         $forUp = $forDown = false;
         if (!empty(array_intersect(['type', 'size'
                     , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
+            , 'precision', 'scale', 'unsigned'
         ], $changed))) {
             $addUsing = $this->isNeedUsingExpression($current->dbType, $desired->dbType);
             $this->migration->addUpCode($this->recordBuilder->alterColumnType($tableName, $desired, $addUsing));
@@ -99,6 +99,17 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
                 $this->migration->addUpCode($upCode)->addDownCode($downCode, true);
             }
         }
+
+        if (in_array('comment', $changed, true)) {
+            if ($desired->comment) {
+                $this->migration->addUpCode($this->recordBuilder->addCommentOnColumn($tableName, $desired->name, $desired->comment));
+                $this->migration->addDownCode($this->recordBuilder->dropCommentFromColumn($tableName, $desired->name));
+            } else {
+                $this->migration->addUpCode($this->recordBuilder->dropCommentFromColumn($tableName, $desired->name));
+                $this->migration->addDownCode($this->recordBuilder->addCommentOnColumn($tableName, $desired->name, $current->comment));
+            }
+        }
+
         if ($isChangeToEnum) {
             $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $desired->name, $desired->enumValues), true);
         }
@@ -130,10 +141,15 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesiredInContextOfCurrent($current, $desiredFromDb);
         $this->modifyDesiredFromDbInContextOfDesired($desired, $desiredFromDb);
 
-        foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
+        $properties = ['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
                     , 'dbType', 'phpType'
-                    , 'precision', 'scale', 'unsigned'
-        ] as $attr) {
+            , 'precision', 'scale', 'unsigned'
+        ];
+        if ($this->shouldCompareComment($desired)) {
+            $properties[] = 'comment';
+        }
+
+        foreach ($properties as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
                     $changedAttributes[] = $attr;
@@ -264,5 +280,16 @@ SQL;
 
     public function setColumnsPositions()
     {
+    }
+
+    public function handleCommentsMigration()
+    {
+        $tableAlias = $this->model->getTableAlias();
+        foreach ($this->newColumns as $column) {
+            if ($column->comment) {
+                $this->migration
+                    ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
+            }
+        }
     }
 }

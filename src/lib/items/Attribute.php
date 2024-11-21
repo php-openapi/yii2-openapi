@@ -62,13 +62,6 @@ class Attribute extends BaseObject
     public $dbType = 'string';
 
     /**
-     * Custom db type
-     * string | null | false
-     * if `false` then this attribute is virtual
-     */
-    public $xDbType;
-
-    /**
      * nullable
      * bool | null
      */
@@ -127,6 +120,18 @@ class Attribute extends BaseObject
      * @var bool
      **/
     public $isVirtual = false;
+
+    /**
+     * Custom db type
+     * string | null | false
+     * if `false` then this attribute is virtual
+     */
+    public $xDbType;
+
+    /**
+     * @see \cebe\yii2openapi\lib\CustomSpecAttr::DESC_IS_COMMENT
+     */
+    public ?bool $xDescriptionIsComment = false;
 
     public function __construct(string $propertyName, array $config = [])
     {
@@ -322,6 +327,7 @@ class Attribute extends BaseObject
             'allowNull' => $this->allowNull(),
             'size' => $this->size > 0 ? $this->size : null,
             'xDbType' => $this->xDbType,
+            'comment' => $this->description,
         ]);
         $column->isPrimaryKey = $this->primary;
         $column->autoIncrement = $this->primary && $this->phpType === 'int';
@@ -395,5 +401,11 @@ class Attribute extends BaseObject
             $columnSchema->scale = $decimalAttributes['scale'];
             $columnSchema->dbType = $decimalAttributes['dbType'];
         }
+    }
+
+    public function setXDescriptionIsComment($xDescriptionIsComment): Attribute
+    {
+        $this->xDescriptionIsComment = $xDescriptionIsComment;
+        return $this;
     }
 }

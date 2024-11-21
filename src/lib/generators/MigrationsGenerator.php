@@ -12,7 +12,6 @@ use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\MigrationModel;
 use cebe\yii2openapi\lib\migrations\BaseMigrationBuilder;
-use cebe\yii2openapi\lib\migrations\MigrationRecordBuilder;
 use cebe\yii2openapi\lib\migrations\MysqlMigrationBuilder;
 use cebe\yii2openapi\lib\migrations\PostgresMigrationBuilder;
 use Exception;
@@ -139,10 +138,11 @@ class MigrationsGenerator
      */
     protected function createBuilder(DbModel $model):BaseMigrationBuilder
     {
+        $params = [$this->db, $model, $this->config];
         if ($this->db->getDriverName() === 'pgsql') {
-            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model]);
+            return Yii::createObject(PostgresMigrationBuilder::class, $params);
         }
-        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model]);
+        return Yii::createObject(MysqlMigrationBuilder::class, $params);
     }
 
     /**
