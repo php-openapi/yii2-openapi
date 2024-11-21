@@ -141,10 +141,15 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesiredInContextOfCurrent($current, $desiredFromDb);
         $this->modifyDesiredFromDbInContextOfDesired($desired, $desiredFromDb);
 
-        foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
+        $properties = ['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
                     , 'dbType', 'phpType'
-                     , 'precision', 'scale', 'unsigned', 'comment'
-        ] as $attr) {
+            , 'precision', 'scale', 'unsigned'
+        ];
+        if ($this->shouldCompareComment($desired)) {
+            $properties[] = 'comment';
+        }
+
+        foreach ($properties as $attr) {
             if ($attr === 'defaultValue') {
                 if ($this->isDefaultValueChanged($current, $desiredFromDb)) {
                     $changedAttributes[] = $attr;

@@ -10,6 +10,7 @@ namespace cebe\yii2openapi\lib\migrations;
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
 use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ManyToManyRelation;
 use cebe\yii2openapi\lib\items\MigrationModel;
@@ -54,7 +55,7 @@ abstract class BaseMigrationBuilder
      */
     protected $recordBuilder;
 
-    public ?Config $config = null;
+    protected ?Config $config = null;
 
     /**
      * MigrationBuilder constructor.
@@ -597,4 +598,20 @@ abstract class BaseMigrationBuilder
     abstract public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string;
 
     abstract public function setColumnsPositions();
+
+    protected function shouldCompareComment(ColumnSchema $desired): bool
+    {
+        $comment = false;
+        if (isset($this->model->attributes[$desired->name]) && $this->model->attributes[$desired->name]->xDescriptionIsComment) {
+            $comment = true;
+        }
+        if ($this->model->descriptionIsComment) {
+            $comment = true;
+        }
+        if ($this->config !== null &&
+            !empty($this->config->getOpenApi()->{CustomSpecAttr::DESC_IS_COMMENT})) {
+            $comment = true;
+        }
+        return $comment;
+    }
 }

@@ -11,7 +11,6 @@ class m200000_000005_change_table_v2_comments extends \yii\db\Migration
         $this->dropForeignKey('fk_v2_comments_post_id_v2_posts_uid', '{{%v2_comments}}');
         $this->addColumn('{{%v2_comments}}', 'user_id', $this->bigInteger()->null()->defaultValue(null)->comment('The User'));
         $this->dropColumn('{{%v2_comments}}', 'author_id');
-        $this->addCommentOnColumn('{{%v2_comments}}', 'post_id', 'A blog post (uid used as pk for test purposes)');
         $this->alterColumn('{{%v2_comments}}', 'message', 'text NOT NULL USING "message"::text');
         $this->alterColumn('{{%v2_comments}}', 'message', "DROP DEFAULT");
         $this->alterColumn('{{%v2_comments}}', 'meta_data', 'varchar(300) NULL USING "meta_data"::varchar');
@@ -29,7 +28,6 @@ class m200000_000005_change_table_v2_comments extends \yii\db\Migration
         $this->alterColumn('{{%v2_comments}}', 'created_at', 'int4 NOT NULL USING "created_at"::int4');
         $this->alterColumn('{{%v2_comments}}', 'meta_data', 'jsonb NOT NULL USING "meta_data"::jsonb');
         $this->alterColumn('{{%v2_comments}}', 'message', 'jsonb NOT NULL USING "message"::jsonb');
-        $this->dropCommentFromColumn('{{%v2_comments}}', 'post_id');
         $this->addColumn('{{%v2_comments}}', 'author_id', $this->integer()->notNull());
         $this->dropColumn('{{%v2_comments}}', 'user_id');
         $this->alterColumn('{{%v2_comments}}', 'message', "SET DEFAULT '[]'");
