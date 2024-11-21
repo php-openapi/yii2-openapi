@@ -465,6 +465,60 @@ Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
 ```
 `x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).
 
+### `x-description-is-comment`
+
+    boolean; default: false
+
+When a new database table is created from new OpenAPI component schema, description of a property will be used as
+comment of column (of database table).
+
+This extension is used when a description is edited for existing property, and you want to generate migration for its
+corresponding column comment changes.
+
+This extension can be used at 3 place:
+
+**1. root level (highest priority)**
+
+```yaml
+openapi: 3.0.3
+x-description-is-comment: true
+info:
+  title: Description
+```
+
+This will create migration of any changed description of component schema property present throughout the spec.
+
+**2. component schema level**
+
+```yaml
+components:
+  schemas:
+    Fruit:
+      type: object
+      x-description-is-comment: true
+```
+
+This will create migration of changed description of only properties of component schema which have this extension.
+
+**3. property level (lowest priority)**
+
+```yaml
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+          x-description-is-comment: true
+          description: Hi there
+```
+
+Migrations will be only generated for changed description of properties having this extension.
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:
