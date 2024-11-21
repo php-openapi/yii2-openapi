@@ -58,6 +58,8 @@ class CustomSpecAttr
     public const ROUTE = 'x-route';
 
 
-    // TODO docs here + in README.md
+    /**
+     * Generate migrations for changed description of property. More docs is present in README.md file
+     */
     public const DESC_IS_COMMENT = 'x-description-is-comment';
 }
