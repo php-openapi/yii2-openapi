@@ -194,7 +194,6 @@ final class FractalAction extends BaseObject
 
     public function getTemplate():?string
     {
-        //@TODO: Model scenarios for create/update actions
         return $this->templateFactory()->getTemplate();
     }
 

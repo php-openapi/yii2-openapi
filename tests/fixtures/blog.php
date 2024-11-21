@@ -48,7 +48,7 @@ return [
                 ->setRequired()->setDefault(false)->setFakerStub('$faker->boolean'),
         ],
         'relations' => [
-            'posts' => new AttributeRelation('posts', 'blog_posts', 'Post', 'hasMany', ['category_id' => 'id']),
+            'posts' => (new AttributeRelation('posts', 'blog_posts', 'Post', 'hasMany', ['category_id' => 'id']))->setInverse('category'),
         ],
         'indexes' => [
             'categories_active_index' => DbIndex::make('categories', ['active']),
@@ -88,7 +88,7 @@ return [
                 'hasOne',
                 ['id' => 'category_id']),
             'created_by' => new AttributeRelation('created_by', 'users', 'User', 'hasOne', ['id' => 'created_by_id']),
-            'comments' => new AttributeRelation('comments', 'post_comments', 'Comment', 'hasMany', ['post_id' => 'uid']),
+            'comments' => (new AttributeRelation('comments', 'post_comments', 'Comment', 'hasMany', ['post_id' => 'uid']))->setInverse('post'),
         ],
         'indexes' => [
             'blog_posts_title_key' => DbIndex::make('blog_posts', ['title'], null, true),
@@ -117,9 +117,11 @@ return [
                 ->setDescription('The User')
                 ->setFakerStub('$faker->randomElement(\app\models\User::find()->select("id")->column())'),
             'message' => (new Attribute('message', ['phpType' => 'array', 'dbType' => 'json', 'xDbType' => 'json']))
-                ->setRequired()->setDefault([])->setFakerStub('["a" => "b"]'),
+                ->setRequired()->setDefault([])->setFakerStub('$faker->words()'),
             'meta_data' => (new Attribute('meta_data', ['phpType' => 'array', 'dbType' => 'json', 'xDbType' => 'json']))
-                ->setDefault([])->setFakerStub('[]'),
+                ->setDefault([])->setFakerStub('array_map(function () use ($faker, $uniqueFaker) {
+            return $faker->words();
+        }, range(1, 4))'),
             'created_at' => (new Attribute('created_at',['phpType' => 'int', 'dbType' => 'integer']))
                 ->setRequired()->setFakerStub('$faker->unixTime'),
         ],

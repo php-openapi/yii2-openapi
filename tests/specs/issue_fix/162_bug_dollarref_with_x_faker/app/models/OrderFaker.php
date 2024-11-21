@@ -43,7 +43,6 @@ class OrderFaker extends BaseModelFaker
     {
         return [
             // just model class names
-            'Invoice',
 
         ];
     }

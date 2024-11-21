@@ -39,12 +39,14 @@ up:
 	echo "Waiting for mariadb to start up..."
 	docker-compose exec -T mysql timeout 60s sh -c "while ! (mysql -udbuser -pdbpass -h maria --execute 'SELECT 1;' > /dev/null 2>&1); do echo -n '.'; sleep 0.1 ; done; echo 'ok'" || (docker-compose ps; docker-compose logs; exit 1)
 
-	# Solution to problem https://stackoverflow.com/questions/50026939/php-mysqli-connect-authentication-method-unknown-to-the-client-caching-sha2-pa
-	# if updated to PHP 7.4 or more, this command is not needed (TODO)
-	docker-compose exec -T mysql timeout 60s sh -c "while ! (mysql --execute \"ALTER USER 'dbuser'@'%' IDENTIFIED WITH mysql_native_password BY 'dbpass';\" > /dev/null 2>&1); do echo -n '.'; sleep 0.1 ; done; echo 'ok'" || (docker-compose ps; docker-compose logs; exit 1)
+	echo "Waiting for Mysql to start up..."
+	docker-compose exec -T mysql timeout 60s sh -c "while ! (mysql -udbuser -pdbpass -h mysql --execute 'SELECT 1;' > /dev/null 2>&1); do echo -n '.'; sleep 0.1 ; done; echo 'ok'" || (docker-compose ps; docker-compose logs; exit 1)
 
 cli:
 	docker-compose exec --user=$(UID) php bash
+
+cli_root:
+	docker-compose exec --user="root" php bash
 
 cli_mysql:
 	docker-compose exec --user=$(UID) mysql bash
@@ -56,6 +58,9 @@ migrate:
 
 installdocker:
 	docker-compose run --user=$(UID) --rm php composer install && chmod +x tests/yii
+
+tests_dir_write_permission:
+	docker-compose run --user="root" --rm php chmod -R 777 tests/tmp/ # TODO avoid 777 https://github.com/cebe/yii2-openapi/issues/156
 
 testdocker:
 	docker-compose run --user=$(UID) --rm php sh -c 'vendor/bin/phpunit --repeat 3'

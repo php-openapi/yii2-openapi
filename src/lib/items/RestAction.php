@@ -70,13 +70,32 @@ final class RestAction extends BaseObject
      */
     public $responseWrapper;
 
+    /**
+     * @var bool
+     * @see $isDuplicate
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * see `x-route` in README.md
+     * Used for generating only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * If duplicates routes have same params then `false`, else action is generated with no (0) params `true`
+     */
+    public $zeroParams = false;
+
+    /**
+     * @var bool
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * Generate only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * @see $zeroParams
+     * see `x-route` in README.md
+     */
+    public $isDuplicate = false;
+
     public function getRoute():string
     {
         if ($this->prefix && !empty($this->prefixSettings)) {
             $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
+            return trim($prefix, '/') . '/' . $this->controllerId . '/' . $this->id;
         }
-        return $this->controllerId.'/'.$this->id;
+        return $this->controllerId . '/' . $this->id;
     }
 
     public function getBaseModelName():string
@@ -118,7 +137,6 @@ final class RestAction extends BaseObject
 
     public function getTemplate():?string
     {
-        //@TODO: Model scenarios for create/update actions
         $template = ActionTemplates::getTemplate($this->id);
         if (!$template) {
             return null;
