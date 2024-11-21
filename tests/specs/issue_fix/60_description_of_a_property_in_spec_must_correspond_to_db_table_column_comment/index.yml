@@ -8,48 +8,38 @@ components:
   schemas:
     Fruit:
       type: object
-      #      x-description-is-comment: true
       properties:
         id:
           type: integer
         name:
           type: string
           description: desc with ' quote
-          x-description-is-comment: true
         description:
           type: number
           x-db-type: double precision
           description: desc ' 2
-          x-description-is-comment: true
     Animal:
       type: object
-      #      x-description-is-comment: true
       properties:
         id:
           type: integer
         name:
           type: integer
-          x-description-is-comment: true
         g:
           type: string
           description: desc for g
-          x-description-is-comment: true
         g2:
           type: string
           description: changed comment on g2 col
-          x-description-is-comment: true
         g3:
           type: string
           description: the comment on g3 col remains same
-          x-description-is-comment: true
         g4:
           type: integer
           description: data type changes but comment remains same
-          x-description-is-comment: true
         new_col:
           type: string
           description: new col added
-          x-description-is-comment: true
 
 paths:
   '/':
