@@ -65,7 +65,7 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
             , 'precision', 'scale', 'unsigned'#, 'comment'
         ];
         $comment = false;
-        if ($this->model->attributes[$desired->name]->xDescriptionIsComment) {
+        if (isset($this->model->attributes[$desired->name]) && $this->model->attributes[$desired->name]->xDescriptionIsComment) {
             $comment = true;
         }
         if ($this->model->descriptionIsComment) {

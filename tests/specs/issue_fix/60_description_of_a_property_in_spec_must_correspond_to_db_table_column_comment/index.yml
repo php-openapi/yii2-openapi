@@ -1,5 +1,5 @@
 openapi: 3.0.3
-#x-description-is-comment: true
+x-description-is-comment: true
 info:
   title: 'Description of a property in spec must correspond to DB TABLE COLUMN COMMENT #60'
   version: 1.0.0
