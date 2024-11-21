@@ -138,10 +138,11 @@ class MigrationsGenerator
      */
     protected function createBuilder(DbModel $model):BaseMigrationBuilder
     {
+        $params = [$this->db, $model, $this->config];
         if ($this->db->getDriverName() === 'pgsql') {
-            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model, $this->config]);
+            return Yii::createObject(PostgresMigrationBuilder::class, $params);
         }
-        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model, $this->config]);
+        return Yii::createObject(MysqlMigrationBuilder::class, $params);
     }
 
     /**
