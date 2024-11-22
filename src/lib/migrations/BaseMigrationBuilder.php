@@ -9,6 +9,8 @@ namespace cebe\yii2openapi\lib\migrations;
 
 use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\ColumnToCode;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ManyToManyRelation;
 use cebe\yii2openapi\lib\items\MigrationModel;
@@ -53,6 +55,8 @@ abstract class BaseMigrationBuilder
      */
     protected $recordBuilder;
 
+    protected ?Config $config = null;
+
     /**
      * MigrationBuilder constructor.
      * @param \yii\db\Connection                  $db
@@ -60,12 +64,13 @@ abstract class BaseMigrationBuilder
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\base\NotSupportedException
      */
-    public function __construct(Connection $db, DbModel $model)
+    public function __construct(Connection $db, DbModel $model, ?Config $config = null)
     {
         $this->db = $db;
         $this->model = $model;
         $this->tableSchema = $db->getTableSchema($model->getTableAlias(), true);
         $this->recordBuilder = Yii::createObject(MigrationRecordBuilder::class, [$db->getSchema()]);
+        $this->config = $config;
     }
 
     /**
@@ -161,6 +166,8 @@ abstract class BaseMigrationBuilder
                 $this->migration->dependencies[] = $refTable;
             }
         }
+
+        $this->handleCommentsMigration();
 
         return $this->migration;
     }
@@ -293,6 +300,8 @@ abstract class BaseMigrationBuilder
      * @return array|\cebe\yii2openapi\lib\items\DbIndex[]
      */
     abstract protected function findTableIndexes():array;
+
+    abstract public function handleCommentsMigration();
 
     protected function buildIndexChanges():void
     {
@@ -467,7 +476,7 @@ abstract class BaseMigrationBuilder
         if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
             $allEnumValues = $columnSchema->enumValues;
             $allEnumValues = array_map(function ($aValue) {
-                return "'$aValue'";
+                return $this->db->quoteValue($aValue);
             }, $allEnumValues);
             Yii::$app->db->createCommand(
                 'CREATE TYPE '.$tmpEnumName($columnSchema->name).' AS ENUM('.implode(', ', $allEnumValues).')'
@@ -475,6 +484,9 @@ abstract class BaseMigrationBuilder
         }
 
         Yii::$app->db->createCommand()->createTable($tmpTableName, $column)->execute();
+        if (ApiGenerator::isPostgres() && $columnSchema->comment) {
+            Yii::$app->db->createCommand("COMMENT ON COLUMN $tmpTableName.$columnSchema->name IS {$this->db->quoteValue($columnSchema->comment)}")->execute();
+        }
 
         $table = Yii::$app->db->getTableSchema($tmpTableName);
 
@@ -496,7 +508,8 @@ abstract class BaseMigrationBuilder
     public function newColStr(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): string
     {
         $ctc = new ColumnToCode(\Yii::$app->db->schema, $tableAlias, $columnSchema, false, false, true);
-        return ColumnToCode::undoEscapeQuotes($ctc->getCode());
+//        return ColumnToCode::undoEscapeQuotes($ctc->getCode());
+        return $ctc->getCode();
     }
 
     public static function isEnum(\yii\db\ColumnSchema $columnSchema): bool
@@ -585,4 +598,20 @@ abstract class BaseMigrationBuilder
     abstract public function findPosition(ColumnSchema $column, bool $forDrop = false, bool $forAlter = false): ?string;
 
     abstract public function setColumnsPositions();
+
+    protected function shouldCompareComment(ColumnSchema $desired): bool
+    {
+        $comment = false;
+        if (isset($this->model->attributes[$desired->name]) && $this->model->attributes[$desired->name]->xDescriptionIsComment) {
+            $comment = true;
+        }
+        if ($this->model->descriptionIsComment) {
+            $comment = true;
+        }
+        if ($this->config !== null &&
+            !empty($this->config->getOpenApi()->{CustomSpecAttr::DESC_IS_COMMENT})) {
+            $comment = true;
+        }
+        return $comment;
+    }
 }

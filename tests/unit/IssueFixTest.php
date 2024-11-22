@@ -544,6 +544,197 @@ class IssueFixTest extends DbTestCase
         $this->checkFiles($actualFiles, $expectedFiles);
     }
 
+    // https://github.com/php-openapi/yii2-openapi/issues/60
+    public function test60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
+    {
+        // MySQL
+        $this->deleteTableFor60DescriptionOfAProperty();
+        $this->createTableFor60DescriptionOfAProperty();
+        $testFile = Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/index.php");
+        $this->runGenerator($testFile);
+        $this->runActualMigrations();
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->deleteTableFor60DescriptionOfAProperty();
+
+
+        // PgSQL
+        $this->changeDbToPgsql();
+        $this->deleteTableFor60DescriptionOfAProperty();
+        $this->createTableFor60DescriptionOfAProperty();
+        $this->runGenerator($testFile, 'pgsql');
+        $this->runActualMigrations('pgsql');
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+            'except' => ['migrations_mysql_db']
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->deleteTableFor60DescriptionOfAProperty();
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/60
+    public function test60ComponentSchemaLevelExtension()
+    {
+
+
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test60ComponentSchemaLevelExtension'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      x-description-is-comment: true
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+          description: Hi there
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->text()->notNull()->comment('Hi there'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->text()->null());
+    }
+}
+
+PHP;
+
+        $this->for60($schema, $expected);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/60
+    public function test60PropertyLevelExtension()
+    {
+        $schema = <<<YAML
+openapi: 3.0.3
+info:
+  title: 'test60ComponentSchemaLevelExtension'
+  version: 1.0.0
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+          x-description-is-comment: true
+          description: Hi there
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK
+YAML;
+
+        $expected = <<<'PHP'
+<?php
+
+/**
+ * Table for Fruit
+ */
+class m200000_000000_change_table_fruits extends \yii\db\Migration
+{
+    public function up()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->text()->notNull()->comment('Hi there'));
+    }
+
+    public function down()
+    {
+        $this->alterColumn('{{%fruits}}', 'name', $this->text()->null());
+    }
+}
+
+PHP;
+
+        $this->for60($schema, $expected);
+    }
+
+    private function for60($spec, $expected)
+    {
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'text',
+        ])->execute();
+        $config = [
+            'openApiPath' => 'data://text/plain;base64,' . base64_encode($spec),
+            'generateUrls' => false,
+            'generateModels' => false,
+            'generateControllers' => false,
+            'generateMigrations' => true,
+            'generateModelFaker' => false,
+        ];
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+
+        $this->runGenerator($tmpConfigFile);
+        $actual = file_get_contents(Yii::getAlias('@app') . '/migrations_mysql_db/m200000_000000_change_table_fruits.php');
+        $this->assertSame($expected, $actual);
+        $this->runActualMigrations('mysql', 1);
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+    }
+
+    private function createTableFor60DescriptionOfAProperty()
+    {
+        Yii::$app->db->createCommand()->createTable('{{%animals}}', [
+            'id' => 'pk',
+            'name' => 'text ', # comment "the name"
+            'g' => 'text',
+            'g2' => 'text',
+            'g3' => 'text',
+            'g4' => 'text',
+            'drop_col' => 'text',
+        ])->execute();
+
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'name', 'the comment on name col')->execute();
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'g2', 'the comment on g2 col')->execute();
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'g3', 'the comment on g3 col remains same')->execute();
+        Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'g4', 'data type changes but comment remains same')->execute();
+    }
+
+    private function deleteTableFor60DescriptionOfAProperty()
+    {
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%animals}}')->execute();
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/3
     public function test3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes()
     {

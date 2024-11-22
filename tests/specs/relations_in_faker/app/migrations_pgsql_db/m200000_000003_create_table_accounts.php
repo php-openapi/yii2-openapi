@@ -9,8 +9,9 @@ class m200000_000003_create_table_accounts extends \yii\db\Migration
     {
         $this->createTable('{{%accounts}}', [
             'id' => $this->primaryKey(),
-            'name' => $this->string(40)->notNull(),
+            'name' => $this->string(40)->notNull()->comment('account name'),
         ]);
+        $this->addCommentOnColumn('{{%accounts}}', 'name', 'account name');
     }
 
     public function safeDown()

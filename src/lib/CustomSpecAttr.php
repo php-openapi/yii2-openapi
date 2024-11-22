@@ -56,4 +56,10 @@ class CustomSpecAttr
      * Custom route (controller ID/action ID) instead of auto-generated. See README for usage docs. https://github.com/cebe/yii2-openapi/issues/144
      */
     public const ROUTE = 'x-route';
+
+
+    /**
+     * Generate migrations for changed description of property. More docs is present in README.md file
+     */
+    public const DESC_IS_COMMENT = 'x-description-is-comment';
 }

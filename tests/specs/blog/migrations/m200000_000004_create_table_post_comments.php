@@ -9,8 +9,8 @@ class m200000_000004_create_table_post_comments extends \yii\db\Migration
     {
         $this->createTable('{{%post_comments}}', [
             'id' => $this->bigPrimaryKey(),
-            'post_id' => $this->string(128)->notNull(),
-            'author_id' => $this->integer()->notNull(),
+            'post_id' => $this->string(128)->notNull()->comment('A blog post (uid used as pk for test purposes)'),
+            'author_id' => $this->integer()->notNull()->comment('The User'),
             0 => 'message json NOT NULL',
             1 => 'meta_data json NOT NULL',
             'created_at' => $this->integer()->notNull(),
