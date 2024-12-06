@@ -885,4 +885,24 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/63
+    public function test63JustColumnNameRename()
+    {
+        $this->assertTrue(4);
+
+        return;
+        
+
+        $testFile = Yii::getAlias("@specs/issue_fix/63_just_column_name_rename/index.php");
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 1);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/63_just_column_name_rename/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
