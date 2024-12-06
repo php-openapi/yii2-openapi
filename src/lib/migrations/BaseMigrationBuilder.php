@@ -199,9 +199,10 @@ abstract class BaseMigrationBuilder
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
 
+        $columnsForRename = $this->findColumnsToRename($columnsForCreate, $columnsForDrop, $this->newColumns);
+
         if ($this->model->drop) {
             $this->newColumns = [];
-            $wantNames = [];
             $columnsForCreate = [];
             $columnsForChange = [];
             $columnsForDrop = [];
@@ -613,5 +614,27 @@ abstract class BaseMigrationBuilder
             $comment = true;
         }
         return $comment;
+    }
+
+    /**
+     * @param array $columnsForCreate
+     * @param array $columnsForDrop
+     * @param $newColumns
+     * @return string[]
+     */
+    public function findColumnsToRename(array &$columnsForCreate, array &$columnsForDrop, $newColumns): array
+    {
+        $columnNames = [];
+        $existingColumns = $this->tableSchema->columns;
+        $existingColumnNames = array_flip(array_keys($existingColumns));
+        $newColumnNames = array_flip(array_keys($newColumns));
+
+        foreach ($columnsForCreate as $name) {
+            if ($existingColumnNames[$name] === $newColumnNames[$name]) {
+                // TODO compare column
+            }
+        }
+
+        return $columnNames;
     }
 }
