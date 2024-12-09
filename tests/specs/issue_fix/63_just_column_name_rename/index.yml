@@ -1,7 +1,6 @@
 openapi: 3.0.3
-x-description-is-comment: true
 info:
-  title: 'Description of a property in spec must correspond to DB TABLE COLUMN COMMENT #60'
+  title: '63_just_column_name_rename'
   version: 1.0.0
 
 components:
@@ -11,35 +10,12 @@ components:
       properties:
         id:
           type: integer
-        name:
+        name_2:
           type: string
-          description: desc with ' quote
-        description:
-          type: number
-          x-db-type: double precision
-          description: desc ' 2
-    Animal:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: integer
-        g:
+        description_2:
           type: string
-          description: desc for g
-        g2:
+        colour:
           type: string
-          description: changed comment on g2 col
-        g3:
-          type: string
-          description: the comment on g3 col remains same
-        g4:
-          type: integer
-          description: data type changes but comment remains same
-        new_col:
-          type: string
-          description: new col added
 
 paths:
   '/':

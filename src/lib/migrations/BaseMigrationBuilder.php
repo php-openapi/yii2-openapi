@@ -199,7 +199,7 @@ abstract class BaseMigrationBuilder
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
 
-        $columnsForRename = $this->findColumnsToRename($columnsForCreate, $columnsForDrop, $this->newColumns);
+        $columnsForRename = $this->handleColumnsRename($columnsForCreate, $columnsForDrop, $this->newColumns);
 
         if ($this->model->drop) {
             $this->newColumns = [];
@@ -620,21 +620,41 @@ abstract class BaseMigrationBuilder
      * @param array $columnsForCreate
      * @param array $columnsForDrop
      * @param $newColumns
-     * @return string[]
      */
-    public function findColumnsToRename(array &$columnsForCreate, array &$columnsForDrop, $newColumns): array
+    public function handleColumnsRename(array &$columnsForCreate, array &$columnsForDrop, $newColumns)
     {
-        $columnNames = [];
+        $keys = [];
         $existingColumns = $this->tableSchema->columns;
-        $existingColumnNames = array_flip(array_keys($existingColumns));
+        $existingColumnNames = array_keys($existingColumns);
         $newColumnNames = array_flip(array_keys($newColumns));
+        foreach ($columnsForCreate as $key => $column) {
+            $index = $newColumnNames[$column->name];
+            $previousColumnName = $existingColumnNames[$index] ?? null;
+            if ($previousColumnName) {
+                $current = $existingColumns[$previousColumnName];
+                $desired = $newColumns[$column->name];
+                $changedAttributes = $this->compareColumns($current, $desired);
+                if (empty($changedAttributes)) {
+                    $keys[] = $key;
+                    $dropKeyOut = null;
+                    array_walk($columnsForDrop, function ($value, $dropKey) use ($previousColumnName, &$dropKeyOut) {
+                        if ($value->name === $previousColumnName) {
+                            $dropKeyOut = $dropKey;
+                        }
+                    });
+                    // existing column name should be removed from $columnsForDrop
+                    unset($columnsForDrop[$dropKeyOut]);
 
-        foreach ($columnsForCreate as $name) {
-            if ($existingColumnNames[$name] === $newColumnNames[$name]) {
-                // TODO compare column
+                    // Create ALTER COLUMN NAME query
+                    $this->migration->addUpCode($this->recordBuilder->renameColumn($this->model->tableAlias, $previousColumnName, $column->name))
+                        ->addDownCode($this->recordBuilder->renameColumn($this->model->tableAlias, $column->name, $previousColumnName));
+                }
             }
         }
 
-        return $columnNames;
+        // new column name should be removed from $columnsForCreate
+        foreach ($keys as $key) {
+            unset($columnsForCreate[$key], $columnsForDrop[$previousColumnName]);
+        }
     }
 }
