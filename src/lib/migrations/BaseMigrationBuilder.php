@@ -199,7 +199,7 @@ abstract class BaseMigrationBuilder
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
 
-        $columnsForRename = $this->handleColumnsRename($columnsForCreate, $columnsForDrop, $this->newColumns);
+        $this->handleColumnsRename($columnsForCreate, $columnsForDrop, $this->newColumns);
 
         if ($this->model->drop) {
             $this->newColumns = [];
@@ -625,6 +625,9 @@ abstract class BaseMigrationBuilder
     {
         $keys = [];
         $existingColumns = $this->tableSchema->columns;
+        if (count($existingColumns) !== count($newColumns)) {
+            return;
+        }
         $existingColumnNames = array_keys($existingColumns);
         $newColumnNames = array_flip(array_keys($newColumns));
         foreach ($columnsForCreate as $key => $column) {
@@ -633,7 +636,7 @@ abstract class BaseMigrationBuilder
             if ($previousColumnName) {
                 $current = $existingColumns[$previousColumnName];
                 $desired = $newColumns[$column->name];
-                $changedAttributes = $this->compareColumns($current, $desired);
+                $changedAttributes = $this->compareColumns(clone $current, clone $desired);
                 if (empty($changedAttributes)) {
                     $keys[] = $key;
                     $dropKeyOut = null;
@@ -645,6 +648,8 @@ abstract class BaseMigrationBuilder
                     // existing column name should be removed from $columnsForDrop
                     unset($columnsForDrop[$dropKeyOut]);
 
+                    // TODO check in `required` and `x-index`
+
                     // Create ALTER COLUMN NAME query
                     $this->migration->addUpCode($this->recordBuilder->renameColumn($this->model->tableAlias, $previousColumnName, $column->name))
                         ->addDownCode($this->recordBuilder->renameColumn($this->model->tableAlias, $column->name, $previousColumnName));
@@ -654,7 +659,7 @@ abstract class BaseMigrationBuilder
 
         // new column name should be removed from $columnsForCreate
         foreach ($keys as $key) {
-            unset($columnsForCreate[$key], $columnsForDrop[$previousColumnName]);
+            unset($columnsForCreate[$key]);
         }
     }
 }
