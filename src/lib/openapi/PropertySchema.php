@@ -269,13 +269,15 @@ class PropertySchema
 
     public function isRefPointerToSelf():bool
     {
-        $schema = Json::decode(Json::encode($this->schema->getSchema()->getSerializableData()));
+        $allOfsInSchema = null;
+        if (isset($this->schema->getSchema()->properties[$this->name]->allOf)) {
+            $allOfsInSchema = $this->schema->getSchema()->properties[$this->name]->allOf;
+        }
 
-        if (isset($schema['properties'][$this->name]['allOf'])) { # fixes https://github.com/php-openapi/yii2-openapi/issues/68
-            $allOfs = $schema['properties'][$this->name]['allOf'];
+        if ($allOfsInSchema) { # fixes https://github.com/php-openapi/yii2-openapi/issues/68
             $refCounter = 0;
-            foreach ($allOfs as $allOf) {
-                if (isset($allOf['$ref'])) {
+            foreach ($allOfsInSchema as $allOf) {
+                if ($allOf instanceof Reference) {
                     $refCounter++;
                 }
             }
