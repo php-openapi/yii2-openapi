@@ -220,24 +220,17 @@ class ColumnToCode
             array_unshift($parts, '$this');
             return implode('->', array_filter(array_map('trim', $parts)));
         }
-        if ($this->rawParts['default'] === null) {
-            $default = '';
-        } elseif (ApiGenerator::isPostgres() && $this->isEnum()) {
-            $default =
-                $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
-        } else {
-            $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
+
+        if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
+            return $quoted ? VarDumper::export($this->rawParts['type']) : $this->rawParts['type'];
         }
 
+        $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
         $code = $this->rawParts['type'] . ' ' . $this->rawParts['nullable'] . $default;
 
         if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb())) {
             $code .= $this->rawParts['position'] ? ' ' . $this->rawParts['position'] : '';
             $code .= $this->rawParts['comment'] ? ' '.$this->rawParts['comment'] : '';
-        }
-
-        if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
-            return $quoted ? VarDumper::export($this->rawParts['type']) : $this->rawParts['type'];
         }
         return $quoted ? VarDumper::export($code) : $code;
     }
