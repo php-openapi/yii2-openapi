@@ -78,14 +78,4 @@ abstract class Invoice extends \yii\db\ActiveRecord
     {
         return $this->hasOne(\app\models\Animal::class, ['id' => 'animal_id']);
     }
-
-    public function getInvoice()
-    {
-        return $this->hasOne(\app\models\Invoice::class, ['reference_invoice_id' => 'id'])->inverseOf('reference_invoice');
-    }
-
-    public function getInvoice2()
-    {
-        return $this->hasOne(\app\models\Invoice::class, ['reference_invoice_2_id' => 'id'])->inverseOf('reference_invoice_2');
-    }
 }
