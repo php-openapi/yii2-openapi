@@ -4,7 +4,6 @@ namespace tests\unit;
 
 use tests\DbTestCase;
 use Yii;
-use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
 
 // This class contains tests for various issues present at GitHub
@@ -900,7 +899,7 @@ components:
         description:
           type: boolean
         col_6:
-          type: boolean
+          type: integer
 paths:
   '/':
     get:
@@ -919,7 +918,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->addColumn('{{%fruits}}', 'col_6', $this->boolean()->null()->defaultValue(null));
+        $this->addColumn('{{%fruits}}', 'col_6', $this->integer()->null()->defaultValue(null));
         $this->dropColumn('{{%fruits}}', 'size');
         $this->alterColumn('{{%fruits}}', 'colour', $this->tinyInteger(1)->null()->defaultValue(null)->after('id'));
     }
@@ -962,7 +961,8 @@ components:
         name:
           type: boolean
         description_new:
-          type: boolean
+          type: integer
+          default: 7
         colour:
           type: boolean
         size:
@@ -985,7 +985,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function up()
     {
-        $this->addColumn('{{%fruits}}', 'description_new', $this->boolean()->null()->defaultValue(null)->after('name'));
+        $this->addColumn('{{%fruits}}', 'description_new', $this->integer()->null()->defaultValue(7)->after('name'));
         $this->dropColumn('{{%fruits}}', 'description');
     }
 

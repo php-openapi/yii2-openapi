@@ -742,7 +742,6 @@ PHP;
         $this->createTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
         $testFile = Yii::getAlias("@specs/issue_fix/3_bug_add_remove_property_and_at_the_same_time_change_it_at_x_indexes/index.php");
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 1);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
@@ -750,6 +749,7 @@ PHP;
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 1);
         $this->dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
     }
 
