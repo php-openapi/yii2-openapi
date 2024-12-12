@@ -168,7 +168,6 @@ class EnumTest extends DbTestCase
         $this->deleteTables();
     }
 
-    // TODO ENH enum change is more work than just changing the eunm values. And for PgSQL it is even more
     // public function testEnumValuesChange()
     // {
     //     $this->deleteTables();
@@ -201,7 +200,6 @@ class EnumTest extends DbTestCase
 
     // public function testChangeEnumValues()
     // {
-    //     // TODO
     //     // add a value to list
     //     // fix a typo in a enum value present in existing list
     //     // remove a value from list

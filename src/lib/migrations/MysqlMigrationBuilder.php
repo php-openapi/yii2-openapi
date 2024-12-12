@@ -34,9 +34,6 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
         foreach ($changed as $attr) {
             $newColumn->$attr = $desired->$attr;
         }
-        if (static::isEnum($newColumn)) {
-            $newColumn->dbType = 'enum'; // TODO this is concretely not correct
-        }
         $this->migration->addUpCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $newColumn, $positionDesired))
             ->addDownCode($this->recordBuilder->alterColumn($this->model->getTableAlias(), $current, $positionCurrent));
     }
@@ -131,13 +128,12 @@ final class MysqlMigrationBuilder extends BaseMigrationBuilder
 
     public static function getColumnSchemaBuilderClass(): string
     {
-        if (ApiGenerator::isMysql()) {
-            return \yii\db\mysql\ColumnSchemaBuilder::class;
-        } elseif (ApiGenerator::isMariaDb()) {
+        if (ApiGenerator::isMariaDb()) {
             return \SamIT\Yii2\MariaDb\ColumnSchemaBuilder::class;
         } else {
             throw new \Exception('Unknown database');
         }
+        return \yii\db\mysql\ColumnSchemaBuilder::class;
     }
 
     public function modifyCurrent(ColumnSchema $current): void
