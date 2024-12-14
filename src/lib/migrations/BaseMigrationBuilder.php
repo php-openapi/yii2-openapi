@@ -655,7 +655,6 @@ abstract class BaseMigrationBuilder
                     // existing column name should be removed from $columnsForDrop
                     unset($columnsForDrop[$dropKeyOut]);
 
-                    // TODO check in `required` and `x-index`
                     // Create ALTER COLUMN NAME query
                     // see `migrationForRenameColumn()`
                     $fromColNameToColName[$previousColumnName] = $column->name;
