@@ -7,13 +7,11 @@ class m200000_000000_change_table_column_name_changes extends \yii\db\Migration
 {
     public function up()
     {
-        $this->db->createCommand('ALTER TABLE {{%column_name_changes}} ADD COLUMN updated_at_2 datetime NOT NULL')->execute();
-        $this->dropColumn('{{%column_name_changes}}', 'updated_at');
+        $this->renameColumn('{{%column_name_changes}}', 'updated_at', 'updated_at_2');
     }
 
     public function down()
     {
-        $this->addColumn('{{%column_name_changes}}', 'updated_at', $this->datetime()->notNull());
-        $this->dropColumn('{{%column_name_changes}}', 'updated_at_2');
+        $this->renameColumn('{{%column_name_changes}}', 'updated_at_2', 'updated_at');
     }
 }
