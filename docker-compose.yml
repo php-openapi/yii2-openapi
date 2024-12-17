@@ -41,7 +41,7 @@ services:
             MYSQL_DATABASE: testdb
 
     maria:
-        image: mariadb:10.8
+        image: mariadb:10.8.2
         ports:
             - '23306:3306'
         volumes:
