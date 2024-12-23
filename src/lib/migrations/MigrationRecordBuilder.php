@@ -49,6 +49,7 @@ final class MigrationRecordBuilder
     public const ADD_COMMENT_ON_COLUMN = MigrationRecordBuilder::INDENT . "\$this->addCommentOnColumn('%s', '%s', %s);";
 
     public const DROP_COMMENT_FROM_COLUMN = MigrationRecordBuilder::INDENT . "\$this->dropCommentFromColumn('%s', '%s');";
+    public const RENAME_COLUMN = MigrationRecordBuilder::INDENT . "\$this->renameColumn('%s', '%s', '%s');";
 
     /**
      * @var \yii\db\Schema
@@ -386,5 +387,10 @@ final class MigrationRecordBuilder
     public function dropCommentFromColumn($table, string $column): string
     {
         return sprintf(self::DROP_COMMENT_FROM_COLUMN, $table, $column);
+    }
+
+    public function renameColumn(string $table, string $fromColumn, string $toColumn): string
+    {
+        return sprintf(self::RENAME_COLUMN, $table, $fromColumn, $toColumn);
     }
 }

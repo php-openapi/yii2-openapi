@@ -1,0 +1,25 @@
+openapi: 3.0.3
+info:
+  title: '63_just_column_name_rename'
+  version: 1.0.0
+
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name_2:
+          type: string
+        description_2:
+          type: string
+        colour:
+          type: string
+
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK

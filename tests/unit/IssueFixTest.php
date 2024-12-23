@@ -742,7 +742,6 @@ PHP;
         $this->createTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
         $testFile = Yii::getAlias("@specs/issue_fix/3_bug_add_remove_property_and_at_the_same_time_change_it_at_x_indexes/index.php");
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 1);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
@@ -750,6 +749,7 @@ PHP;
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 1);
         $this->dropTestTableFor3BugAddRemovePropertyAndAtTheSameTimeChangeItAtXIndexes();
     }
 
@@ -916,4 +916,50 @@ PHP;
         $this->checkFiles($actualFiles, $expectedFiles);
     }
 
+    // https://github.com/php-openapi/yii2-openapi/issues/63
+    public function test63JustColumnNameRename()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/63_just_column_name_rename/index.php");
+
+        // MySQL
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'text',
+            'description' => 'text',
+            'colour' => 'text',
+        ])->execute();
+
+        $this->runGenerator($testFile);
+        $this->runActualMigrations('mysql', 1);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/63_just_column_name_rename/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+
+        // PgSQL
+        $this->changeDbToPgsql();
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'text',
+            'description' => 'text',
+            'colour' => 'text',
+        ])->execute();
+        $this->runGenerator($testFile, 'pgsql');
+        $this->runActualMigrations('pgsql', 1);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+            'except' => ['migrations_mysql_db']
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/63_just_column_name_rename/pgsql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+    }
 }
