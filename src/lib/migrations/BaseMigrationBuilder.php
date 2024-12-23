@@ -199,9 +199,10 @@ abstract class BaseMigrationBuilder
 
         $columnsForChange = array_intersect($wantNames, $haveNames);
 
+        $fromColNameToColName = $this->handleColumnsRename($columnsForCreate, $columnsForDrop, $this->newColumns);
+
         if ($this->model->drop) {
             $this->newColumns = [];
-            $wantNames = [];
             $columnsForCreate = [];
             $columnsForChange = [];
             $columnsForDrop = [];
@@ -218,7 +219,9 @@ abstract class BaseMigrationBuilder
         }
 
         if (!$relation) {
-            $this->buildIndexChanges();
+            $this->buildIndexChanges($fromColNameToColName);
+        } else {
+            $this->migrationForRenameColumn($fromColNameToColName);
         }
 
         $this->buildColumnsDrop($columnsForDrop);
@@ -303,7 +306,7 @@ abstract class BaseMigrationBuilder
 
     abstract public function handleCommentsMigration();
 
-    protected function buildIndexChanges():void
+    protected function buildIndexChanges(array $fromColNameToColName): void
     {
         $haveIndexes = $this->findTableIndexes();
         $wantIndexes = $this->model->indexes;
@@ -338,6 +341,9 @@ abstract class BaseMigrationBuilder
             $this->migration->addUpCode($this->recordBuilder->dropIndex($tableName, $index->name))
                             ->addDownCode($downCode);
         }
+
+        $this->migrationForRenameColumn($fromColNameToColName);
+
         foreach ($forCreate as $index) {
             $upCode = $index->isUnique
                 ? $this->recordBuilder->addUniqueIndex($tableName, $index->name, $index->columns)
@@ -613,5 +619,61 @@ abstract class BaseMigrationBuilder
             $comment = true;
         }
         return $comment;
+    }
+
+    /**
+     * @param array $columnsForCreate
+     * @param array $columnsForDrop
+     * @param $newColumns
+     * @return array key is previous/old column name and value is new column name
+     */
+    public function handleColumnsRename(array &$columnsForCreate, array &$columnsForDrop, $newColumns): array
+    {
+        $keys = [];
+        $fromColNameToColName = [];
+        $existingColumns = $this->tableSchema->columns;
+        if (count($existingColumns) !== count($newColumns)) {
+            return $fromColNameToColName;
+        }
+        $existingColumnNames = array_keys($existingColumns);
+        $newColumnNames = array_flip(array_keys($newColumns));
+        foreach ($columnsForCreate as $key => $column) {
+            $index = $newColumnNames[$column->name];
+            $previousColumnName = $existingColumnNames[$index] ?? null;
+            if ($previousColumnName) {
+                $current = $existingColumns[$previousColumnName];
+                $desired = $newColumns[$column->name];
+                $changedAttributes = $this->compareColumns(clone $current, clone $desired);
+                if (empty($changedAttributes)) {
+                    $keys[] = $key;
+                    $dropKeyOut = null;
+                    array_walk($columnsForDrop, function ($value, $dropKey) use ($previousColumnName, &$dropKeyOut) {
+                        if ($value->name === $previousColumnName) {
+                            $dropKeyOut = $dropKey;
+                        }
+                    });
+                    // existing column name should be removed from $columnsForDrop
+                    unset($columnsForDrop[$dropKeyOut]);
+
+                    // Create ALTER COLUMN NAME query
+                    // see `migrationForRenameColumn()`
+                    $fromColNameToColName[$previousColumnName] = $column->name;
+                }
+            }
+        }
+
+        // new column name should be removed from $columnsForCreate
+        foreach ($keys as $key) {
+            unset($columnsForCreate[$key]);
+        }
+        return $fromColNameToColName;
+    }
+
+    public function migrationForRenameColumn(array $fromColNameToColName): void
+    {
+        foreach ($fromColNameToColName as $previousColumnName => $columnName) {
+            $this->migration->addUpCode($this->recordBuilder->renameColumn($this->model->tableAlias, $previousColumnName, $columnName))
+                ->addDownCode($this->recordBuilder->renameColumn($this->model->tableAlias, $columnName, $previousColumnName));
+        }
     }
 }
