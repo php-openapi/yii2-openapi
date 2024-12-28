@@ -962,4 +962,20 @@ PHP;
         $this->checkFiles($actualFiles, $expectedFiles);
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/63
+    public function test74InvalidSchemaReferenceError()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/index.php");
+
+        $this->runGenerator($testFile);
+//        $this->runActualMigrations('mysql', 1);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/mysql"), [
+//            'recursive' => true,
+//        ]);
+//        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

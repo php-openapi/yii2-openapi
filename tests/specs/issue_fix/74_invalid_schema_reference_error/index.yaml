@@ -1,0 +1,31 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Invalid schema reference error \#74
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: The information
+
+components:
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        vat_rate:
+          $ref: '#/components/schemas/Product/properties/vat_rate'
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        vat_rate:
+          type: string
+          enum:
+            - normal
+            - none
+          default: normal

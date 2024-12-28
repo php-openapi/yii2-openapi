@@ -498,7 +498,7 @@ class AttributeResolver
         $attribute->setPhpType($fkProperty->guessPhpType())
             ->setDbType($fkProperty->guessDbType(true))
             ->setSize($fkProperty->getMaxLength())
-            ->setDescription($fkProperty->getAttr('description'))
+            ->setDescription($fkProperty->getAttr('description', ''))
             ->setDefault($fkProperty->guessDefault())
             ->setLimits($min, $max, $fkProperty->getMinLength());
         $this->attributes[$property->getName()] =
