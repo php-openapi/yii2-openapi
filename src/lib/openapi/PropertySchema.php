@@ -70,6 +70,7 @@ class PropertySchema
 
     /** @var string $refPointer */
     private $refPointer;
+    private $uri;
 
     /** @var \cebe\yii2openapi\lib\openapi\ComponentSchema $refSchema */
     private $refSchema;
@@ -170,6 +171,7 @@ class PropertySchema
     {
         $this->isReference = true;
         $this->refPointer = $this->property->getJsonReference()->getJsonPointer()->getPointer();
+        $this->uri = $this->property->getJsonReference()->getDocumentUri();
         $refSchemaName = $this->getRefSchemaName();
         if ($this->isRefPointerToSelf()) {
             $this->refSchema = $this->schema;
@@ -194,6 +196,7 @@ class PropertySchema
             return;
         }
         $this->refPointer = $items->getJsonReference()->getJsonPointer()->getPointer();
+        $this->uri = $this->property->getJsonReference()->getDocumentUri();
         if ($this->isRefPointerToSelf()) {
             $this->refSchema = $this->schema;
         } elseif ($this->isRefPointerToSchema()) {
@@ -301,8 +304,15 @@ class PropertySchema
             '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)/properties/(?<propName>.+)$~'
             : '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)$~';
         if (!\preg_match($pattern, $this->refPointer, $matches)) {
-            throw new InvalidDefinitionException('Invalid schema reference');
+            $pattern = '/((\.\/)*)(?<schemaName>.+)(\.)(yml|yaml)(.*)/';
+//            $pattern = '~^(?<schemaName>.+)(\.+)(yaml+)(.*)$~';
+            if (strpos($this->uri, '#') !== false && !\preg_match($pattern, $this->uri, $matches)) {
+//                throw new InvalidDefinitionException('Invalid schema reference');
+            } else {
+                throw new InvalidDefinitionException('Invalid schema reference');
+            }
         }
+        var_dump($matches);
         return $matches['schemaName'];
     }
 

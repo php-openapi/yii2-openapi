@@ -966,6 +966,14 @@ PHP;
     // https://github.com/php-openapi/yii2-openapi/issues/63
     public function test74InvalidSchemaReferenceError()
     {
+//        $pattern = '~^(?<schemaName>.+)(\.+)(yaml+)(.*)$~';
+//        $pattern = '/((\.\/)*)(?<schemaName>.+)(\.)(yml|yaml)(.*)/';
+//
+//        $pointer = './Product.yaml#/properties/vat_rate';
+//        preg_match($pattern, $pointer, $matches);
+//        $this->assertSame('supda saf', $matches);
+//        return;
+
         $testFile = Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/index.php");
 
         $this->runGenerator($testFile);
