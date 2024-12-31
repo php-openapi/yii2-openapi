@@ -17,7 +17,8 @@ components:
         id:
           type: integer
         vat_rate:
-          $ref: '#/components/schemas/Product/properties/vat_rate'
+          # $ref: '#/components/schemas/Product/properties/vat_rate' # issue is not observed
+          $ref: './Product.yaml#/properties/vat_rate'  # issue is observed
     Product:
       type: object
       properties:
