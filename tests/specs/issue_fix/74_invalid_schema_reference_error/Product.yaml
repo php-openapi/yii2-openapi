@@ -7,20 +7,12 @@ required:
   - id
   - vat_rate
 
-
 properties:
-
   id:
     type: integer
-    example: 12531
-    readOnly: true
-
-
   vat_rate:
     type: string
     enum:
       - standard
-      - reduced
-      - custom
       - none
     default: standard
