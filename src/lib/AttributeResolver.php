@@ -501,6 +501,10 @@ class AttributeResolver
             ->setDescription($fkProperty->getAttr('description', ''))
             ->setDefault($fkProperty->guessDefault())
             ->setLimits($min, $max, $fkProperty->getMinLength());
+
+        if ($fkProperty->hasEnum()) {
+            $attribute->setEnumValues($fkProperty->getAttr('enum'));
+        }
         $this->attributes[$property->getName()] =
             $attribute->setFakerStub($this->guessFakerStub($attribute, $fkProperty));
     }

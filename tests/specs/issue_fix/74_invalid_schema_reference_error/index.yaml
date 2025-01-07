@@ -13,6 +13,8 @@ components:
   schemas:
     Invoice:
       type: object
+      required:
+        - vat_rate
       properties:
         id:
           type: integer
