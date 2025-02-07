@@ -963,6 +963,29 @@ PHP;
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
 
+    public function test64AddATestForAColumnChangeDataTypeCommentPositionAll3AreChanged()
+    {
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
+            'id' => 'pk',
+            'name' => 'text comment "desc"',
+            'description' => 'text',
+            'col' => 'text',
+        ])->execute();
+
+        $testFile = Yii::getAlias("@specs/issue_fix/64_add_a_test_for_a_column_change_data_type_comment_position_all_3_are_changed/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/64_add_a_test_for_a_column_change_data_type_comment_position_all_3_are_changed/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 1);
+        Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/63
     public function test74InvalidSchemaReferenceError()
     {
@@ -977,4 +1000,5 @@ PHP;
         $this->checkFiles($actualFiles, $expectedFiles);
         $this->runActualMigrations();
     }
+
 }
