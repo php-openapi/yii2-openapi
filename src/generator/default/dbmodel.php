@@ -84,12 +84,14 @@ foreach ($scenarios as $scenario): ?>
      */
     public function scenarios()
     {
+        $parentScenarios = parent::scenarios();
+
         /**
          * Each scenario is assigned attributes as in the 'default' scenario.
          * The advantage is that the scenario can be used immediately.
          * This can be overridden in the child model if needed.
          */
-        $default = parent::scenarios()[self::SCENARIO_DEFAULT];
+        $default = $parentScenarios[self::SCENARIO_DEFAULT];
 
         return [
 <?php foreach ($scenarios as $scenario): ?>
@@ -99,7 +101,7 @@ foreach ($scenarios as $scenario): ?>
              * The 'default' scenario and all scenarios mentioned in the rules() using 'on' and 'except'
              * are automatically included in the scenarios() function for the model.
              */
-            ...parent::scenarios(),
+            ...$parentScenarios,
         ];
     }
 <?php endif;?>

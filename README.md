@@ -186,6 +186,224 @@ Such values are not allowed:
 
 If `enum` and `x-db-type` both are provided then for database column schema (migrations), only `x-db-type` will be considered ignoring `enum`.
 
+### `x-scenarios`
+
+Automatically generated scenarios from the model 'x-scenarios'.
+Each scenario is assigned attributes as in the 'default' scenario.
+The advantage is that the scenario can be used immediately.
+This can be overridden in the child model if needed.
+
+The 'default' scenario and all scenarios mentioned in the rules() using 'on' and 'except'
+are automatically included in the scenarios() function for the model.
+
+There are three ways to define the scenarios `description`:
+- use scenario description default settings `public $scenarioDefaultDescription = "Scenario {scenarioName}"`.
+- use custom `scenarioDefaultDescription` at `dbModel`.
+- use custom `description` for individual scenario.
+
+1. Example with default setting.
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * Scenario create
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * Scenario update
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {
+            $parentScenarios = parent::scenarios();
+
+            /**
+             * Each scenario is assigned attributes as in the 'default' scenario.
+             * The advantage is that the scenario can be used immediately.
+             * This can be overridden in the child model if needed.
+             */
+            $default = $parentScenarios[self::SCENARIO_DEFAULT];
+
+            return [
+               self::SCENARIO_CREATE => $default,
+               self::SCENARIO_UPDATE => $default,
+               /**
+                * The 'default' scenario and all scenarios mentioned in the rules() using 'on' and 'except'
+                * are automatically included in the scenarios() function for the model.
+                */
+               ...$parentScenarios,
+            ];
+        }
+      }
+      ```
+
+2. Example with custom `description` for individual scenario.
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+              description: My custom description for scenario create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * My custom description for scenario create
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * Scenario update
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {...}
+      }
+      ```
+
+3. Example with custom `scenarioDefaultDescription`.
+
+   Set custom `scenarioDefaultDescription` at `dbModel`.
+   `scenarioDefaultDescription` Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}.
+
+   For example, for the `create` scenario in the `Invoice` model, the placeholders would result in the following:
+   `{scenarioName}` = `create`
+   `{scenarioConst}` = `SCENARIO_CREATE`
+   `{modelName}` = `Invoice`
+
+    php-config-settings
+    ```php
+    $config['modules']['gii']['generators']['api'] = [
+        'class' => \cebe\yii2openapi\generator\ApiGenerator::class,
+        'dbModel' => [
+            /** Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}. @see DbModel::$scenarioDefaultDescription */
+            'scenarioDefaultDescription' => "This scenario \"{scenarioName}\" at Model \"{modelName}\" has Constant {scenarioConst}.",
+        ],
+        ...
+    ];
+    ```
+
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+              description: My custom description for scenario create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * My custom description for scenario create
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * This scenario "update" at Model "Invoice" has Constant SCENARIO_UPDATE.
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {...}
+      }
+      ```
+
+4. Example with custom `scenarioDefaultDescription`
+   and use-case: both '\cebe\yii2openapi\generator\ApiGenerator::class' and '\common\client_generator\{your_ApiClientGenerator}::class' are used.
+
+   Set custom `scenarioDefaultDescription` at `dbModel`.
+   `scenarioDefaultDescription` Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}.
+
+    php-config-settings
+    ```php
+    $config['modules']['gii']['generators']['api'] = [
+        'class' => \cebe\yii2openapi\generator\ApiGenerator::class,
+        'dbModel' => [
+            /** Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}. @see DbModel::$scenarioDefaultDescription */
+            'scenarioDefaultDescription' => implode("\n", [
+                "This Backend-Scenario \"{scenarioName}\" exist in both the frontend model and the backend model.",
+                "@see \common\client\models\{modelName}::{scenarioConst}",
+            ]),
+        ],
+        ...
+    ];
+
+   $config['modules']['gii']['generators']['api-client'] = [
+       'class' => \common\client_generator\{your_ApiClientGenerator}::class,
+       'dbModel' => [
+           /** AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}. @see DbModel::$scenarioDefaultDescription */
+           'scenarioDefaultDescription' => implode("\n", [
+               "This Frontend-Scenario \"{scenarioName}\" exist in both the frontend model and the backend model.",
+               "@see \common\models\base\{modelName}::{scenarioConst}",
+           ]),
+       ],
+       ...
+    ```
+
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * This Backend-Scenario "create" exist in both the frontend model and the backend model.
+         * @see \common\client\models\Invoice::SCENARIO_CREATE
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * This Backend-Scenario "update" exist in both the frontend model and the backend model.
+         * @see \common\client\models\Invoice::SCENARIO_UPDATE
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {...}
+    }
+    ```
+
 ### `x-indexes`
 
 Specify table indexes
