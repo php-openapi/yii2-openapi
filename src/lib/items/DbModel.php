@@ -84,7 +84,7 @@ class DbModel extends BaseObject
     /**
      * @var string
      * Here, you can set your own default description for the scenario.
-     * AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}.
+     * Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}.
      */
     public $scenarioDefaultDescription = "Scenario {scenarioName}";
 
