@@ -1,0 +1,24 @@
+openapi: 3.0.3
+
+info:
+  title: '#78'
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: The Response
+
+components:
+  schemas:
+    Payment:
+      properties:
+        id:
+          type: integer
+        amount:
+          type: integer
+          readOnly: true
+        currency:
+          type: string
