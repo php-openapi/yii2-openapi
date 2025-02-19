@@ -278,7 +278,9 @@ class AttributeResolver
             if ($property->isRefPointerToSelf()) {
                 $relation->asSelfReference();
             }
-            $this->relations[$property->getName()] = $relation;
+            if (empty($property->getAttr(CustomSpecAttr::NO_RELATION))) {
+                $this->relations[$property->getName()] = $relation;
+            }
             if (!$property->isRefPointerToSelf()) {
                 $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
             }
@@ -321,21 +323,25 @@ class AttributeResolver
                         $fkProperty->getName(),
                         '_id'
                     )) {
+                    if (empty($property->getAttr(CustomSpecAttr::NO_RELATION))) {
+                        $this->relations[$property->getName()] =
+                            Yii::createObject(
+                                AttributeRelation::class,
+                                [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
+                            )
+                                ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
+                    }
+                    return;
+                }
+                $foreignPk = Inflector::camel2id($fkProperty->getName(), '_') . '_id';
+                if (empty($property->getAttr(CustomSpecAttr::NO_RELATION))) {
                     $this->relations[$property->getName()] =
                         Yii::createObject(
                             AttributeRelation::class,
                             [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
                         )
-                            ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
-                    return;
+                            ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 }
-                $foreignPk = Inflector::camel2id($fkProperty->getName(), '_') . '_id';
-                $this->relations[$property->getName()] =
-                    Yii::createObject(
-                        AttributeRelation::class,
-                        [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
-                    )
-                        ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
             }
             $relatedClassName = $property->getRefClassName();
@@ -349,13 +355,15 @@ class AttributeResolver
                 return;
             }
             $attribute->setPhpType($relatedClassName . '[]');
-            $this->relations[$property->getName()] =
-                Yii::createObject(
-                    AttributeRelation::class,
-                    [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
-                )
-                    ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->componentSchema->getPkName()])
-                    ->setInverse(Inflector::variablize($this->schemaName));
+            if (empty($property->getAttr(CustomSpecAttr::NO_RELATION))) {
+                $this->relations[$property->getName()] =
+                    Yii::createObject(
+                        AttributeRelation::class,
+                        [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
+                    )
+                        ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->componentSchema->getPkName()])
+                        ->setInverse(Inflector::variablize($this->schemaName));
+            }
             return;
         }
         if ($this->componentSchema->isNonDb() && $attribute->isReference()) {
