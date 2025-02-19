@@ -23,6 +23,7 @@ components:
           maxLength: 128
         paymentMethodName:
           type: string
+          default: card
         verified:
             type: boolean
             default: false

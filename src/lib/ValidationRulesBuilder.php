@@ -53,30 +53,38 @@ class ValidationRulesBuilder
             $this->rules['trim'] = new ValidationRule($this->typeScope['trim'], 'trim');
         }
 
-        if (!empty($this->typeScope['ref'])) {
-            $this->addExistRules($this->typeScope['ref']);
-        }
-        foreach ($this->model->indexes as $index) {
-            if ($index->isUnique) {
-                $this->addUniqueRule($index->columns);
-            }
-        }
         foreach ($this->model->attributes as $attribute) {
-            // column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by DB/Yii; so remove it from validation `rules()`
-            if (in_array($attribute->columnName, ['id', $this->model->pkName]) ||
-                in_array($attribute->propertyName, ['id', $this->model->pkName])
-            ) {
+            if ($this->isIdColumn($attribute)) {
+                continue;
+            }
+            $this->defaultRule($attribute);
+        }
+
+        if (!empty($this->typeScope['required'])) {
+            $this->rules['required'] = new ValidationRule($this->typeScope['required'], 'required');
+        }
+
+        foreach ($this->model->attributes as $attribute) {
+            if ($this->isIdColumn($attribute)) {
                 continue;
             }
             $this->resolveAttributeRules($attribute);
         }
 
+        foreach ($this->model->indexes as $index) {
+            if ($index->isUnique) {
+                $this->addUniqueRule($index->columns);
+            }
+        }
+
+        if (!empty($this->typeScope['ref'])) {
+            $this->addExistRules($this->typeScope['ref']);
+        }
+
         if (!empty($this->typeScope['safe'])) {
             $this->rules['safe'] = new ValidationRule($this->typeScope['safe'], 'safe');
         }
-        if (!empty($this->typeScope['required'])) {
-            $this->rules['required'] = new ValidationRule($this->typeScope['required'], 'required');
-        }
+
         return $this->rules;
     }
 
@@ -93,7 +101,7 @@ class ValidationRulesBuilder
         }
         if ($attribute->phpType === 'bool' || $attribute->phpType === 'boolean') {
             $this->rules[$attribute->columnName . '_boolean'] = new ValidationRule([$attribute->columnName], 'boolean');
-            $this->defaultRule($attribute);
+//            $this->defaultRule($attribute);
             return;
         }
 
@@ -111,13 +119,13 @@ class ValidationRulesBuilder
             }
 
             $this->rules[$key] = new ValidationRule([$attribute->columnName], $attribute->dbType, $params);
-            $this->defaultRule($attribute);
+//            $this->defaultRule($attribute);
             return;
         }
 
         if (in_array($attribute->phpType, ['int', 'integer', 'double', 'float']) && !$attribute->isReference()) {
             $this->addNumericRule($attribute);
-            $this->defaultRule($attribute);
+//            $this->defaultRule($attribute);
             return;
         }
         if ($attribute->phpType === 'string' && !$attribute->isReference()) {
@@ -127,10 +135,10 @@ class ValidationRulesBuilder
             $key = $attribute->columnName . '_in';
             $this->rules[$key] =
                 new ValidationRule([$attribute->columnName], 'in', ['range' => $attribute->enumValues]);
-            $this->defaultRule($attribute);
+//            $this->defaultRule($attribute); // TODO remove
             return;
         }
-        $this->defaultRule($attribute);
+//        $this->defaultRule($attribute);
         $this->addRulesByAttributeName($attribute);
     }
 
@@ -277,5 +285,16 @@ class ValidationRulesBuilder
                 return '-yii-db-expression-starts-("' . $this->expression . '")-yii-db-expression-ends-';
             }
         };
+    }
+
+    private function isIdColumn(Attribute $attribute): bool
+    {
+        // column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by DB/Yii; so remove it from validation `rules()`
+        if (in_array($attribute->columnName, ['id', $this->model->pkName]) ||
+            in_array($attribute->propertyName, ['id', $this->model->pkName])
+        ) {
+            return true;
+        }
+        return false;
     }
 }

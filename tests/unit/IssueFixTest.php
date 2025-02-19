@@ -1001,7 +1001,7 @@ PHP;
         $this->runActualMigrations();
     }
 
-        // https://github.com/php-openapi/yii2-openapi/issues/22
+    // https://github.com/php-openapi/yii2-openapi/issues/22
     public function test22BugRulesRequiredIsGeneratedBeforeDefault()
     {
         $testFile = Yii::getAlias("@specs/issue_fix/22_bug_rules_required_is_generated_before_default/index.php");
@@ -1014,5 +1014,4 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
-
 }
