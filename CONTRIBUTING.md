@@ -10,7 +10,7 @@ cd yii2-openapi
 make clean_all
 make up
 make installdocker
-sudo chmod -R 777 tests/tmp/ # https://github.com/cebe/yii2-openapi/issues/156
+sudo chmod -R 777 tests/tmp/ # TODO avoid 777 https://github.com/cebe/yii2-openapi/issues/156
 make migrate
 
 # to check everything is setup up correctly ensure all tests passes
@@ -93,6 +93,14 @@ Copyright (c) The PHP Group
 Zend Engine v3.4.0, Copyright (c) Zend Technologies
 with Zend OPcache v7.4.27, Copyright (c), by Zend Technologies
 with Xdebug v2.9.6, Copyright (c) 2002-2020, by Derick Rethans
+```
+
+If a PHP version is changed as mentioned above, then following operations must be performed:
+
+```
+rm -rf vendor
+rm -rf composer.lock
+composer install
 ```
 
 Issues and solutions

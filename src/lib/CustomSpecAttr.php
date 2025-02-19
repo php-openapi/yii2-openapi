@@ -40,4 +40,26 @@ class CustomSpecAttr
      * Foreign key column name. See README for usage docs
      */
     public const FK_COLUMN_NAME = 'x-fk-column-name';
+
+    /**
+     * Drop table Migrations to be generated from removed component schemas
+     * See README for docs
+     */
+    public const DELETED_SCHEMAS = 'x-deleted-schemas';
+
+    /**
+     * Foreign key column name. See README for usage docs
+     */
+    public const NO_RELATION = 'x-no-relation';
+
+    /**
+     * Custom route (controller ID/action ID) instead of auto-generated. See README for usage docs. https://github.com/cebe/yii2-openapi/issues/144
+     */
+    public const ROUTE = 'x-route';
+
+
+    /**
+     * Generate migrations for changed description of property. More docs is present in README.md file
+     */
+    public const DESC_IS_COMMENT = 'x-description-is-comment';
 }

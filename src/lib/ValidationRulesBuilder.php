@@ -10,6 +10,8 @@ namespace cebe\yii2openapi\lib;
 use cebe\yii2openapi\lib\items\Attribute;
 use cebe\yii2openapi\lib\items\DbModel;
 use cebe\yii2openapi\lib\items\ValidationRule;
+use yii\db\Expression;
+use yii\helpers\Inflector;
 use function count;
 use function implode;
 use function in_array;
@@ -60,7 +62,7 @@ class ValidationRulesBuilder
             }
         }
         foreach ($this->model->attributes as $attribute) {
-            // column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by DB/Yii; so remove it from validation `rules()`
+            // column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by DB/Yii; so remove it from validation `rules()`
             if (in_array($attribute->columnName, ['id', $this->model->pkName]) ||
                 in_array($attribute->propertyName, ['id', $this->model->pkName])
             ) {
@@ -134,16 +136,32 @@ class ValidationRulesBuilder
 
     private function addRulesByAttributeName(Attribute $attribute):void
     {
-        //@TODO: probably also patterns for file, image
         $patterns = [
             '~e?mail~i' => 'email',
             '~(url|site|website|href|link)~i' => 'url',
+
+            # below patters will only work if `format: binary` (file) is present in OpenAPI spec
+            # also `string` validation rule will be removed
+            '~(image|photo|picture)~i' => 'image',
+            '~(file|pdf|audio|video|document|json|yml|yaml|zip|tar|7z)~i' => 'file',
         ];
+        $addRule = function (Attribute $attribute, string $validator): void {
+            $key = $attribute->columnName . '_' . $validator;
+            $this->rules[$key] = new ValidationRule([$attribute->columnName], $validator);
+        };
         foreach ($patterns as $pattern => $validator) {
             if (empty($attribute->reference) # ignore column name based rules in case of reference/relation # https://github.com/cebe/yii2-openapi/issues/159
                 && preg_match($pattern, strtolower($attribute->columnName))) {
-                $key = $attribute->columnName . '_' . $validator;
-                $this->rules[$key] = new ValidationRule([$attribute->columnName], $validator);
+                if (in_array($validator, ['image', 'file'], true)) {
+                    if ($attribute->dbType === 'binary') {
+                        $addRule($attribute, $validator);
+                        // for files, we don't need `string` validation
+                        $key = $attribute->columnName . '_string';
+                        unset($this->rules[$key]);
+                    }
+                } else {
+                    $addRule($attribute, $validator);
+                }
                 return;
             }
         }
@@ -160,10 +178,12 @@ class ValidationRulesBuilder
             } elseif ($attribute->phpType === 'string') {
                 $this->addStringRule($attribute);
             }
+
+            $targetRelation = AttributeResolver::relationName(Inflector::variablize($attribute->camelName()), $attribute->fkColName);
             $this->rules[$attribute->columnName . '_exist'] = new ValidationRule(
                 [$attribute->columnName],
                 'exist',
-                ['targetRelation' => $attribute->camelName()]
+                ['targetRelation' => $targetRelation]
             );
         }
     }
@@ -190,12 +210,11 @@ class ValidationRulesBuilder
         if ($attribute->defaultValue === null) {
             return;
         }
-        if ($attribute->defaultValue instanceof \yii\db\Expression) {
-            return;
-        }
 
         $params = [];
-        $params['value'] = $attribute->defaultValue;
+        $params['value'] = ($attribute->defaultValue instanceof \yii\db\Expression) ?
+            $this->wrapDefaultExpression($attribute->defaultValue) :
+            $attribute->defaultValue;
         $key = $attribute->columnName . '_default';
         $this->rules[$key] = new ValidationRule([$attribute->columnName], 'default', $params);
     }
@@ -221,7 +240,7 @@ class ValidationRulesBuilder
             if ($attribute->isReadOnly()) {
                 continue;
             }
-            // column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by DB/Yii; so remove it from validation `rules()`
+            // column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by DB/Yii; so remove it from validation `rules()`
             if (in_array($attribute->columnName, ['id', $this->model->pkName]) ||
                 in_array($attribute->propertyName, ['id', $this->model->pkName])
             ) {
@@ -248,5 +267,15 @@ class ValidationRulesBuilder
 
             $this->typeScope['safe'][$attribute->columnName] = $attribute->columnName;
         }
+    }
+
+    private function wrapDefaultExpression(Expression $dbExpr): Expression
+    {
+        return new class($dbExpr->expression) extends Expression {
+            public function __toString()
+            {
+                return '-yii-db-expression-starts-("' . $this->expression . '")-yii-db-expression-ends-';
+            }
+        };
     }
 }

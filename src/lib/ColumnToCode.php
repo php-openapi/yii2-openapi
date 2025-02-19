@@ -69,7 +69,7 @@ class ColumnToCode
      * @var bool
      * Built In Type means the \cebe\yii2openapi\lib\items\Attribute::$type or \cebe\yii2openapi\lib\items\Attribute::$dbType is in list of Yii abstract data type list or not. And if is found we can use \yii\db\SchemaBuilderTrait methods to build migration instead of putting raw SQL
      */
-    private $isBuiltinType = false;
+    public $isBuiltinType = false;
 
     /**
      * @var bool
@@ -84,9 +84,9 @@ class ColumnToCode
      */
     private $isPk = false;
 
-    private $rawParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null];
+    private $rawParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null, 'comment' => null];
 
-    private $fluentParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null];
+    private $fluentParts = ['type' => null, 'nullable' => null, 'default' => null, 'position' => null, 'comment' => null];
 
     /**
      * @var bool
@@ -150,6 +150,60 @@ class ColumnToCode
         $this->resolve();
     }
 
+    private function resolve():void
+    {
+        $dbType = $this->typeWithoutSize(strtolower($this->column->dbType));
+        $type = $this->column->type;
+        $this->resolvePosition();
+        //Primary Keys
+        if (array_key_exists($type, self::PK_TYPE_MAP)) {
+            $this->rawParts['type'] = $type;
+            $this->fluentParts['type'] = self::PK_TYPE_MAP[$type];
+            $this->isPk = true;
+            return;
+        }
+        if (array_key_exists($dbType, self::PK_TYPE_MAP)) {
+            $this->rawParts['type'] = $dbType;
+            $this->fluentParts['type'] = self::PK_TYPE_MAP[$dbType];
+            $this->isPk = true;
+            return;
+        }
+
+        if ($dbType === 'varchar') {
+            $type = $dbType = 'string';
+        }
+        $fluentSize = $this->column->size ? '(' . $this->column->size . ')' : '()';
+        $rawSize = $this->column->size ? '(' . $this->column->size . ')' : '';
+        $this->rawParts['nullable'] = $this->column->allowNull ? 'NULL' : 'NOT NULL';
+        $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
+
+        $this->fluentParts['comment'] = $this->column->comment ? 'comment('.var_export($this->column->comment, true).')' : $this->fluentParts['comment'];
+        $this->rawParts['comment'] = $this->column->comment ? 'COMMENT '.var_export($this->column->comment, true) : $this->rawParts['comment'];
+
+        if (array_key_exists($dbType, self::INT_TYPE_MAP)) {
+            $this->fluentParts['type'] = self::INT_TYPE_MAP[$dbType] . $fluentSize;
+            $this->rawParts['type'] =
+                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
+        } elseif (array_key_exists($type, self::INT_TYPE_MAP)) {
+            $this->fluentParts['type'] = self::INT_TYPE_MAP[$type] . $fluentSize;
+            $this->rawParts['type'] =
+                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
+        } elseif ($this->isEnum()) {
+            $this->resolveEnumType();
+        } elseif ($this->isDecimal()) {
+            $this->fluentParts['type'] = $this->column->dbType;
+            $this->rawParts['type'] = $this->column->dbType;
+        } else {
+            $this->fluentParts['type'] = $type . $fluentSize;
+            $this->rawParts['type'] =
+                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
+        }
+
+        $this->isBuiltinType = $this->raw ? false : $this->getIsBuiltinType($type, $dbType);
+
+        $this->resolveDefaultValue();
+    }
+
     public function getCode(bool $quoted = false):string
     {
         if ($this->isPk) {
@@ -160,26 +214,23 @@ class ColumnToCode
                 $this->fluentParts['type'],
                 $this->fluentParts['nullable'],
                 $this->fluentParts['default'],
-                $this->fluentParts['position']
+                $this->fluentParts['position'],
+                $this->fluentParts['comment'],
             ]);
             array_unshift($parts, '$this');
             return implode('->', array_filter(array_map('trim', $parts)));
         }
-        if ($this->rawParts['default'] === null) {
-            $default = '';
-        } elseif (ApiGenerator::isPostgres() && $this->isEnum()) {
-            $default =
-                $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
-        } else {
-            $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
-        }
 
-        $code = $this->rawParts['type'] . ' ' . $this->rawParts['nullable'] . $default;
-        if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb()) && $this->rawParts['position']) {
-            $code .= ' ' . $this->rawParts['position'];
-        }
         if (ApiGenerator::isPostgres() && $this->alterByXDbType) {
             return $quoted ? VarDumper::export($this->rawParts['type']) : $this->rawParts['type'];
+        }
+
+        $default = $this->rawParts['default'] !== null ? ' DEFAULT ' . trim($this->rawParts['default']) : '';
+        $code = $this->rawParts['type'] . ' ' . $this->rawParts['nullable'] . $default;
+
+        if ((ApiGenerator::isMysql() || ApiGenerator::isMariaDb())) {
+            $code .= $this->rawParts['position'] ? ' ' . $this->rawParts['position'] : '';
+            $code .= $this->rawParts['comment'] ? ' '.$this->rawParts['comment'] : '';
         }
         return $quoted ? VarDumper::export($code) : $code;
     }
@@ -320,56 +371,6 @@ class ColumnToCode
         return "'{" . trim(Json::encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT), '[]') . "}'";
     }
 
-    private function resolve():void
-    {
-        $dbType = $this->typeWithoutSize(strtolower($this->column->dbType));
-        $type = $this->column->type;
-        $this->resolvePosition();
-        //Primary Keys
-        if (array_key_exists($type, self::PK_TYPE_MAP)) {
-            $this->rawParts['type'] = $type;
-            $this->fluentParts['type'] = self::PK_TYPE_MAP[$type];
-            $this->isPk = true;
-            return;
-        }
-        if (array_key_exists($dbType, self::PK_TYPE_MAP)) {
-            $this->rawParts['type'] = $dbType;
-            $this->fluentParts['type'] = self::PK_TYPE_MAP[$dbType];
-            $this->isPk = true;
-            return;
-        }
-
-        if ($dbType === 'varchar') {
-            $type = $dbType = 'string';
-        }
-        $fluentSize = $this->column->size ? '(' . $this->column->size . ')' : '()';
-        $rawSize = $this->column->size ? '(' . $this->column->size . ')' : '';
-        $this->rawParts['nullable'] = $this->column->allowNull ? 'NULL' : 'NOT NULL';
-        $this->fluentParts['nullable'] = $this->column->allowNull === true ? 'null()' : 'notNull()';
-        if (array_key_exists($dbType, self::INT_TYPE_MAP)) {
-            $this->fluentParts['type'] = self::INT_TYPE_MAP[$dbType] . $fluentSize;
-            $this->rawParts['type'] =
-                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
-        } elseif (array_key_exists($type, self::INT_TYPE_MAP)) {
-            $this->fluentParts['type'] = self::INT_TYPE_MAP[$type] . $fluentSize;
-            $this->rawParts['type'] =
-                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
-        } elseif ($this->isEnum()) {
-            $this->resolveEnumType();
-        } elseif ($this->isDecimal()) {
-            $this->fluentParts['type'] = $this->column->dbType;
-            $this->rawParts['type'] = $this->column->dbType;
-        } else {
-            $this->fluentParts['type'] = $type . $fluentSize;
-            $this->rawParts['type'] =
-                $this->column->dbType . (strpos($this->column->dbType, '(') !== false ? '' : $rawSize);
-        }
-
-        $this->isBuiltinType = $this->raw ? false : $this->getIsBuiltinType($type, $dbType);
-
-        $this->resolveDefaultValue();
-    }
-
     /**
      * @param $type
      * @param $dbType
@@ -384,6 +385,7 @@ class ColumnToCode
         if ($this->isEnum()) {
             return false;
         }
+
         if ($this->fromDb === true) {
             return isset(
                 (new ColumnSchemaBuilder(''))->categoryMap[$type]
@@ -398,8 +400,7 @@ class ColumnToCode
     private function resolveEnumType():void
     {
         if (ApiGenerator::isPostgres()) {
-            $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            $this->rawParts['type'] = '"'.$this->column->dbType.'"';
             return;
         }
         $this->rawParts['type'] = 'enum(' . self::mysqlEnumToString($this->column->enumValues) . ')';
@@ -465,7 +466,7 @@ class ColumnToCode
 
     private function isDefaultAllowed():bool
     {
-        // default expression with parenthases is allowed
+        // default expression with parentheses is allowed
         if ($this->column->defaultValue instanceof \yii\db\Expression) {
             return true;
         }

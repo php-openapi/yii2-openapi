@@ -11,6 +11,7 @@ use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
 use cebe\yii2openapi\lib\CustomSpecAttr;
+use cebe\yii2openapi\lib\SchemaToDatabase;
 use Generator;
 use Yii;
 use yii\helpers\Inflector;
@@ -111,7 +112,7 @@ class ComponentSchema
     public function resolveTableName(string $schemaName):string
     {
         return $this->schema->{CustomSpecAttr::TABLE} ??
-            Inflector::camel2id(StringHelper::basename(Inflector::pluralize($schemaName)), '_');
+            SchemaToDatabase::resolveTableName($schemaName);
     }
 
     public function hasCustomTableName():bool
