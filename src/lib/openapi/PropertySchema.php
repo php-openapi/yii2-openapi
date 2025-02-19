@@ -497,6 +497,7 @@ class PropertySchema
                 }
                 return YiiDbSchema::TYPE_TEXT;
             case 'object':
+            case 'array': // TODO WIP Resume from here
             {
                 return YiiDbSchema::TYPE_JSON;
             }
