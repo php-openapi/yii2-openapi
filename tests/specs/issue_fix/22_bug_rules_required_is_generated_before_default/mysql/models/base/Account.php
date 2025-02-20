@@ -26,11 +26,12 @@ abstract class Account extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'paymentMethodName'], 'trim'],
+            'paymentMethodName_default' => [['paymentMethodName'], 'default', 'value' => 'card'],
+            'verified_default' => [['verified'], 'default', 'value' => false],
             'required' => [['name', 'verified'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 128],
             'paymentMethodName_string' => [['paymentMethodName'], 'string'],
             'verified_boolean' => [['verified'], 'boolean'],
-            'verified_default' => [['verified'], 'default', 'value' => false],
         ];
     }
 }
