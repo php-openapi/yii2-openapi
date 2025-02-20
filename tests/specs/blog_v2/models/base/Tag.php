@@ -27,13 +27,13 @@ abstract class Tag extends \yii\db\ActiveRecord
         return [
             'trim' => [['name'], 'trim'],
             'required' => [['name', 'lang'], 'required'],
-            'name_unique' => [['name'], 'unique'],
             'name_string' => [['name'], 'string', 'max' => 100],
             'lang_string' => [['lang'], 'string'],
             'lang_in' => [['lang'], 'in', 'range' => [
                 'ru',
                 'eng',
             ]],
+            'name_unique' => [['name'], 'unique'],
         ];
     }
 

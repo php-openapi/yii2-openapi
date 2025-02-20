@@ -26,9 +26,9 @@ abstract class Post extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['content'], 'trim'],
+            'content_string' => [['content'], 'string'],
             'user_integer' => [['user'], 'integer'],
             'user_exist' => [['user'], 'exist', 'targetRelation' => 'userRel'],
-            'content_string' => [['content'], 'string'],
         ];
     }
 

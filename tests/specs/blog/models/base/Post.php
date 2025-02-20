@@ -32,18 +32,18 @@ abstract class Post extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['title', 'slug', 'created_at'], 'trim'],
+            'active_default' => [['active'], 'default', 'value' => false],
             'required' => [['title', 'category_id', 'active'], 'required'],
+            'title_string' => [['title'], 'string', 'max' => 255],
+            'slug_string' => [['slug'], 'string', 'min' => 1, 'max' => 200],
+            'active_boolean' => [['active'], 'boolean'],
+            'created_at_date' => [['created_at'], 'date', 'format' => 'php:Y-m-d'],
+            'title_unique' => [['title'], 'unique'],
+            'slug_unique' => [['slug'], 'unique'],
             'category_id_integer' => [['category_id'], 'integer'],
             'category_id_exist' => [['category_id'], 'exist', 'targetRelation' => 'category'],
             'created_by_id_integer' => [['created_by_id'], 'integer'],
             'created_by_id_exist' => [['created_by_id'], 'exist', 'targetRelation' => 'createdBy'],
-            'title_unique' => [['title'], 'unique'],
-            'slug_unique' => [['slug'], 'unique'],
-            'title_string' => [['title'], 'string', 'max' => 255],
-            'slug_string' => [['slug'], 'string', 'min' => 1, 'max' => 200],
-            'active_boolean' => [['active'], 'boolean'],
-            'active_default' => [['active'], 'default', 'value' => false],
-            'created_at_date' => [['created_at'], 'date', 'format' => 'php:Y-m-d'],
         ];
     }
 

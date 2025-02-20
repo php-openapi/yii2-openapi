@@ -28,11 +28,11 @@ abstract class Webhook extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
+            'name_string' => [['name'], 'string'],
             'user_id_integer' => [['user_id'], 'integer'],
             'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'user'],
             'redelivery_of_integer' => [['redelivery_of'], 'integer'],
             'redelivery_of_exist' => [['redelivery_of'], 'exist', 'targetRelation' => 'redeliveryOf'],
-            'name_string' => [['name'], 'string'],
         ];
     }
 

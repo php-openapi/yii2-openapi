@@ -27,12 +27,12 @@ abstract class Contact extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['nickname'], 'trim'],
+            'active_default' => [['active'], 'default', 'value' => false],
             'required' => [['account_id'], 'required'],
+            'active_boolean' => [['active'], 'boolean'],
+            'nickname_string' => [['nickname'], 'string'],
             'account_id_integer' => [['account_id'], 'integer'],
             'account_id_exist' => [['account_id'], 'exist', 'targetRelation' => 'account'],
-            'active_boolean' => [['active'], 'boolean'],
-            'active_default' => [['active'], 'default', 'value' => false],
-            'nickname_string' => [['nickname'], 'string'],
         ];
     }
 

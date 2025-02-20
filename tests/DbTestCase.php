@@ -3,13 +3,13 @@
 namespace tests;
 
 use cebe\yii2openapi\generator\ApiGenerator;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use Yii;
 use yii\db\IndexConstraint;
-use yii\di\Container;
 use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
-use \SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\helpers\{ArrayHelper, VarDumper, StringHelper, Console};
+use yii\di\Container;
+use yii\helpers\{ArrayHelper, StringHelper};
 use yii\helpers\FileHelper;
 
 class DbTestCase extends \PHPUnit\Framework\TestCase
@@ -102,7 +102,6 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         foreach ($actual as $file) {
             $expectedFile = str_replace('@app', substr($testFile, 0, -4), $file);
             $actualFile = str_replace('@app', Yii::getAlias('@app'), $file);
-            // exec('cp '.$actualFile.' '.$expectedFile);
             $this->checkFiles([$actualFile], [$expectedFile]);
         }
     }
@@ -128,6 +127,7 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
                 );
             }
 
+            // exec('cp '.$file.' '.$expectedFilePath);
             $this->assertFileEquals($expectedFilePath, $file, "Failed asserting that file contents of\n$file\nare equal to file contents of\n$expectedFilePath \n\n cp $file $expectedFilePath \n\n ");
         }
     }
