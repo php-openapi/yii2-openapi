@@ -101,7 +101,6 @@ class ValidationRulesBuilder
         }
         if ($attribute->phpType === 'bool' || $attribute->phpType === 'boolean') {
             $this->rules[$attribute->columnName . '_boolean'] = new ValidationRule([$attribute->columnName], 'boolean');
-//            $this->defaultRule($attribute);
             return;
         }
 
@@ -119,13 +118,11 @@ class ValidationRulesBuilder
             }
 
             $this->rules[$key] = new ValidationRule([$attribute->columnName], $attribute->dbType, $params);
-//            $this->defaultRule($attribute);
             return;
         }
 
         if (in_array($attribute->phpType, ['int', 'integer', 'double', 'float']) && !$attribute->isReference()) {
             $this->addNumericRule($attribute);
-//            $this->defaultRule($attribute);
             return;
         }
         if ($attribute->phpType === 'string' && !$attribute->isReference()) {
@@ -135,10 +132,8 @@ class ValidationRulesBuilder
             $key = $attribute->columnName . '_in';
             $this->rules[$key] =
                 new ValidationRule([$attribute->columnName], 'in', ['range' => $attribute->enumValues]);
-//            $this->defaultRule($attribute); // TODO remove
             return;
         }
-//        $this->defaultRule($attribute);
         $this->addRulesByAttributeName($attribute);
     }
 
