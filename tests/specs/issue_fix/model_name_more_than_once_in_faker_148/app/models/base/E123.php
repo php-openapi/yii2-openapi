@@ -30,13 +30,13 @@ abstract class E123 extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
+            'name_string' => [['name'], 'string'],
             'account_id_integer' => [['account_id'], 'integer'],
             'account_id_exist' => [['account_id'], 'exist', 'targetRelation' => 'account'],
             'account_2_id_integer' => [['account_2_id'], 'integer'],
             'account_2_id_exist' => [['account_2_id'], 'exist', 'targetRelation' => 'account2'],
             'account_3_id_integer' => [['account_3_id'], 'integer'],
             'account_3_id_exist' => [['account_3_id'], 'exist', 'targetRelation' => 'account3'],
-            'name_string' => [['name'], 'string'],
         ];
     }
 

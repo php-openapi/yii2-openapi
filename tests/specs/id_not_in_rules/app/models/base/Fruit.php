@@ -24,8 +24,8 @@ abstract class Fruit extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'name_string' => [['name'], 'string'],
             'required' => [['name'], 'required'],
+            'name_string' => [['name'], 'string'],
         ];
     }
 }

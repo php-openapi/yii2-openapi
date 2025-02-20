@@ -25,6 +25,7 @@ abstract class Mailing extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
+            'required' => [['name'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 128],
             'paymentMethodName_string' => [['paymentMethodName'], 'string'],
             'paymentMethodName_in' => [['paymentMethodName'], 'in', 'range' => [
@@ -32,7 +33,6 @@ abstract class Mailing extends \yii\db\ActiveRecord
                 'cash',
                 'ewallet',
             ]],
-            'required' => [['name'], 'required'],
         ];
     }
 }

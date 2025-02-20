@@ -26,13 +26,13 @@ abstract class Address extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'shortName', 'postCode'], 'trim'],
+            'name_string' => [['name'], 'string', 'max' => 64],
+            'shortName_string' => [['shortName'], 'string', 'max' => 64],
+            'postCode_string' => [['postCode'], 'string', 'max' => 64],
             'shortName_postCode_unique' => [['shortName', 'postCode'], 'unique', 'targetAttribute' => [
                 'shortName',
                 'postCode',
             ]],
-            'name_string' => [['name'], 'string', 'max' => 64],
-            'shortName_string' => [['shortName'], 'string', 'max' => 64],
-            'postCode_string' => [['postCode'], 'string', 'max' => 64],
         ];
     }
 }

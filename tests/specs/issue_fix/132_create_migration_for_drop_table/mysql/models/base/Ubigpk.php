@@ -30,6 +30,7 @@ abstract class Ubigpk extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'f'], 'trim'],
+            'size_default' => [['size'], 'default', 'value' => 'x-small'],
             'name_string' => [['name'], 'string', 'max' => 150],
             'size_string' => [['size'], 'string'],
             'size_in' => [['size'], 'in', 'range' => [
@@ -39,7 +40,6 @@ abstract class Ubigpk extends \yii\db\ActiveRecord
                 'large',
                 'x-large',
             ]],
-            'size_default' => [['size'], 'default', 'value' => 'x-small'],
             'd_integer' => [['d'], 'integer'],
             'e_integer' => [['e'], 'integer'],
             'f_string' => [['f'], 'string', 'max' => 12],

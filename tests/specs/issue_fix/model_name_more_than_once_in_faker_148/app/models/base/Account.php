@@ -24,8 +24,8 @@ abstract class Account extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'name_string' => [['name'], 'string', 'max' => 40],
             'required' => [['name'], 'required'],
+            'name_string' => [['name'], 'string', 'max' => 40],
         ];
     }
 
