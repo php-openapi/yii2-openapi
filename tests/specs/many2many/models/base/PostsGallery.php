@@ -26,11 +26,11 @@ abstract class PostsGallery extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            'is_cover_boolean' => [['is_cover'], 'boolean'],
             'image_id_integer' => [['image_id'], 'integer'],
             'image_id_exist' => [['image_id'], 'exist', 'targetRelation' => 'image'],
             'article_id_integer' => [['article_id'], 'integer'],
             'article_id_exist' => [['article_id'], 'exist', 'targetRelation' => 'article'],
-            'is_cover_boolean' => [['is_cover'], 'boolean'],
         ];
     }
 

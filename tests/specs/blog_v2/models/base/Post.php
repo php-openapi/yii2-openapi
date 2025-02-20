@@ -34,11 +34,8 @@ abstract class Post extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['title', 'slug', 'created_at'], 'trim'],
-            'category_id_integer' => [['category_id'], 'integer'],
-            'category_id_exist' => [['category_id'], 'exist', 'targetRelation' => 'category'],
-            'created_by_id_integer' => [['created_by_id'], 'integer'],
-            'created_by_id_exist' => [['created_by_id'], 'exist', 'targetRelation' => 'createdBy'],
-            'title_unique' => [['title'], 'unique'],
+            'lang_default' => [['lang'], 'default', 'value' => 'ru'],
+            'required' => [['title', 'category_id', 'active'], 'required'],
             'title_string' => [['title'], 'string', 'max' => 255],
             'slug_string' => [['slug'], 'string', 'min' => 1, 'max' => 200],
             'lang_string' => [['lang'], 'string'],
@@ -46,10 +43,13 @@ abstract class Post extends \yii\db\ActiveRecord
                 'ru',
                 'eng',
             ]],
-            'lang_default' => [['lang'], 'default', 'value' => 'ru'],
             'active_boolean' => [['active'], 'boolean'],
             'created_at_date' => [['created_at'], 'date', 'format' => 'php:Y-m-d'],
-            'required' => [['title', 'category_id', 'active'], 'required'],
+            'title_unique' => [['title'], 'unique'],
+            'category_id_integer' => [['category_id'], 'integer'],
+            'category_id_exist' => [['category_id'], 'exist', 'targetRelation' => 'category'],
+            'created_by_id_integer' => [['created_by_id'], 'integer'],
+            'created_by_id_exist' => [['created_by_id'], 'exist', 'targetRelation' => 'createdBy'],
         ];
     }
 

@@ -30,15 +30,15 @@ abstract class Comment extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['post_id'], 'trim'],
+            'message_default' => [['message'], 'default', 'value' => []],
+            'meta_data_default' => [['meta_data'], 'default', 'value' => []],
+            'required' => [['post_id', 'author_id', 'message', 'created_at'], 'required'],
+            'created_at_integer' => [['created_at'], 'integer'],
             'post_id_string' => [['post_id'], 'string', 'max' => 128],
             'post_id_exist' => [['post_id'], 'exist', 'targetRelation' => 'post'],
             'author_id_integer' => [['author_id'], 'integer'],
             'author_id_exist' => [['author_id'], 'exist', 'targetRelation' => 'author'],
-            'message_default' => [['message'], 'default', 'value' => []],
-            'meta_data_default' => [['meta_data'], 'default', 'value' => []],
-            'created_at_integer' => [['created_at'], 'integer'],
             'safe' => [['message', 'meta_data'], 'safe'],
-            'required' => [['post_id', 'author_id', 'message', 'created_at'], 'required'],
         ];
     }
 

@@ -29,19 +29,19 @@ abstract class User extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['username', 'email', 'password', 'role', 'created_at'], 'trim'],
-            'username_unique' => [['username'], 'unique'],
-            'email_unique' => [['email'], 'unique'],
+            'role_default' => [['role'], 'default', 'value' => 'reader'],
+            'flags_default' => [['flags'], 'default', 'value' => 0],
+            'created_at_default' => [['created_at'], 'default', 'value' => new \yii\db\Expression("(CURRENT_TIMESTAMP)")],
+            'required' => [['username', 'email', 'password'], 'required'],
             'username_string' => [['username'], 'string', 'max' => 200],
             'email_string' => [['email'], 'string', 'max' => 200],
             'email_email' => [['email'], 'email'],
             'password_string' => [['password'], 'string'],
             'role_string' => [['role'], 'string', 'max' => 20],
-            'role_default' => [['role'], 'default', 'value' => 'reader'],
             'flags_integer' => [['flags'], 'integer'],
-            'flags_default' => [['flags'], 'default', 'value' => 0],
             'created_at_datetime' => [['created_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
-            'required' => [['username', 'email', 'password'], 'required'],
-            'created_at_default' => [['created_at'], 'default', 'value' => new \yii\db\Expression("(CURRENT_TIMESTAMP)")],
+            'username_unique' => [['username'], 'unique'],
+            'email_unique' => [['email'], 'unique'],
         ];
     }
 

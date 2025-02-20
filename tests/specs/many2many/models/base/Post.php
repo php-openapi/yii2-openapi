@@ -31,8 +31,8 @@ abstract class Post extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['title'], 'trim'],
-            'title_string' => [['title'], 'string'],
             'required' => [['title'], 'required'],
+            'title_string' => [['title'], 'string'],
         ];
     }
 
