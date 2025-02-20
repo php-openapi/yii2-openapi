@@ -35,23 +35,22 @@ abstract class Editcolumn extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'tag', 'first_name', 'string_col', 'str_col_def', 'json_col'], 'trim'],
+            'name_default' => [['name'], 'default', 'value' => 'Horse-2'],
+            'dec_col_default' => [['dec_col'], 'default', 'value' => 3.14],
+            'json_col_default' => [['json_col'], 'default', 'value' => 'fox jumps over dog'],
+            'json_col_2_default' => [['json_col_2'], 'default', 'value' => []],
+            'json_col_def_n_default' => [['json_col_def_n'], 'default', 'value' => []],
+            'json_col_def_n_2_default' => [['json_col_def_n_2'], 'default', 'value' => []],
             'required' => [['name', 'str_col_def', 'json_col', 'json_col_2', 'numeric_col'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 254],
-            'name_default' => [['name'], 'default', 'value' => 'Horse-2'],
             'tag_string' => [['tag'], 'string'],
             'first_name_string' => [['first_name'], 'string'],
             'string_col_string' => [['string_col'], 'string'],
             'dec_col_double' => [['dec_col'], 'double'],
-            'dec_col_default' => [['dec_col'], 'default', 'value' => 3.14],
             'str_col_def_string' => [['str_col_def'], 'string'],
             'json_col_string' => [['json_col'], 'string'],
-            'json_col_default' => [['json_col'], 'default', 'value' => 'fox jumps over dog'],
-            'json_col_2_default' => [['json_col_2'], 'default', 'value' => []],
             'numeric_col_double' => [['numeric_col'], 'double'],
-            'json_col_def_n_default' => [['json_col_def_n'], 'default', 'value' => []],
-            'json_col_def_n_2_default' => [['json_col_def_n_2'], 'default', 'value' => []],
             'safe' => [['json_col_2', 'json_col_def_n', 'json_col_def_n_2', 'text_col_array'], 'safe'],
-            'required' => [['name', 'str_col_def', 'json_col', 'json_col_2'], 'required'],
         ];
     }
 }
