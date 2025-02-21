@@ -30,12 +30,7 @@ abstract class Webhook extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name'], 'trim'],
-            'user_id_integer' => [['user_id'], 'integer'],
-            'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'user'],
-            'redelivery_of_integer' => [['redelivery_of'], 'integer'],
-            'redelivery_of_exist' => [['redelivery_of'], 'exist', 'targetRelation' => 'redeliveryOf'],
-            'rd_abc_2_integer' => [['rd_abc_2'], 'integer'],
-            'rd_abc_2_exist' => [['rd_abc_2'], 'exist', 'targetRelation' => 'rd2'],
+            'name_string' => [['name'], 'string', 'max' => 255],
             'user_id_name_unique' => [['user_id', 'name'], 'unique', 'targetAttribute' => [
                 'user_id',
                 'name',
@@ -48,7 +43,12 @@ abstract class Webhook extends \yii\db\ActiveRecord
                 'rd_abc_2',
                 'name',
             ]],
-            'name_string' => [['name'], 'string', 'max' => 255],
+            'user_id_integer' => [['user_id'], 'integer'],
+            'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'user'],
+            'redelivery_of_integer' => [['redelivery_of'], 'integer'],
+            'redelivery_of_exist' => [['redelivery_of'], 'exist', 'targetRelation' => 'redeliveryOf'],
+            'rd_abc_2_integer' => [['rd_abc_2'], 'integer'],
+            'rd_abc_2_exist' => [['rd_abc_2'], 'exist', 'targetRelation' => 'rd2'],
         ];
     }
 

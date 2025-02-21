@@ -26,11 +26,11 @@ abstract class Category extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['title'], 'trim'],
+            'active_default' => [['active'], 'default', 'value' => false],
             'required' => [['title', 'active'], 'required'],
-            'title_unique' => [['title'], 'unique'],
             'title_string' => [['title'], 'string', 'max' => 255],
             'active_boolean' => [['active'], 'boolean'],
-            'active_default' => [['active'], 'default', 'value' => false],
+            'title_unique' => [['title'], 'unique'],
         ];
     }
 

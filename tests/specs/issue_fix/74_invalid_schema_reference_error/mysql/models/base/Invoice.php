@@ -23,13 +23,13 @@ abstract class Invoice extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            'vat_rate_default' => [['vat_rate'], 'default', 'value' => 'standard'],
             'required' => [['vat_rate'], 'required'],
             'vat_rate_string' => [['vat_rate'], 'string'],
             'vat_rate_in' => [['vat_rate'], 'in', 'range' => [
                 'standard',
                 'none',
             ]],
-            'vat_rate_default' => [['vat_rate'], 'default', 'value' => 'standard'],
         ];
     }
 }

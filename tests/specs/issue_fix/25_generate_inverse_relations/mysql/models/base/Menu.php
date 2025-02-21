@@ -28,9 +28,9 @@ abstract class Menu extends \yii\db\ActiveRecord
         return [
             'trim' => [['name'], 'trim'],
             'required' => [['name'], 'required'],
+            'name_string' => [['name'], 'string', 'min' => 3, 'max' => 100],
             'parent_id_integer' => [['parent_id'], 'integer'],
             'parent_id_exist' => [['parent_id'], 'exist', 'targetRelation' => 'parent'],
-            'name_string' => [['name'], 'string', 'min' => 3, 'max' => 100],
         ];
     }
 

@@ -1001,6 +1001,20 @@ PHP;
         $this->runActualMigrations();
     }
 
+    // https://github.com/php-openapi/yii2-openapi/issues/22
+    public function test22BugRulesRequiredIsGeneratedBeforeDefault()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/22_bug_rules_required_is_generated_before_default/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/22_bug_rules_required_is_generated_before_default/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/23
     public function test23ConsiderOpenapiExtensionXNoRelationAlsoInOtherPertinentPlace()
     {
@@ -1017,4 +1031,5 @@ PHP;
 //        $this->checkFiles($actualFiles, $expectedFiles);
 //        $this->runActualMigrations();
     }
+
 }
