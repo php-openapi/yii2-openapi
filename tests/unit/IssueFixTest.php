@@ -1031,5 +1031,4 @@ PHP;
 //        $this->checkFiles($actualFiles, $expectedFiles);
 //        $this->runActualMigrations();
     }
-
 }
