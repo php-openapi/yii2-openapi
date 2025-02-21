@@ -25,6 +25,7 @@ components:
           type: array
           x-no-relation: true
           items:
+            #            type: string
             $ref: '#/components/schemas/Sample'
 
     Sample:

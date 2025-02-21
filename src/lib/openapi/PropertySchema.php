@@ -145,6 +145,10 @@ class PropertySchema
             $property = $this->property;
         }
 
+        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
+            return;
+        }
+
         if ($property instanceof Reference) {
             $this->initReference();
         } elseif (
@@ -182,6 +186,10 @@ class PropertySchema
         if ($this->refSchema && $this->refSchema->isNonDb()) {
             $this->isNonDbReference = true;
         }
+        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
+            $this->isReference = false;
+            $this->isNonDbReference = true;
+        }
     }
 
     /**
@@ -191,6 +199,9 @@ class PropertySchema
     private function initItemsReference():void
     {
         $this->isItemsReference = true;
+        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
+            $this->isItemsReference = false;
+        }
         $items = $this->property->items ?? null;
         if (!$items) {
             return;
@@ -204,6 +215,9 @@ class PropertySchema
             $this->refSchema = Yii::createObject(ComponentSchema::class, [$items->resolve(), $this->getRefSchemaName()]);
         }
         if ($this->refSchema && $this->refSchema->isNonDb()) {
+            $this->isNonDbReference = true;
+        }
+        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
             $this->isNonDbReference = true;
         }
     }
