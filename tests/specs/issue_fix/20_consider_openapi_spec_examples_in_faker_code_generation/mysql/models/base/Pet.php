@@ -23,7 +23,7 @@ namespace app\models\base;
  * @property array $arr_arr_str
  * @property array $arr_arr_arr_str
  * @property array $arr_of_obj
- * @property User[] $user_ref_obj_arr
+ * @property array $user_ref_obj_arr
  * @property array $one_of_arr
  * @property array $one_of_arr_complex
  * @property array $one_of_from_multi_ref_arr
