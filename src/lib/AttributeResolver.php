@@ -350,12 +350,12 @@ class AttributeResolver
             }
             $attribute->setPhpType($relatedClassName . '[]');
             $this->relations[$property->getName()] =
-                    Yii::createObject(
-                        AttributeRelation::class,
-                        [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
-                    )
-                        ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->componentSchema->getPkName()])
-                        ->setInverse(Inflector::variablize($this->schemaName));
+                Yii::createObject(
+                    AttributeRelation::class,
+                    [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
+                )
+                    ->asHasMany([Inflector::camel2id($this->schemaName, '_') . '_id' => $this->componentSchema->getPkName()])
+                    ->setInverse(Inflector::variablize($this->schemaName));
             return;
         }
         if ($this->componentSchema->isNonDb() && $attribute->isReference()) {
