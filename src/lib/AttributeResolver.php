@@ -322,20 +322,20 @@ class AttributeResolver
                         '_id'
                     )) {
                     $this->relations[$property->getName()] =
-                            Yii::createObject(
-                                AttributeRelation::class,
-                                [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
-                            )
-                                ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
-                    return;
-                }
-                $foreignPk = Inflector::camel2id($fkProperty->getName(), '_') . '_id';
-                $this->relations[$property->getName()] =
                         Yii::createObject(
                             AttributeRelation::class,
                             [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
                         )
-                            ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
+                            ->asHasMany([$fkProperty->getName() => $fkProperty->getName()])->asSelfReference();
+                    return;
+                }
+                $foreignPk = Inflector::camel2id($fkProperty->getName(), '_') . '_id';
+                $this->relations[$property->getName()] =
+                    Yii::createObject(
+                        AttributeRelation::class,
+                        [static::relationName($property->getName(), $property->fkColName), $relatedTableName, $relatedClassName]
+                    )
+                        ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
             }
             $relatedClassName = $property->getRefClassName();
