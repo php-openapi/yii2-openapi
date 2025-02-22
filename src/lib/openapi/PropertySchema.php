@@ -145,6 +145,7 @@ class PropertySchema
             $property = $this->property;
         }
 
+        // don't go reference part if `x-no-relation` is true
         if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
             return;
         }
@@ -186,10 +187,6 @@ class PropertySchema
         if ($this->refSchema && $this->refSchema->isNonDb()) {
             $this->isNonDbReference = true;
         }
-        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
-            $this->isReference = false;
-            $this->isNonDbReference = true;
-        }
     }
 
     /**
@@ -199,9 +196,6 @@ class PropertySchema
     private function initItemsReference():void
     {
         $this->isItemsReference = true;
-        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
-            $this->isItemsReference = false;
-        }
         $items = $this->property->items ?? null;
         if (!$items) {
             return;
@@ -215,9 +209,6 @@ class PropertySchema
             $this->refSchema = Yii::createObject(ComponentSchema::class, [$items->resolve(), $this->getRefSchemaName()]);
         }
         if ($this->refSchema && $this->refSchema->isNonDb()) {
-            $this->isNonDbReference = true;
-        }
-        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
             $this->isNonDbReference = true;
         }
     }
@@ -511,7 +502,7 @@ class PropertySchema
                 }
                 return YiiDbSchema::TYPE_TEXT;
             case 'object':
-            case 'array': // TODO WIP Resume from here
+            case 'array':
             {
                 return YiiDbSchema::TYPE_JSON;
             }
