@@ -243,10 +243,7 @@ class ValidationRulesBuilder
             if ($attribute->isReadOnly()) {
                 continue;
             }
-            // column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by DB/Yii; so remove it from validation `rules()`
-            if (in_array($attribute->columnName, ['id', $this->model->pkName]) ||
-                in_array($attribute->propertyName, ['id', $this->model->pkName])
-            ) {
+            if ($this->isIdColumn($attribute)) {
                 continue;
             }
             if (/*$attribute->defaultValue === null &&*/ $attribute->isRequired()) {

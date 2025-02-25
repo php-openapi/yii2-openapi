@@ -1018,17 +1018,15 @@ PHP;
     // https://github.com/php-openapi/yii2-openapi/issues/23
     public function test23ConsiderOpenapiExtensionXNoRelationAlsoInOtherPertinentPlace()
     {
-//        23-consider-openapi-extension-x-no-relation-also-in-other-pertinent-place
-//        23_consider_openapi_extension_x_no_relation_also_in_other_pertinent_place
         $testFile = Yii::getAlias("@specs/issue_fix/23_consider_openapi_extension_x_no_relation_also_in_other_pertinent_place/index.php");
         $this->runGenerator($testFile);
-//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-//            'recursive' => true,
-//        ]);
-//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/23_consider_openapi_extension_x_no_relation_also_in_other_pertinent_place/mysql"), [
-//            'recursive' => true,
-//        ]);
-//        $this->checkFiles($actualFiles, $expectedFiles);
-//        $this->runActualMigrations();
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/23_consider_openapi_extension_x_no_relation_also_in_other_pertinent_place/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations();
     }
 }
