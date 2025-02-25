@@ -23,13 +23,12 @@ namespace app\models\base;
  * @property array $arr_arr_str
  * @property array $arr_arr_arr_str
  * @property array $arr_of_obj
- * @property User[] $user_ref_obj_arr
+ * @property array $user_ref_obj_arr
  * @property array $one_of_arr
  * @property array $one_of_arr_complex
  * @property array $one_of_from_multi_ref_arr
  *
  * @property array|\app\models\User[] $userRefObjArrNormal
- * @property array|\app\models\User[] $userRefObjArr
  */
 abstract class Pet extends \yii\db\ActiveRecord
 {
@@ -50,11 +49,6 @@ abstract class Pet extends \yii\db\ActiveRecord
     }
 
     public function getUserRefObjArrNormal()
-    {
-        return $this->hasMany(\app\models\User::class, ['pet_id' => 'id'])->inverseOf('pet');
-    }
-
-    public function getUserRefObjArr()
     {
         return $this->hasMany(\app\models\User::class, ['pet_id' => 'id'])->inverseOf('pet');
     }

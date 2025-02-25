@@ -350,7 +350,7 @@ related objects, `x-no-relation` (type: boolean, default: false) is used.
 
 This will not generate 'comments' column in database migrations. But it will generate `getComments()` relation in Yii model file.
 
-In order to make it real database column, extension `x-no-relation` can be used.
+In order to make it real database column, OpenAPI extension `x-no-relation` can be used.
 
 ```yaml
         comments:

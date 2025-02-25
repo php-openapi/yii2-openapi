@@ -1,0 +1,35 @@
+openapi: 3.0.3
+
+info:
+  title: '#23'
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: The Response
+
+
+
+components:
+  schemas:
+    Payments:
+      properties:
+        id:
+          type: integer
+        currency:
+          type: string
+        samples:
+          type: array
+          x-no-relation: true
+          items:
+            $ref: '#/components/schemas/Sample'
+
+    Sample:
+      properties:
+        id:
+          type: integer
+        message:
+          type: string
