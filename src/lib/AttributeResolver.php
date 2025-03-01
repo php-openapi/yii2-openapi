@@ -279,7 +279,7 @@ class AttributeResolver
                 $relation->asSelfReference();
             }
             $this->relations[$property->getName()] = $relation;
-            if (!$property->isRefPointerToSelf()) {
+            if (!$property->isRefPointerToSelf() && $property->hasRefItems()) {
                 $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
             }
         }
