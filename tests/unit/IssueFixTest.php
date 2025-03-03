@@ -1014,4 +1014,18 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/90
+    public function test90ImplementBelongsToRelationsInModels()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/90_implement_belongs_to_relations_in_models/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/90_implement_belongs_to_relations_in_models/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
