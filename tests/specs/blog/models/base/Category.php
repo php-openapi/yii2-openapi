@@ -38,9 +38,4 @@ abstract class Category extends \yii\db\ActiveRecord
     {
         return $this->hasMany(\app\models\Post::class, ['category_id' => 'id'])->inverseOf('category');
     }
-
-    public function getPost()
-    {
-        return $this->hasOne(\app\models\Post::class, ['category_id' => 'id'])->inverseOf('category');
-    }
 }
