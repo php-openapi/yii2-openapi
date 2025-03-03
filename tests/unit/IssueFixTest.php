@@ -1023,7 +1023,7 @@ PHP;
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
-        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/mysql"), [
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/mysql"), [ # this is intentional
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
