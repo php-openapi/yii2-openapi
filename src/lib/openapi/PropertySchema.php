@@ -268,8 +268,10 @@ class PropertySchema
     public function isRefPointerToSchema():bool
     {
         return $this->refPointer &&
-            ((strpos($this->refPointer, self::REFERENCE_PATH) === 0) ||
-                (str_ends_with($this->uri, '.yml')) || (str_ends_with($this->uri, '.yaml')));
+            (
+                (strpos($this->refPointer, self::REFERENCE_PATH) === 0) ||
+                (str_ends_with($this->uri, '.yml')) || (str_ends_with($this->uri, '.yaml')) || (str_ends_with($this->uri, '.json'))
+            );
     }
 
     public function isRefPointerToSelf():bool
@@ -305,7 +307,7 @@ class PropertySchema
         $pattern = strpos($this->refPointer, '/properties/') !== false ?
             '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)/properties/(?<propName>.+)$~'
             : '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)$~';
-        $separateFilePattern = '/((\.\/)*)(?<schemaName>.+)(\.)(yml|yaml)(.*)/'; # https://github.com/php-openapi/yii2-openapi/issues/74
+        $separateFilePattern = '/((\.\/)*)(?<schemaName>.+)(\.)(yml|yaml|json)(.*)/'; # https://github.com/php-openapi/yii2-openapi/issues/74
         if (!\preg_match($pattern, $this->refPointer, $matches)) {
             if (!\preg_match($separateFilePattern, $this->uri, $separateFilePatternMatches)) {
                 throw new InvalidDefinitionException('Invalid schema reference');

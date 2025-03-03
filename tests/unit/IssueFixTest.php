@@ -1014,4 +1014,19 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/87
+    public function test87ImplementForJsonInIsrefpointertoschema()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/87_implement_for_json_in_is_ref_pointer_to_schema/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations();
+    }
 }
