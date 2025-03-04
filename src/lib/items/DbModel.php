@@ -86,7 +86,7 @@ class DbModel extends BaseObject
     public bool $descriptionIsComment = false;
 
     /**
-     * @var array|AttributeRelation[] belongs to relations
+     * @var AttributeRelation[] belongs to relations
      */
     public array $belongsToRelations = [];
 

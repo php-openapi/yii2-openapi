@@ -38,7 +38,7 @@ class AttributeResolver
     public array $relations = [];
 
     /**
-     * @var AttributeRelation[]|array
+     * @var array keys contains class names and value contains array of belongs to relations
      */
     public array $belongsToRelations = [];
 

@@ -113,10 +113,8 @@ class SchemaToDatabase
         // handle belongs to relation
         foreach ($resolvers as $aResolver) {
             foreach ($aResolver->belongsToRelations as $name => $relations) {
-                foreach ($relations as $relation) {
-                    /** @var AttributeRelation $relation */
-                    $models[$name]->belongsToRelations[] = $relation;
-                }
+                /** @var AttributeRelation[] $relations */
+                $models[$name]->belongsToRelations = [...$models[$name]->belongsToRelations, ...$relations];
             }
         }
 
