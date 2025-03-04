@@ -232,6 +232,7 @@ class AttributeResolver
                   ->setForeignKeyColumnName($property->fkColName)
                   ->setFakerStub($this->guessFakerStub($attribute, $property))
                   ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
+
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
