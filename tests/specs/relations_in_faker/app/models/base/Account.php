@@ -28,9 +28,4 @@ abstract class Account extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string', 'max' => 40],
         ];
     }
-
-    public function getDomain()
-    {
-        return $this->hasOne(\app\models\Domain::class, ['account_id' => 'id'])->inverseOf('account');
-    }
 }

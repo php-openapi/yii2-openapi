@@ -27,9 +27,4 @@ abstract class User extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
-
-    public function getPost()
-    {
-        return $this->hasOne(\app\models\Post::class, ['user' => 'id'])->inverseOf('user');
-    }
 }

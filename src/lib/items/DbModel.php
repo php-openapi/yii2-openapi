@@ -67,11 +67,6 @@ class DbModel extends BaseObject
      */
     public array $many2many = [];
 
-    /**
-     * @var array|AttributeRelation[] inverse relations
-     */
-    public array $inverseRelations = [];
-
     public array $junctionCols = [];
 
     /**

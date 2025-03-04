@@ -1,0 +1,33 @@
+openapi: "3.0.0"
+
+info:
+  version: 1.0.0
+  title: '#88'
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: The response
+
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Human:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+
+
