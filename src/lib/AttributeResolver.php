@@ -232,6 +232,7 @@ class AttributeResolver
                   ->setForeignKeyColumnName($property->fkColName)
                   ->setFakerStub($this->guessFakerStub($attribute, $property))
                   ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
+
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
@@ -279,10 +280,8 @@ class AttributeResolver
                 $relation->asSelfReference();
             }
             $this->relations[$property->getName()] = $relation;
-            if (!$property->isRefPointerToSelf() && $property->hasRefItems()) {
-                $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
-            }
         }
+
         if (!$property->isReference() && !$property->hasRefItems()) {
             [$min, $max] = $property->guessMinMax();
             $attribute->setIsVirtual($property->isVirtual())
@@ -337,7 +336,14 @@ class AttributeResolver
                     )
                         ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
+            } else { # handle inverse relation
+                if ($property->isReference()) {
+                    $relatedClassName = $property->getRefClassName();
+                    $fkProperty = $property->getTargetProperty();
+                    $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
+                }
             }
+
             $relatedClassName = $property->getRefClassName();
             $relatedTableName = $property->getRefSchema()->resolveTableName($relatedClassName);
             if ($this->catchManyToMany(
