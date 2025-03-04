@@ -60,11 +60,6 @@ class AttributeResolver
 
     private ?Config $config;
 
-    /**
-     * @var AttributeRelation[]|array
-     */
-    public array $inverseRelations = [];
-
     public function __construct(string $schemaName, ComponentSchema $schema, JunctionSchemas $junctions, ?Config $config = null)
     {
         $this->schemaName = $schemaName;
@@ -336,12 +331,6 @@ class AttributeResolver
                     )
                         ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
-            } else { # handle inverse relation
-                if ($property->isReference()) {
-                    $relatedClassName = $property->getRefClassName();
-                    $fkProperty = $property->getTargetProperty();
-                    $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
-                }
             }
 
             $relatedClassName = $property->getRefClassName();
@@ -523,23 +512,5 @@ class AttributeResolver
             $relationName = strtolower($fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
         }
         return $relationName;
-    }
-
-    /**
-     * @throws InvalidConfigException
-     */
-    public function addInverseRelation(
-        string $relatedClassName,
-        Attribute $attribute,
-        PropertySchema $property,
-        PropertySchema $fkProperty
-    ): void {
-        $inverseRelation = Yii::createObject(
-            AttributeRelation::class,
-            [$this->schemaName, $this->tableName, $this->schemaName]
-        )
-            ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
-        $inverseRelation->setInverse($property->getName());
-        $this->inverseRelations[$relatedClassName][] = $inverseRelation;
     }
 }
