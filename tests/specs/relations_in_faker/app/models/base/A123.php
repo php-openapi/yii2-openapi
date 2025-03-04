@@ -36,4 +36,10 @@ abstract class A123 extends \yii\db\ActiveRecord
     {
         return $this->hasOne(\app\models\B123::class, ['id' => 'b123_id']);
     }
+
+    # belongs to relation
+    public function getRouting()
+    {
+        return $this->hasOne(\app\models\Routing::class, ['a123_id' => 'id']);
+    }
 }

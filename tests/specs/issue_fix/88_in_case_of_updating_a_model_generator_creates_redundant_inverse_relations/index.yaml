@@ -29,5 +29,3 @@ components:
           type: string
         address:
           $ref: '#/components/schemas/Address'
-
-

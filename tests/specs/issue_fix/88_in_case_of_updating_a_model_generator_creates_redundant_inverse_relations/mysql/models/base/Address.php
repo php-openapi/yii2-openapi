@@ -27,4 +27,10 @@ abstract class Address extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getHuman()
+    {
+        return $this->hasOne(\app\models\Human::class, ['address_id' => 'id']);
+    }
 }

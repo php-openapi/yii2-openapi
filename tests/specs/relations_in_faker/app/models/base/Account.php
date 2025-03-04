@@ -28,4 +28,10 @@ abstract class Account extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string', 'max' => 40],
         ];
     }
+
+    # belongs to relation
+    public function getDomain()
+    {
+        return $this->hasOne(\app\models\Domain::class, ['account_id' => 'id']);
+    }
 }

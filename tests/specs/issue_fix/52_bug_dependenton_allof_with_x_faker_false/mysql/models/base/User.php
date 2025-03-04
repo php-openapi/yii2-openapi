@@ -27,4 +27,16 @@ abstract class User extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getInvoice()
+    {
+        return $this->hasOne(\app\models\Invoice::class, ['user_id' => 'id']);
+    }
+
+    # belongs to relation
+    public function getInvoice2()
+    {
+        return $this->hasOne(\app\models\Invoice::class, ['user_2_id' => 'id']);
+    }
 }

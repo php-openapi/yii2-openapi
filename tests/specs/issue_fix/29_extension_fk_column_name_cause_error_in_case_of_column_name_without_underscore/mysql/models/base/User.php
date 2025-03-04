@@ -27,4 +27,10 @@ abstract class User extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getPost()
+    {
+        return $this->hasOne(\app\models\Post::class, ['user' => 'id']);
+    }
 }

@@ -28,4 +28,10 @@ abstract class Store extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getPet()
+    {
+        return $this->hasOne(\app\models\Pet::class, ['store_id' => 'id']);
+    }
 }

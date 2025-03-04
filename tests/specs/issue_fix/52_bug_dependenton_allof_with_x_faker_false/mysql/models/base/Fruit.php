@@ -27,4 +27,10 @@ abstract class Fruit extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getInvoice()
+    {
+        return $this->hasOne(\app\models\Invoice::class, ['fruit_id' => 'id']);
+    }
 }

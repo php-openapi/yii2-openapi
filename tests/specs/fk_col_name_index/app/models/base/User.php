@@ -28,4 +28,10 @@ abstract class User extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getWebhook()
+    {
+        return $this->hasOne(\app\models\Webhook::class, ['user_id' => 'id']);
+    }
 }
