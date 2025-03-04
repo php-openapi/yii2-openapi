@@ -1,4 +1,4 @@
-version: "3.5"
+name: yii2-docker
 services:
     php:
         image: yii2-openapi-php:${PHP_VERSION:-8.3}
