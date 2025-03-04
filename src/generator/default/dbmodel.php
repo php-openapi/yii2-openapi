@@ -144,4 +144,14 @@ foreach ($scenarios as $scenario): ?>
 <?php endif;?>
     }
 <?php endforeach; ?>
+<?php $i = 1;
+foreach ($model->belongsToRelations as $relationName => $relation): ?>
+
+    # belongs to relation
+    public function get<?= $relation->getCamelName() . ($i === 1 ? '' : $i) ?>()
+    {
+        return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
+    echo $relation->linkToString() ?>);
+    }
+<?php $i++; endforeach; ?>
 }
