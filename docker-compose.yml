@@ -73,4 +73,3 @@ networks:
         ipam:
           config:
               - subnet: 172.14.0.0/24
-
