@@ -59,7 +59,7 @@ class ControllersGenerator
             $controllerPath = $path;
             /**
              * @var RestAction|FractalAction $action
-            **/
+             **/
             $action = $actions[0];
             if ($action->prefix && !empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
@@ -126,15 +126,22 @@ PHP;
         ];
         $reflection->addMethod('checkAccess', $params, AbstractMemberGenerator::FLAG_PUBLIC, '//TODO implement checkAccess');
         foreach ($abstractActions as $action) {
+
+            $responseHttpStatusCodes = '';
+            foreach ($this->config->getOpenApi()->paths->getPaths()[$action->urlPath]->getOperations() as $verb => $operation) {
+                if ($verb === strtolower($action->requestMethod)) {
+                    $responseHttpStatusCodes = implode(', ', array_keys($operation->responses->getResponses()));
+                }
+            }
+
             $params = array_map(static function ($param) {
                 return ['name' => $param];
             }, $action->getParamNames());
-
             $reflection->addMethod(
                 $action->actionMethodName,
                 $params,
                 AbstractMemberGenerator::FLAG_PUBLIC,
-                '//TODO implement ' . $action->actionMethodName
+                '// TODO implement ' . $action->actionMethodName . PHP_EOL . '// In order to conform with OpenAPI spec, response of this action must have one of the following HTTP status code: ' . $responseHttpStatusCodes
             );
         }
         $classFileGenerator->setClasses([$reflection]);
