@@ -126,11 +126,19 @@ PHP;
         ];
         $reflection->addMethod('checkAccess', $params, AbstractMemberGenerator::FLAG_PUBLIC, '//TODO implement checkAccess');
         foreach ($abstractActions as $action) {
-
             $responseHttpStatusCodes = '';
             foreach ($this->config->getOpenApi()->paths->getPaths()[$action->urlPath]->getOperations() as $verb => $operation) {
                 $codes = array_keys($operation->responses->getResponses());
-                if ($verb === strtolower($action->requestMethod) && $codes !== [200]) {
+
+                $only200OrDefault = false;
+                if ($codes === [200] || $codes === ['default']) {
+                    $only200OrDefault = true;
+                }
+                if (in_array('default', $codes) && in_array(200, $codes) && count($codes) === 2) {
+                    $only200OrDefault = true;
+                }
+
+                if ($verb === strtolower($action->requestMethod) && !$only200OrDefault) {
                     $responseHttpStatusCodes = implode(', ', $codes);
                 }
             }
