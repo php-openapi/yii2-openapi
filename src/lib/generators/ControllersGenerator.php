@@ -129,8 +129,9 @@ PHP;
 
             $responseHttpStatusCodes = '';
             foreach ($this->config->getOpenApi()->paths->getPaths()[$action->urlPath]->getOperations() as $verb => $operation) {
-                if ($verb === strtolower($action->requestMethod)) {
-                    $responseHttpStatusCodes = implode(', ', array_keys($operation->responses->getResponses()));
+                $codes = array_keys($operation->responses->getResponses());
+                if ($verb === strtolower($action->requestMethod) && $codes !== [200]) {
+                    $responseHttpStatusCodes = implode(', ', $codes);
                 }
             }
 
@@ -141,7 +142,7 @@ PHP;
                 $action->actionMethodName,
                 $params,
                 AbstractMemberGenerator::FLAG_PUBLIC,
-                '// TODO implement ' . $action->actionMethodName . PHP_EOL . '// In order to conform with OpenAPI spec, response of this action must have one of the following HTTP status code: ' . $responseHttpStatusCodes
+                '//TODO implement ' . $action->actionMethodName . ($responseHttpStatusCodes ? PHP_EOL . '// In order to conform with OpenAPI spec, response of this action must have one of the following HTTP status code: ' . $responseHttpStatusCodes : '')
             );
         }
         $classFileGenerator->setClasses([$reflection]);
