@@ -170,7 +170,7 @@ class IssueFixTest extends DbTestCase
         ]);
 
         // check no files are generated
-        $this->assertEquals(count($actualFiles), 0);
+        $this->assertCount(0, $actualFiles);
         $this->deleteTables();
     }
 
@@ -716,12 +716,12 @@ PHP;
     {
         Yii::$app->db->createCommand()->createTable('{{%animals}}', [
             'id' => 'pk',
-            'name' => 'text ', # comment "the name"
-            'g' => 'text',
-            'g2' => 'text',
-            'g3' => 'text',
-            'g4' => 'text',
-            'drop_col' => 'text',
+            'name' => 'text not null', # comment "the name"
+            'g' => 'text not null',
+            'g2' => 'text not null',
+            'g3' => 'text not null',
+            'g4' => 'text not null',
+            'drop_col' => 'text not null',
         ])->execute();
 
         Yii::$app->db->createCommand()->addCommentOnColumn('{{%animals}}', 'name', 'the comment on name col')->execute();
@@ -757,9 +757,9 @@ PHP;
     {
         Yii::$app->db->createCommand()->createTable('{{%addresses}}', [
             'id' => 'pk',
-            'name' => 'varchar(64)',
-            'shortName' => 'varchar(64)',
-            'postalCode' => 'varchar(64)',
+            'name' => 'varchar(64) not null',
+            'shortName' => 'varchar(64) not null',
+            'postalCode' => 'varchar(64) not null',
         ])->execute();
         Yii::$app->db->createCommand()->createIndex('addresses_shortName_postalCode_key', '{{%addresses}}', ["shortName", "postalCode"], true)->execute();
     }
