@@ -211,7 +211,9 @@ class AttributeResolver
         $nullableValue = 'ARG_ABSENT'
     ): void {
         if ($nullableValue === 'ARG_ABSENT') {
-            $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
+//            $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
+//            $nullableValue = $property->getAttr('nullable') ?? null;
+            $nullableValue = $property->getProperty()->nullable ?? null;
         }
         $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
 
