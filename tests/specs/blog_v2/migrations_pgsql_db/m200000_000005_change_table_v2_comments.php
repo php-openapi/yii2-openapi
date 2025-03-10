@@ -9,7 +9,7 @@ class m200000_000005_change_table_v2_comments extends \yii\db\Migration
     {
         $this->dropForeignKey('fk_v2_comments_author_id_v2_users_id', '{{%v2_comments}}');
         $this->dropForeignKey('fk_v2_comments_post_id_v2_posts_uid', '{{%v2_comments}}');
-        $this->addColumn('{{%v2_comments}}', 'user_id', $this->bigInteger()->null()->defaultValue(null)->comment('The User'));
+        $this->addColumn('{{%v2_comments}}', 'user_id', $this->bigInteger()->notNull()->comment('The User'));
         $this->dropColumn('{{%v2_comments}}', 'author_id');
         $this->alterColumn('{{%v2_comments}}', 'message', 'text NOT NULL USING "message"::text');
         $this->alterColumn('{{%v2_comments}}', 'message', "DROP DEFAULT");
