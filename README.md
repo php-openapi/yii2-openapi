@@ -236,7 +236,7 @@ created_at:
   x-db-default-expression: current_timestamp()
 ```
 
-Note: If both `default` and `x-db-default-expression` are present then `default` will be considered.
+Note: If both `default` and `x-db-default-expression` are present, then `default` will be considered.
 
 ```yaml
 created_at:
@@ -600,7 +600,7 @@ User:
 `NOT NULL` in DB migrations is determined by `nullable` and `required` properties of the OpenAPI schema.
 e.g. attribute = 'my_property'.
 
-- If you define attribute neither "required" nor via "nullable", then it is by default `NULL` ([opposite of OpenAPI spec](https://swagger.io/specification/v3/?sbsearch=nullable)):
+- If you define attribute neither "required" nor via "nullable", then it is by default `NOT NULL` ([as per OpenAPI spec](https://github.com/OAI/OpenAPI-Specification/blob/main/proposals/2019-10-31-Clarify-Nullable.md)):
 
 ```yaml
   ExampleSchema:

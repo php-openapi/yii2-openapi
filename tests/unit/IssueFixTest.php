@@ -264,7 +264,6 @@ class IssueFixTest extends DbTestCase
         ])->execute();
 
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 4);
 
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
@@ -273,6 +272,7 @@ class IssueFixTest extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 4);
 
         $dropTables();
     }
@@ -285,7 +285,6 @@ class IssueFixTest extends DbTestCase
         $this->deleteTablesForCreateMigrationForDropTable132();
         $this->createTablesForCreateMigrationForDropTable132();
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 8);
 
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
@@ -294,6 +293,7 @@ class IssueFixTest extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 8);
 
         $this->deleteTablesForCreateMigrationForDropTable132();
     }
@@ -373,7 +373,6 @@ class IssueFixTest extends DbTestCase
         $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
         $this->createTablesForCreateMigrationForDropTable132ForPgsql();
         $this->runGenerator($testFile, 'pgsql');
-        $this->runActualMigrations('pgsql', 8);
 
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
@@ -382,6 +381,7 @@ class IssueFixTest extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('pgsql', 8);
 
         $this->deleteTablesForCreateMigrationForDropTable132ForPgsql();
     }
@@ -552,7 +552,6 @@ class IssueFixTest extends DbTestCase
         $this->createTableFor60DescriptionOfAProperty();
         $testFile = Yii::getAlias("@specs/issue_fix/60_description_of_a_property_in_spec_must_correspond_to_db_table_column_comment/index.php");
         $this->runGenerator($testFile);
-        $this->runActualMigrations();
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
@@ -560,6 +559,7 @@ class IssueFixTest extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations();
         $this->deleteTableFor60DescriptionOfAProperty();
 
 
@@ -568,7 +568,6 @@ class IssueFixTest extends DbTestCase
         $this->deleteTableFor60DescriptionOfAProperty();
         $this->createTableFor60DescriptionOfAProperty();
         $this->runGenerator($testFile, 'pgsql');
-        $this->runActualMigrations('pgsql');
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
             'except' => ['migrations_mysql_db']
@@ -577,6 +576,7 @@ class IssueFixTest extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('pgsql');
         $this->deleteTableFor60DescriptionOfAProperty();
     }
 
@@ -876,7 +876,6 @@ PHP;
     {
         $testFile = Yii::getAlias("@specs/issue_fix/25_generate_inverse_relations/index.php");
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 3);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
@@ -884,6 +883,7 @@ PHP;
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 3);
     }
 
     // https://github.com/php-openapi/yii2-openapi/issues/35
@@ -925,13 +925,12 @@ PHP;
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
-            'name' => 'text',
-            'description' => 'text',
-            'colour' => 'text',
+            'name' => 'text not null',
+            'description' => 'text not null',
+            'colour' => 'text not null',
         ])->execute();
 
         $this->runGenerator($testFile);
-        $this->runActualMigrations('mysql', 1);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
@@ -939,6 +938,7 @@ PHP;
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('mysql', 1);
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
 
         // PgSQL
@@ -946,12 +946,11 @@ PHP;
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
-            'name' => 'text',
-            'description' => 'text',
-            'colour' => 'text',
+            'name' => 'text not null',
+            'description' => 'text not null',
+            'colour' => 'text not null',
         ])->execute();
         $this->runGenerator($testFile, 'pgsql');
-        $this->runActualMigrations('pgsql', 1);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
             'except' => ['migrations_mysql_db']
@@ -960,6 +959,7 @@ PHP;
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations('pgsql', 1);
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
     }
 
@@ -968,9 +968,9 @@ PHP;
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
-            'name' => 'text comment "desc"',
-            'description' => 'text',
-            'col' => 'text',
+            'name' => 'text not null comment "desc"',
+            'description' => 'text not null',
+            'col' => 'text not null',
         ])->execute();
 
         $testFile = Yii::getAlias("@specs/issue_fix/64_add_a_test_for_a_column_change_data_type_comment_position_all_3_are_changed/index.php");

@@ -32,8 +32,8 @@ class Issue58FixTest extends DbTestCase
     {
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
-            'description' => 'text',
-            'name' => 'text',
+            'description' => 'text not null',
+            'name' => 'text not null',
         ])->execute();
     }
 
@@ -380,7 +380,8 @@ components:
         id:
           type: integer
         name:
-          type: boolean        
+          type: boolean
+          nullable: true        
 paths:
   '/':
     get:
@@ -442,8 +443,10 @@ components:
       properties:        
         col_6:
           type: boolean
+          nullable: true
         col_7:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:

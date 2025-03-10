@@ -132,7 +132,7 @@ class XDbDefaultExpressionTest extends DbTestCase
             'ts6' => 'timestamp',
             'd' => 'date',
             'd2' => 'text',
-            'd3' => 'text',
+            'd3' => 'text not null',
             'ts7' => 'date',
         ])->execute();
     }
@@ -199,7 +199,7 @@ class XDbDefaultExpressionTest extends DbTestCase
             'ts6' => 'timestamp DEFAULT CURRENT_TIMESTAMP',
             'd' => 'date DEFAULT \'2011-11-11\'',
             'd2' => 'text', // DEFAULT "2011-11-11"
-            'd3' => 'text', // DEFAULT CURRENT_DATE + INTERVAL 1 YEAR
+            'd3' => 'text not null', // DEFAULT CURRENT_DATE + INTERVAL 1 YEAR
             'ts7' => 'date DEFAULT \'2011-11-11\'',
 
             // https://github.com/yiisoft/yii2/issues/19747

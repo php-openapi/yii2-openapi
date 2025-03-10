@@ -62,7 +62,6 @@ components:
           type: string
         address:
           type: string
-
     Dropfirstcol: # drop first column and see its `down()` code
       type: object
       description: Drop first column
