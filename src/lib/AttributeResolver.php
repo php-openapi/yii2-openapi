@@ -87,9 +87,12 @@ class AttributeResolver
             /** @var $property PropertySchema */
 
             $isRequired = $this->componentSchema->isRequiredProperty($property->getName());
-            $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
-            if ($nullableValue === false) { // see docs in README regarding NOT NULL, required and nullable
-                $isRequired = true;
+            $nullableValue = false; # https://github.com/OAI/OpenAPI-Specification/blob/main/proposals/2019-10-31-Clarify-Nullable.md
+
+            if ($property->hasAttr('nullable')) {
+                if ($property->getAttr('nullable') === true) {
+                    $nullableValue = true;
+                }
             }
 
             if ($this->isJunctionSchema) {
@@ -211,9 +214,10 @@ class AttributeResolver
         $nullableValue = 'ARG_ABSENT'
     ): void {
         if ($nullableValue === 'ARG_ABSENT') {
-//            $nullableValue = $property->getProperty()->getSerializableData()->nullable ?? null;
-//            $nullableValue = $property->getAttr('nullable') ?? null;
-            $nullableValue = $property->getProperty()->nullable ?? null;
+            $nullableValue = false;
+            if ($property->hasAttr('nullable') && $property->getAttr('nullable') === true) {
+                $nullableValue = true;
+            }
         }
         $attribute = Yii::createObject(Attribute::class, [$property->getName()]);
 
