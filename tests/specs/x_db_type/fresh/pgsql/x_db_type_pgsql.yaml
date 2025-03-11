@@ -489,6 +489,7 @@ components:
           default: Horse-2
         tag:
           type: string
+          nullable: true
         first_name:
           type: string
           x-db-type: varchar
@@ -499,6 +500,7 @@ components:
           type: string
           x-db-type: decimal(12,2)
           default: 3.14
+          nullable: true
         str_col_def:
           type: string
           x-db-type: varchar
