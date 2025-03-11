@@ -10,7 +10,7 @@ class m200000_000001_create_table_editcolumns extends \yii\db\Migration
         $this->createTable('{{%editcolumns}}', [
             'id' => $this->primaryKey(),
             0 => 'name varchar(255) NOT NULL DEFAULT \'Horse-2\'',
-            'tag' => $this->text()->notNull(),
+            'tag' => $this->text()->null()->defaultValue(null),
             1 => 'first_name varchar(255) NOT NULL',
             'string_col' => $this->text()->null()->defaultValue(null),
             2 => 'dec_col decimal(12,2) NOT NULL DEFAULT 3.14',
