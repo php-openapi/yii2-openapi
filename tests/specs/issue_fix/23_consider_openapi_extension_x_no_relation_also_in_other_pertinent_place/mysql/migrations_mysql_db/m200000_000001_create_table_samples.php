@@ -9,7 +9,7 @@ class m200000_000001_create_table_samples extends \yii\db\Migration
     {
         $this->createTable('{{%samples}}', [
             'id' => $this->primaryKey(),
-            'message' => $this->text()->null(),
+            'message' => $this->text()->notNull(),
         ]);
     }
 

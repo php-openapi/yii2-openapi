@@ -9,7 +9,7 @@ class m200000_000000_create_table_payments extends \yii\db\Migration
     {
         $this->createTable('{{%payments}}', [
             'id' => $this->primaryKey(),
-            'currency' => $this->text()->null(),
+            'currency' => $this->text()->notNull(),
             'samples' => 'json NOT NULL',
         ]);
     }
