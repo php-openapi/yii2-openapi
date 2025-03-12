@@ -94,7 +94,7 @@ class SchemaToDatabase
 
         $openApi = $this->config->getOpenApi();
         $junctions = $this->findJunctionSchemas();
-        foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
+        foreach ($openApi->components->schemas ?? [] as $schemaName => $openApiSchema) {
             $schema = Yii::createObject(ComponentSchema::class, [$openApiSchema, $schemaName]);
 
             if (!$this->canGenerateModel($schemaName, $schema)) {
@@ -153,7 +153,7 @@ class SchemaToDatabase
     {
         $junctions = [];
         $openApi = $this->config->getOpenApi();
-        foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
+        foreach ($openApi->components->schemas ?? [] as $schemaName => $openApiSchema) {
             /**@var ComponentSchema $schema */
             $schema = Yii::createObject(ComponentSchema::class, [$openApiSchema, $schemaName]);
             if ($schema->isNonDb()) {

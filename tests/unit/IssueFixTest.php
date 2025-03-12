@@ -1044,4 +1044,46 @@ PHP;
         $this->checkFiles($actualFiles, $expectedFiles);
         $this->runActualMigrations();
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/78
+    public function test78PropertiesThatAreMarkedAsReadonlyAreNotReadOnly()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/78_properties_that_are_marked_as_readonly_are_not_read_only/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/78_properties_that_are_marked_as_readonly_are_not_read_only/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/79
+    public function test79ResponseStatusCodesAreNotTheCodesDefinedInSpec()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/79_response_status_codes_are_not_the_codes_defined_in_spec/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/79_response_status_codes_are_not_the_codes_defined_in_spec/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/96
+    public function test96ComponentSchemaShouldBeOptional()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/96_component_schema_should_be_optional/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/96_component_schema_should_be_optional/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

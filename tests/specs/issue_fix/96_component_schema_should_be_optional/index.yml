@@ -1,0 +1,13 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 96_component_schema_should_be_optional
+
+paths:
+  /:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information

@@ -13,6 +13,7 @@ class AccountController extends \app\controllers\base\AccountController
     public function actionView($id)
     {
         //TODO implement actionView
+        // In order to conform with OpenAPI spec, response of this action must have one of the following HTTP status code: 200, 404
     }
 
 

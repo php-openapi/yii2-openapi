@@ -1,0 +1,36 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 79_response_status_codes_are_not_the_codes_defined_in_spec
+paths:
+  /mango/cake:
+    get:
+      responses:
+        '200':
+          description: The information
+        '403':
+          description: The information
+        '404':
+          description: The information
+    post:
+      responses:
+        '201':
+          description: The information
+        '403':
+          description: The information
+        '404':
+          description: The information
+        '422':
+          description: The information
+
+components:
+  schemas:
+    Address:
+      type: object
+      description: desc
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          maxLength: 64
