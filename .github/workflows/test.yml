@@ -31,14 +31,11 @@ jobs:
       # Run every tests inside Docker container
       - name: Docker Compose Setup
         uses: ndeloof/install-compose-action@v0.0.1
-        with:
-          # version: v3.5 # defaults to 'latest'
-          legacy: true    # will also install in PATH as `docker-compose`
 
       - name: Clean
         run: make clean_all
 
-      - name: docker-compose up
+      - name: docker compose up
         run: make up
 
       # https://github.com/shivammathur/setup-php?tab=readme-ov-file#cache-composer-dependencies
@@ -57,7 +54,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Docker and composer dependencies
-        run: docker-compose exec php php -v && make installdocker
+        run: docker compose exec php php -v && make installdocker
 
       - name: Migrate
         run: make UID=0 migrate
