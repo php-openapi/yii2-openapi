@@ -16,6 +16,7 @@ use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Schema;
+use cebe\openapi\SpecBaseObject;
 use cebe\openapi\SpecObjectInterface;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
 use cebe\yii2openapi\lib\items\Attribute;
@@ -329,7 +330,9 @@ class FakerStubResolver
             if (!empty($prop->properties)) { // nested object
                 $result = $this->{__FUNCTION__}($prop);
             } else {
-                $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);
+//                ($prop instanceof SpecBaseObject) && var_dump($prop->rawSpec);
+//                $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);
+                $result = $this->aElementFaker(['items' => $prop->rawSpec], $name);
             }
             $props .= '\'' . $name . '\' => ' . $result . ',' . PHP_EOL;
         }
@@ -358,7 +361,7 @@ class FakerStubResolver
         foreach ($items->oneOf as $key => $aDataType) {
             /** @var Schema|Reference $aDataType */
 
-            $inp = $aDataType instanceof Reference ? $aDataType : ['items' => $aDataType->getSerializableData()];
+            $inp = $aDataType instanceof Reference ? $aDataType : ['items' => $aDataType->rawSpec];
             $aFaker = $this->aElementFaker($inp, $this->attribute->columnName);
             $result .= '$dataType' . $key . ' = ' . $aFaker . ';';
         }
@@ -403,7 +406,7 @@ class FakerStubResolver
             return '(new ' . $class . ')->generateModel()->attributes';
         }
 
-        $inp = $data instanceof SpecObjectInterface ? $data->getSerializableData() : $data;
+        $inp = $data instanceof SpecObjectInterface ? $data->rawSpec : $data;
         $aElementData = Json::decode(Json::encode($inp));
         $columnName = $columnName ?? 'unnamedProp';
         $compoSchemaData = [
