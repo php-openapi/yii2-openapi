@@ -1,31 +1,26 @@
 openapi: "3.0.0"
-
 info:
   version: 1.0.0
-  title: '#88'
-
+  title: \#90
 paths:
   /:
     get:
       responses:
         '200':
-          description: The response
+          description: The information
 
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+
     Address:
       type: object
       properties:
         id:
           type: integer
-        name:
-          type: string
-    Human:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        address:
-          $ref: '#/components/schemas/Address'
+        user:
+          $ref: '#/components/schemas/User'

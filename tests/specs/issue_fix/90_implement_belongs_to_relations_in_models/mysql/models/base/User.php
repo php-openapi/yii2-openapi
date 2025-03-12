@@ -7,16 +7,16 @@
 namespace app\models\base;
 
 /**
- * This is the model class for table "invoices".
+ * This is the model class for table "users".
  *
  * @property int $id
  *
  */
-abstract class Invoice extends \yii\db\ActiveRecord
+abstract class User extends \yii\db\ActiveRecord
 {
     public static function tableName()
     {
-        return '{{%invoices}}';
+        return '{{%users}}';
     }
 
     public function rules()
@@ -25,8 +25,8 @@ abstract class Invoice extends \yii\db\ActiveRecord
     }
 
     # belongs to relation
-    public function getOrder()
+    public function getAddress()
     {
-        return $this->hasOne(\app\models\Order::class, ['invoice_id' => 'id']);
+        return $this->hasOne(\app\models\Address::class, ['user_id' => 'id']);
     }
 }

@@ -38,6 +38,11 @@ class AttributeResolver
     public array $relations = [];
 
     /**
+     * @var array keys contains class names and value contains array of belongs to relations
+     */
+    public array $belongsToRelations = [];
+
+    /**
      * @var NonDbRelation[]|array
      */
     private array $nonDbRelations = [];
@@ -273,6 +278,13 @@ class AttributeResolver
             $relation->onDeleteFkConstraint = $property->onDeleteFkConstraint;
             if ($property->isRefPointerToSelf()) {
                 $relation->asSelfReference();
+            } else { # belongs to relations https://github.com/php-openapi/yii2-openapi/issues/90
+                $belongsToRelation = Yii::createObject(
+                    AttributeRelation::class,
+                    [$this->schemaName, $this->tableName, $this->schemaName]
+                )
+                    ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
+                $this->belongsToRelations[$property->getRefClassName()][] = $belongsToRelation;
             }
             $this->relations[$property->getName()] = $relation;
         }

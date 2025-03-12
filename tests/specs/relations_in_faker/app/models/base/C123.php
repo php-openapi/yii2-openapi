@@ -27,4 +27,10 @@ abstract class C123 extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getB123()
+    {
+        return $this->hasOne(\app\models\B123::class, ['c123_id' => 'id']);
+    }
 }

@@ -28,4 +28,22 @@ abstract class Account extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string', 'max' => 40],
         ];
     }
+
+    # belongs to relation
+    public function getE123()
+    {
+        return $this->hasOne(\app\models\E123::class, ['account_id' => 'id']);
+    }
+
+    # belongs to relation
+    public function getE1232()
+    {
+        return $this->hasOne(\app\models\E123::class, ['account_2_id' => 'id']);
+    }
+
+    # belongs to relation
+    public function getE1233()
+    {
+        return $this->hasOne(\app\models\E123::class, ['account_3_id' => 'id']);
+    }
 }

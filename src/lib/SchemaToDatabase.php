@@ -110,6 +110,14 @@ class SchemaToDatabase
             $models[$schemaName] = $resolvers[$schemaName]->resolve();
         }
 
+        // handle belongs to relation
+        foreach ($resolvers as $aResolver) {
+            foreach ($aResolver->belongsToRelations as $name => $relations) {
+                /** @var AttributeRelation[] $relations */
+                $models[$name]->belongsToRelations = [...$models[$name]->belongsToRelations, ...$relations];
+            }
+        }
+
         foreach ($models as $model) {
             foreach ($model->many2many as $relation) {
                 if (isset($models[$relation->viaModelName])) {

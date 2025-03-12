@@ -44,4 +44,16 @@ abstract class User extends \yii\db\ActiveRecord
             'email_unique' => [['email'], 'unique'],
         ];
     }
+
+    # belongs to relation
+    public function getPost()
+    {
+        return $this->hasOne(\app\models\Post::class, ['created_by_id' => 'id']);
+    }
+
+    # belongs to relation
+    public function getComment()
+    {
+        return $this->hasOne(\app\models\Comment::class, ['author_id' => 'id']);
+    }
 }

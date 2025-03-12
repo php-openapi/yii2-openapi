@@ -30,4 +30,10 @@ abstract class Mailing extends \yii\db\ActiveRecord
             'paymentMethodName_string' => [['paymentMethodName'], 'string'],
         ];
     }
+
+    # belongs to relation
+    public function getContact()
+    {
+        return $this->hasOne(\app\models\Contact::class, ['mailing_id' => 'id']);
+    }
 }

@@ -63,4 +63,10 @@ abstract class Pet extends \yii\db\ActiveRecord
     {
         return $this->hasMany(\app\models\Pet::class, ['tag' => 'tag']);
     }
+
+    # belongs to relation
+    public function getPetStatistic()
+    {
+        return $this->hasOne(\app\models\PetStatistic::class, ['parentPet_id' => 'id']);
+    }
 }

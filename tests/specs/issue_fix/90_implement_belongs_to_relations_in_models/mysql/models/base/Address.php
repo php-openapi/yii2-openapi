@@ -10,8 +10,9 @@ namespace app\models\base;
  * This is the model class for table "addresses".
  *
  * @property int $id
- * @property string $name
+ * @property int $user_id
  *
+ * @property \app\models\User $user
  */
 abstract class Address extends \yii\db\ActiveRecord
 {
@@ -23,14 +24,13 @@ abstract class Address extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            'trim' => [['name'], 'trim'],
-            'name_string' => [['name'], 'string'],
+            'user_id_integer' => [['user_id'], 'integer'],
+            'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'user'],
         ];
     }
 
-    # belongs to relation
-    public function getHuman()
+    public function getUser()
     {
-        return $this->hasOne(\app\models\Human::class, ['address_id' => 'id']);
+        return $this->hasOne(\app\models\User::class, ['id' => 'user_id']);
     }
 }

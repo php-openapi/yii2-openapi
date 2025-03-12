@@ -146,4 +146,14 @@ foreach ($scenarios as $scenario): ?>
 <?php endif;?>
     }
 <?php endforeach; ?>
+<?php $i = 1; $usedRelationNames = [];
+foreach ($model->belongsToRelations as $relationName => $relation): ?><?php $number = in_array($relation->getCamelName(), $usedRelationNames) ? $i : '' ?>
+
+    # belongs to relation
+    public function get<?= $relation->getCamelName() . ($number) ?>()
+    {
+        return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
+    echo $relation->linkToString() ?>);
+    }
+<?php $i++; $usedRelationNames[] = $relation->getCamelName(); endforeach; ?>
 }

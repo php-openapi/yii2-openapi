@@ -86,9 +86,9 @@ class DbModel extends BaseObject
     public bool $descriptionIsComment = false;
 
     /**
-     * @var array Automatically generated scenarios from the model 'x-scenarios'.
+     * @var AttributeRelation[] belongs to relations
      */
-    private $_scenarios;
+    public array $belongsToRelations = [];
 
     /**
      * @var bool
@@ -97,6 +97,11 @@ class DbModel extends BaseObject
      * @see https://github.com/cebe/yii2-openapi/issues/132
      */
     public $drop = false;
+
+    /**
+     * @var array Automatically generated scenarios from the model 'x-scenarios'.
+     */
+    private $_scenarios;
 
     public function getTableAlias(): string
     {
