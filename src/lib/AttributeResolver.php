@@ -60,11 +60,6 @@ class AttributeResolver
 
     private ?Config $config;
 
-    /**
-     * @var AttributeRelation[]|array
-     */
-    public array $inverseRelations = [];
-
     public function __construct(string $schemaName, ComponentSchema $schema, JunctionSchemas $junctions, ?Config $config = null)
     {
         $this->schemaName = $schemaName;
@@ -232,6 +227,7 @@ class AttributeResolver
                   ->setForeignKeyColumnName($property->fkColName)
                   ->setFakerStub($this->guessFakerStub($attribute, $property))
                   ->setTableName($this->componentSchema->resolveTableName($this->schemaName));
+
         if ($property->isReference()) {
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
@@ -279,10 +275,8 @@ class AttributeResolver
                 $relation->asSelfReference();
             }
             $this->relations[$property->getName()] = $relation;
-            if (!$property->isRefPointerToSelf()) {
-                $this->addInverseRelation($relatedClassName, $attribute, $property, $fkProperty);
-            }
         }
+
         if (!$property->isReference() && !$property->hasRefItems()) {
             [$min, $max] = $property->guessMinMax();
             $attribute->setIsVirtual($property->isVirtual())
@@ -338,6 +332,7 @@ class AttributeResolver
                         ->asHasMany([$foreignPk => $this->componentSchema->getPkName()]);
                 return;
             }
+
             $relatedClassName = $property->getRefClassName();
             $relatedTableName = $property->getRefSchema()->resolveTableName($relatedClassName);
             if ($this->catchManyToMany(
@@ -517,23 +512,5 @@ class AttributeResolver
             $relationName = strtolower($fkColumnName) === strtolower($relationName) ? $relationName . 'Rel' : $relationName;
         }
         return $relationName;
-    }
-
-    /**
-     * @throws InvalidConfigException
-     */
-    public function addInverseRelation(
-        string $relatedClassName,
-        Attribute $attribute,
-        PropertySchema $property,
-        PropertySchema $fkProperty
-    ): void {
-        $inverseRelation = Yii::createObject(
-            AttributeRelation::class,
-            [$this->schemaName, $this->tableName, $this->schemaName]
-        )
-            ->asHasOne([$attribute->columnName => $fkProperty->getName()]);
-        $inverseRelation->setInverse($property->getName());
-        $this->inverseRelations[$relatedClassName][] = $inverseRelation;
     }
 }

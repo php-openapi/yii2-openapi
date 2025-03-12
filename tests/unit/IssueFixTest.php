@@ -1072,4 +1072,18 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/88
+    public function test88InCaseOfUpdatingAModelGeneratorCreatesRedundantInverseRelations()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/88_in_case_of_updating_a_model_generator_creates_redundant_inverse_relations/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/88_in_case_of_updating_a_model_generator_creates_redundant_inverse_relations/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }

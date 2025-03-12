@@ -27,9 +27,4 @@ abstract class Fruit extends \yii\db\ActiveRecord
             'name_string' => [['name'], 'string'],
         ];
     }
-
-    public function getInvoice()
-    {
-        return $this->hasOne(\app\models\Invoice::class, ['fruit_id' => 'id'])->inverseOf('fruit');
-    }
 }

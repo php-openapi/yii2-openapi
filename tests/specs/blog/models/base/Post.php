@@ -61,9 +61,4 @@ abstract class Post extends \yii\db\ActiveRecord
     {
         return $this->hasMany(\app\models\Comment::class, ['post_id' => 'uid'])->inverseOf('post');
     }
-
-    public function getComment()
-    {
-        return $this->hasOne(\app\models\Comment::class, ['post_id' => 'uid'])->inverseOf('post');
-    }
 }

@@ -7,24 +7,24 @@
 namespace app\models\base;
 
 /**
- * This is the model class for table "deliveries".
+ * This is the model class for table "addresses".
  *
  * @property int $id
- * @property string $title
+ * @property string $name
  *
  */
-abstract class Delivery extends \yii\db\ActiveRecord
+abstract class Address extends \yii\db\ActiveRecord
 {
     public static function tableName()
     {
-        return '{{%deliveries}}';
+        return '{{%addresses}}';
     }
 
     public function rules()
     {
         return [
-            'trim' => [['title'], 'trim'],
-            'title_string' => [['title'], 'string'],
+            'trim' => [['name'], 'trim'],
+            'name_string' => [['name'], 'string'],
         ];
     }
 }
