@@ -29,8 +29,9 @@ abstract class Store extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getPet()
     {
-        return $this->hasOne(\app\mymodels\Pet::class, ['store_id' => 'id'])->inverseOf('store');
+        return $this->hasOne(\app\mymodels\Pet::class, ['store_id' => 'id']);
     }
 }

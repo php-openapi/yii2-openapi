@@ -37,13 +37,15 @@ abstract class B123 extends \yii\db\ActiveRecord
         return $this->hasOne(\app\models\C123::class, ['id' => 'c123_id']);
     }
 
+    # belongs to relation
     public function getA123()
     {
-        return $this->hasOne(\app\models\A123::class, ['b123_id' => 'id'])->inverseOf('b123');
+        return $this->hasOne(\app\models\A123::class, ['b123_id' => 'id']);
     }
 
-    public function getE1232()
+    # belongs to relation
+    public function getE123()
     {
-        return $this->hasOne(\app\models\E123::class, ['b123_id' => 'id'])->inverseOf('b123');
+        return $this->hasOne(\app\models\E123::class, ['b123_id' => 'id']);
     }
 }

@@ -29,18 +29,21 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getE123()
     {
-        return $this->hasOne(\app\models\E123::class, ['account_id' => 'id'])->inverseOf('account');
+        return $this->hasOne(\app\models\E123::class, ['account_id' => 'id']);
     }
 
+    # belongs to relation
     public function getE1232()
     {
-        return $this->hasOne(\app\models\E123::class, ['account_2_id' => 'id'])->inverseOf('account_2');
+        return $this->hasOne(\app\models\E123::class, ['account_2_id' => 'id']);
     }
 
+    # belongs to relation
     public function getE1233()
     {
-        return $this->hasOne(\app\models\E123::class, ['account_3_id' => 'id'])->inverseOf('account_3');
+        return $this->hasOne(\app\models\E123::class, ['account_3_id' => 'id']);
     }
 }

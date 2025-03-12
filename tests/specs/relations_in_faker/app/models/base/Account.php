@@ -29,8 +29,9 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getDomain()
     {
-        return $this->hasOne(\app\models\Domain::class, ['account_id' => 'id'])->inverseOf('account');
+        return $this->hasOne(\app\models\Domain::class, ['account_id' => 'id']);
     }
 }

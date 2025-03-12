@@ -1030,6 +1030,20 @@ PHP;
         $this->runActualMigrations();
     }
 
+    // https://github.com/php-openapi/yii2-openapi/issues/79
+    public function test79ResponseStatusCodesAreNotTheCodesDefinedInSpec()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/79_response_status_codes_are_not_the_codes_defined_in_spec/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/79_response_status_codes_are_not_the_codes_defined_in_spec/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/87
     public function test87ImplementForJsonInIsrefpointertoschema()
     {
@@ -1043,5 +1057,61 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
         $this->runActualMigrations();
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/96
+    public function test96ComponentSchemaShouldBeOptional()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/96_component_schema_should_be_optional/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/96_component_schema_should_be_optional/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/88
+    public function test88InCaseOfUpdatingAModelGeneratorCreatesRedundantInverseRelations()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/88_in_case_of_updating_a_model_generator_creates_redundant_inverse_relations/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/88_in_case_of_updating_a_model_generator_creates_redundant_inverse_relations/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/78
+    public function test78PropertiesThatAreMarkedAsReadonlyAreNotReadOnly()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/78_properties_that_are_marked_as_readonly_are_not_read_only/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/78_properties_that_are_marked_as_readonly_are_not_read_only/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/90
+    public function test90ImplementBelongsToRelationsInModels()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/90_implement_belongs_to_relations_in_models/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/90_implement_belongs_to_relations_in_models/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
