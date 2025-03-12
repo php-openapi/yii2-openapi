@@ -1001,6 +1001,50 @@ PHP;
         $this->runActualMigrations();
     }
 
+    // https://github.com/php-openapi/yii2-openapi/issues/22
+    public function test22BugRulesRequiredIsGeneratedBeforeDefault()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/22_bug_rules_required_is_generated_before_default/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/22_bug_rules_required_is_generated_before_default/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/23
+    public function test23ConsiderOpenapiExtensionXNoRelationAlsoInOtherPertinentPlace()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/23_consider_openapi_extension_x_no_relation_also_in_other_pertinent_place/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/23_consider_openapi_extension_x_no_relation_also_in_other_pertinent_place/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations();
+    }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/87
+    public function test87ImplementForJsonInIsrefpointertoschema()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/87_implement_for_json_in_is_ref_pointer_to_schema/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/74_invalid_schema_reference_error/mysql"), [ # this is intentional
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        $this->runActualMigrations();
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/78
     public function test78PropertiesThatAreMarkedAsReadonlyAreNotReadOnly()
     {

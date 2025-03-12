@@ -14,8 +14,6 @@ use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\SchemaToDatabase;
 use Generator;
 use Yii;
-use yii\helpers\Inflector;
-use yii\helpers\StringHelper;
 use function in_array;
 
 class ComponentSchema
@@ -106,7 +104,9 @@ class ComponentSchema
 
     public function isNonDb():bool
     {
-        return isset($this->schema->{CustomSpecAttr::TABLE}) && $this->schema->{CustomSpecAttr::TABLE} === false;
+        return
+            isset($this->schema->{CustomSpecAttr::TABLE}) &&
+            $this->schema->{CustomSpecAttr::TABLE} === false;
     }
 
     public function resolveTableName(string $schemaName):string

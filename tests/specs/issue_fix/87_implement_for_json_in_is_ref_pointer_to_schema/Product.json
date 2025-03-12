@@ -1,0 +1,22 @@
+{
+  "title": "Product",
+  "x-table": "products",
+  "type": "object",
+  "required": [
+    "id",
+    "vat_rate"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "vat_rate": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "none"
+      ],
+      "default": "standard"
+    }
+  }
+}

@@ -23,9 +23,9 @@ abstract class Pristine extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            'billing_factor_default' => [['billing_factor'], 'default', 'value' => 100],
             'required' => [['billing_factor'], 'required'],
             'billing_factor_integer' => [['billing_factor'], 'integer'],
-            'billing_factor_default' => [['billing_factor'], 'default', 'value' => 100],
         ];
     }
 }

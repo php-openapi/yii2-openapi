@@ -84,7 +84,7 @@ Creating yii2-openapi_maria_1    ... done
 Creating yii2-openapi_mysql_1    ... done
 Creating yii2-openapi_postgres_1 ... done
 Creating yii2-openapi_php_1      ... done
-docker-compose exec php bash
+docker compose exec php bash
 
 root@f9928598f841:/app# php -v
 

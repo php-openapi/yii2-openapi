@@ -27,10 +27,10 @@ abstract class Order extends \yii\db\ActiveRecord
     {
         return [
             'trim' => [['name', 'name2'], 'trim'],
-            'invoice_id_integer' => [['invoice_id'], 'integer'],
-            'invoice_id_exist' => [['invoice_id'], 'exist', 'targetRelation' => 'invoice'],
             'name_string' => [['name'], 'string'],
             'name2_string' => [['name2'], 'string'],
+            'invoice_id_integer' => [['invoice_id'], 'integer'],
+            'invoice_id_exist' => [['invoice_id'], 'exist', 'targetRelation' => 'invoice'],
         ];
     }
 

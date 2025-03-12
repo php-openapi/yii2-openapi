@@ -32,14 +32,14 @@ abstract class Account extends \yii\db\ActiveRecord
         return [
             'trim' => [['name', 'paymentMethodName'], 'trim'],
             'required' => [['name'], 'required'],
+            'name_string' => [['name'], 'string', 'max' => 128],
+            'paymentMethodName_string' => [['paymentMethodName'], 'string'],
             'user_id_integer' => [['user_id'], 'integer'],
             'user_id_exist' => [['user_id'], 'exist', 'targetRelation' => 'user'],
             'user2_id_integer' => [['user2_id'], 'integer'],
             'user2_id_exist' => [['user2_id'], 'exist', 'targetRelation' => 'user2'],
             'user3_integer' => [['user3'], 'integer'],
             'user3_exist' => [['user3'], 'exist', 'targetRelation' => 'user3Rel'],
-            'name_string' => [['name'], 'string', 'max' => 128],
-            'paymentMethodName_string' => [['paymentMethodName'], 'string'],
         ];
     }
 
