@@ -1058,4 +1058,18 @@ PHP;
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
     }
+
+    // https://github.com/php-openapi/yii2-openapi/issues/79
+    public function test79ResponseStatusCodesAreNotTheCodesDefinedInSpec()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/79_response_status_codes_are_not_the_codes_defined_in_spec/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/79_response_status_codes_are_not_the_codes_defined_in_spec/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
 }
