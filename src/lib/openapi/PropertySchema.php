@@ -145,6 +145,11 @@ class PropertySchema
             $property = $this->property;
         }
 
+        // don't go reference part if `x-no-relation` is true
+        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
+            return;
+        }
+
         if ($property instanceof Reference) {
             $this->initReference();
         } elseif (
@@ -499,6 +504,7 @@ class PropertySchema
                 }
                 return YiiDbSchema::TYPE_TEXT;
             case 'object':
+            case 'array':
             {
                 return YiiDbSchema::TYPE_JSON;
             }
