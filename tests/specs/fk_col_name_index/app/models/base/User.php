@@ -29,8 +29,9 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getWebhook()
     {
-        return $this->hasOne(\app\models\Webhook::class, ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasOne(\app\models\Webhook::class, ['user_id' => 'id']);
     }
 }

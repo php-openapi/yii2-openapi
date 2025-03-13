@@ -28,8 +28,9 @@ abstract class Animal extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getInvoice()
     {
-        return $this->hasOne(\app\models\Invoice::class, ['animal_id' => 'id'])->inverseOf('animal');
+        return $this->hasOne(\app\models\Invoice::class, ['animal_id' => 'id']);
     }
 }

@@ -146,12 +146,14 @@ foreach ($scenarios as $scenario): ?>
 <?php endif;?>
     }
 <?php endforeach; ?>
-<?php $i = 1; foreach ($model->inverseRelations as $relationName => $relation): ?>
+<?php $i = 1; $usedRelationNames = [];
+foreach ($model->belongsToRelations as $relationName => $relation): ?><?php $number = in_array($relation->getCamelName(), $usedRelationNames) ? $i : '' ?>
 
-    public function get<?= $relation->getCamelName().($i===1 ? '' : $i) ?>()
+    # belongs to relation
+    public function get<?= $relation->getCamelName() . ($number) ?>()
     {
         return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
-    echo $relation->linkToString() ?>)->inverseOf('<?= $relation->getInverse() ?>');
+    echo $relation->linkToString() ?>);
     }
-<?php $i++; endforeach; ?>
+<?php $i++; $usedRelationNames[] = $relation->getCamelName(); endforeach; ?>
 }

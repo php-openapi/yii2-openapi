@@ -74,8 +74,9 @@ abstract class Post extends \yii\db\ActiveRecord
                     ->viaTable('posts2tags', ['post_id' => 'id']);
     }
 
+    # belongs to relation
     public function getComment()
     {
-        return $this->hasOne(\app\models\Comment::class, ['post_id' => 'id'])->inverseOf('post');
+        return $this->hasOne(\app\models\Comment::class, ['post_id' => 'id']);
     }
 }

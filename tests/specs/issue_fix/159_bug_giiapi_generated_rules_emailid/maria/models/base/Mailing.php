@@ -31,8 +31,9 @@ abstract class Mailing extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getContact()
     {
-        return $this->hasOne(\app\models\Contact::class, ['mailing_id' => 'id'])->inverseOf('mailing');
+        return $this->hasOne(\app\models\Contact::class, ['mailing_id' => 'id']);
     }
 }

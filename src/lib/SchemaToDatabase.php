@@ -94,7 +94,7 @@ class SchemaToDatabase
 
         $openApi = $this->config->getOpenApi();
         $junctions = $this->findJunctionSchemas();
-        foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
+        foreach ($openApi->components->schemas ?? [] as $schemaName => $openApiSchema) {
             $schema = Yii::createObject(ComponentSchema::class, [$openApiSchema, $schemaName]);
 
             if (!$this->canGenerateModel($schemaName, $schema)) {
@@ -106,18 +106,15 @@ class SchemaToDatabase
             /** @var AttributeResolver $resolver */
             $resolver = Yii::createObject(AttributeResolver::class, [$schemaName, $schema, $junctions, $this->config]);
 
-            // $models[$schemaName] = $resolver->resolve();
             $resolvers[$schemaName] = $resolver;
             $models[$schemaName] = $resolvers[$schemaName]->resolve();
         }
 
-        // handle inverse relation
+        // handle belongs to relation
         foreach ($resolvers as $aResolver) {
-            foreach ($aResolver->inverseRelations as $name => $relations) {
-                foreach ($relations as $relation) {
-                    /** @var AttributeRelation $relation */
-                    $models[$name]->inverseRelations[] = $relation;
-                }
+            foreach ($aResolver->belongsToRelations as $name => $relations) {
+                /** @var AttributeRelation[] $relations */
+                $models[$name]->belongsToRelations = [...$models[$name]->belongsToRelations, ...$relations];
             }
         }
 
@@ -153,7 +150,7 @@ class SchemaToDatabase
     {
         $junctions = [];
         $openApi = $this->config->getOpenApi();
-        foreach ($openApi->components->schemas as $schemaName => $openApiSchema) {
+        foreach ($openApi->components->schemas ?? [] as $schemaName => $openApiSchema) {
             /**@var ComponentSchema $schema */
             $schema = Yii::createObject(ComponentSchema::class, [$openApiSchema, $schemaName]);
             if ($schema->isNonDb()) {

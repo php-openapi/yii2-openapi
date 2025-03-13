@@ -48,13 +48,15 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getPost()
     {
-        return $this->hasOne(\app\models\Post::class, ['created_by_id' => 'id'])->inverseOf('created_by');
+        return $this->hasOne(\app\models\Post::class, ['created_by_id' => 'id']);
     }
 
-    public function getComment2()
+    # belongs to relation
+    public function getComment()
     {
-        return $this->hasOne(\app\models\Comment::class, ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasOne(\app\models\Comment::class, ['user_id' => 'id']);
     }
 }
