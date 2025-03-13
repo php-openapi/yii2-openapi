@@ -1,0 +1,42 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 100_fix_numbering_issue_in_relation_names_in_case_of_more_than_one_similar_belongs_to_relation
+paths:
+  /:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        shortName:
+          type: string
+        postCode:
+          type: string
+          maxLength: 64
+    Foo:
+      type: object
+      properties:
+        id:
+          type: integer
+        address:
+          $ref: '#/components/schemas/Address'
+
+    Bar:
+      type: object
+      properties:
+        id:
+          type: integer
+        task:
+          $ref: '#/components/schemas/Address'
+        related_task:
+          $ref: '#/components/schemas/Address'
