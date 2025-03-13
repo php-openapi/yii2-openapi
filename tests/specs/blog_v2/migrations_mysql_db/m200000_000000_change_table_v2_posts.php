@@ -13,7 +13,7 @@ class m200000_000000_change_table_v2_posts extends \yii\db\Migration
         $this->dropColumn('{{%v2_posts}}', 'uid');
         $this->alterColumn('{{%v2_posts}}', 'category_id', $this->bigInteger()->notNull());
         $this->alterColumn('{{%v2_posts}}', 'active', $this->tinyInteger(1)->notNull());
-        $this->alterColumn('{{%v2_posts}}', 'created_by_id', $this->bigInteger()->null()->defaultValue(null));
+        $this->alterColumn('{{%v2_posts}}', 'created_by_id', $this->bigInteger()->notNull());
     }
 
     public function down()

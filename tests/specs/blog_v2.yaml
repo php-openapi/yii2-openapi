@@ -268,12 +268,15 @@ components:
             - editor
             - reader
           x-faker: "$faker->randomElement(['admin', 'editor', 'reader'])"
+          nullable: true
         flags:
           type: integer
           default: 0
+          nullable: true
         created_at:
           type: string
           format: date-time
+          nullable: true
     Users:
       type: array
       items:
@@ -332,12 +335,14 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+          nullable: true
         lang:
           type: string
           enum:
             - ru
             - eng
           default: ru
+          nullable: true
         category:
           $ref: "#/components/schemas/Category"
         active:
@@ -345,6 +350,8 @@ components:
         created_at:
           type: string
           format: date
+          nullable: true
+          default: null
         created_by:
           $ref: "#/components/schemas/User"
         comments:
@@ -384,6 +391,7 @@ components:
           minLength: 1
           maxLength: 300
           default: ''
+          nullable: true
         created_at:
           type: string
           format: date-time

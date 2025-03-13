@@ -9,7 +9,7 @@ class m200000_000000_create_table_fruits extends \yii\db\Migration
     {
         $this->createTable('{{%fruits}}', [
             'id' => $this->primaryKey(),
-            'name' => $this->text()->null(),
+            'name' => $this->text()->notNull(),
         ]);
     }
 

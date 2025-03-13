@@ -454,7 +454,7 @@ created_at:
   x-db-default-expression: current_timestamp()
 ```
 
-Note: If both `default` and `x-db-default-expression` are present then `default` will be considered.
+Note: If both `default` and `x-db-default-expression` are present, then `default` will be considered.
 
 ```yaml
 created_at:
@@ -815,10 +815,13 @@ User:
 
 ## Handling of `NOT NULL` constraints
 
-`NOT NULL` in DB migrations is determined by `nullable` and `required` properties of the OpenAPI schema.
+`NOT NULL` in DB migrations is determined by `nullable` properties of the OpenAPI schema.
 e.g. attribute = 'my_property'.
 
-- If you define attribute neither "required" nor via "nullable", then it is by default `NULL` ([opposite of OpenAPI spec](https://swagger.io/specification/v3/?sbsearch=nullable)):
+- If you define attribute neither "required" nor via "nullable", then it is by default `NOT NULL` ([as per OpenAPI spec](https://github.com/OAI/OpenAPI-Specification/blob/main/proposals/2019-10-31-Clarify-Nullable.md)):
+- `nullable` and `required` of OpenAPI spec is not related. They have separate purpose.
+- `nullable` will help in creating migrations ([`null()`](https://www.yiiframework.com/doc/api/2.0/yii-db-columnschemabuilder#null()-detail) and [`notNull()`](https://www.yiiframework.com/doc/api/2.0/yii-db-columnschemabuilder#notNull()-detail)) only
+- `required` will help in creating model validation rules only
 
 ```yaml
   ExampleSchema:
@@ -827,7 +830,7 @@ e.g. attribute = 'my_property'.
         type: string
 ```
 
-- If you define attribute in "required", then it is `NOT NULL`
+- In below example, if you define attribute in "required", then it is `NOT NULL`, because `nullable` is present and it defaults to `false`
 
 ```yaml
   ExampleSchema:
@@ -838,7 +841,7 @@ e.g. attribute = 'my_property'.
         type: string
 ```
 
-- If you define attribute via "nullable", then it overrides "required", e.g. allow `NULL` in this case:
+- If you define attribute via "nullable", e.g. allow `NULL` in this case:
 
 ```yaml
   ExampleSchema:
@@ -850,7 +853,7 @@ e.g. attribute = 'my_property'.
         nullable: true
 ```
 
-- If you define attribute via "nullable", then it overrides "required", e.g. `NOT NULL` in this case:
+- If you define attribute via "nullable" e.g. `NOT NULL` in this case:
 
 ```yaml
   test_table:

@@ -9,7 +9,7 @@ class m200000_000000_create_table_userxes extends \yii\db\Migration
     {
         $this->createTable('{{%userxes}}', [
             'id' => $this->primaryKey(),
-            'name' => $this->text()->null()->defaultValue(null),
+            'name' => $this->text()->notNull(),
         ]);
     }
 

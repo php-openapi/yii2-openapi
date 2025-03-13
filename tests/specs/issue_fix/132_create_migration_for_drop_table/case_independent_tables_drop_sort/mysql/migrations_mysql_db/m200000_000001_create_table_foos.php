@@ -9,7 +9,7 @@ class m200000_000001_create_table_foos extends \yii\db\Migration
     {
         $this->createTable('{{%foos}}', [
             'id' => $this->primaryKey(),
-            'factor' => $this->integer()->null()->defaultValue(null),
+            'factor' => $this->integer()->notNull(),
         ]);
     }
 

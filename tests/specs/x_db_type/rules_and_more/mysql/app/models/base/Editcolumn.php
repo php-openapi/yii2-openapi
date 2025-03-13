@@ -40,7 +40,7 @@ abstract class Editcolumn extends \yii\db\ActiveRecord
             'json_col_2_default' => [['json_col_2'], 'default', 'value' => []],
             'json_col_def_n_default' => [['json_col_def_n'], 'default', 'value' => []],
             'json_col_def_n_2_default' => [['json_col_def_n_2'], 'default', 'value' => []],
-            'required' => [['name', 'str_col_def', 'json_col', 'json_col_2'], 'required'],
+            'required' => [['name'], 'required'],
             'name_string' => [['name'], 'string', 'max' => 254],
             'tag_string' => [['tag'], 'string'],
             'first_name_string' => [['first_name'], 'string', 'max' => 255],

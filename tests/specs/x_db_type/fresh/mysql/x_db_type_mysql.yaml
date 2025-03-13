@@ -305,6 +305,7 @@ components:
           default: Horse-2
         tag:
           type: string
+          nullable: true
         first_name:
           type: string
           x-db-type: varchar(255)

@@ -51,24 +51,24 @@ class NewColumnPositionTest extends DbTestCase
     private function createTables()
     {
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
-            'email' => 'text'
+            'email' => 'text not null',
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%fruit2s}}', [
-            'email' => 'text'
+            'email' => 'text not null',
         ])->execute();
 
         Yii::$app->db->createCommand()->createTable('{{%twocols}}', [
-            'name' => 'text',
-            'address' => 'text',
+            'name' => 'text not null',
+            'address' => 'text not null',
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%twocol2s}}', [
-            'name' => 'text',
-            'address' => 'text',
+            'name' => 'text not null',
+            'address' => 'text not null',
         ])->execute();
 
         Yii::$app->db->createCommand()->createTable('{{%dropfirstcols}}', [
             'name' => 'text',
-            'address' => 'text',
+            'address' => 'text not null',
         ])->execute();
 
         // not relavant because data type is fetched from DB and not x-db-type
@@ -80,28 +80,28 @@ class NewColumnPositionTest extends DbTestCase
         Yii::$app->db->createCommand()->createTable('{{%dropfirsttwocols}}', [
             'name' => 'text',
             'address' => 'text',
-            'last_name' => 'text',
-            'email' => 'text',
+            'last_name' => 'text not null',
+            'email' => 'text not null',
         ])->execute();
 
         Yii::$app->db->createCommand()->createTable('{{%addtwonewcolinbetweens}}', [
-            'name' => 'text',
-            'address' => 'text',
-            'last_name' => 'text',
-            'email' => 'text',
+            'name' => 'text not null',
+            'address' => 'text not null',
+            'last_name' => 'text not null',
+            'email' => 'text not null',
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%addtwonewcolinbetween2s}}', [
-            'name' => 'text',
-            'address' => 'text',
-            'last_name' => 'text',
-            'email' => 'text',
+            'name' => 'text not null',
+            'address' => 'text not null',
+            'last_name' => 'text not null',
+            'email' => 'text not null',
         ])->execute();
 
         Yii::$app->db->createCommand()->createTable('{{%twonewcolatlasts}}', [
-            'email' => 'text'
+            'email' => 'text not null',
         ])->execute();
         Yii::$app->db->createCommand()->createTable('{{%twonewcolatlast2s}}', [
-            'email' => 'text'
+            'email' => 'text not null',
         ])->execute();
     }
 

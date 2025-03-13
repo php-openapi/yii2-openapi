@@ -7,9 +7,9 @@ class m200000_000000_change_table_addtwonewcolinbetween2s extends \yii\db\Migrat
 {
     public function up()
     {
-        $this->db->createCommand('ALTER TABLE {{%addtwonewcolinbetween2s}} ADD COLUMN password text NULL DEFAULT NULL AFTER name')->execute();
-        $this->db->createCommand('ALTER TABLE {{%addtwonewcolinbetween2s}} ADD COLUMN screen_name text NULL DEFAULT NULL AFTER last_name')->execute();
-        $this->db->createCommand('ALTER TABLE {{%addtwonewcolinbetween2s}} ADD COLUMN nick_name text NULL DEFAULT NULL AFTER screen_name')->execute();
+        $this->db->createCommand('ALTER TABLE {{%addtwonewcolinbetween2s}} ADD COLUMN password text NOT NULL AFTER name')->execute();
+        $this->db->createCommand('ALTER TABLE {{%addtwonewcolinbetween2s}} ADD COLUMN screen_name text NOT NULL AFTER last_name')->execute();
+        $this->db->createCommand('ALTER TABLE {{%addtwonewcolinbetween2s}} ADD COLUMN nick_name text NOT NULL AFTER screen_name')->execute();
     }
 
     public function down()

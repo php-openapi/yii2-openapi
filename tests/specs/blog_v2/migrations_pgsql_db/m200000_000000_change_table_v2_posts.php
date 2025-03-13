@@ -14,7 +14,8 @@ class m200000_000000_change_table_v2_posts extends \yii\db\Migration
         $this->dropColumn('{{%v2_posts}}', 'uid');
         $this->alterColumn('{{%v2_posts}}', 'category_id', 'int8 NOT NULL USING "category_id"::int8');
         $this->alterColumn('{{%v2_posts}}', 'active', "DROP DEFAULT");
-        $this->alterColumn('{{%v2_posts}}', 'created_by_id', 'int8 NULL USING "created_by_id"::int8');
+        $this->alterColumn('{{%v2_posts}}', 'created_by_id', 'int8 NOT NULL USING "created_by_id"::int8');
+        $this->alterColumn('{{%v2_posts}}', 'created_by_id', "SET NOT NULL");
     }
 
     public function safeDown()
@@ -27,5 +28,6 @@ class m200000_000000_change_table_v2_posts extends \yii\db\Migration
         $this->dropColumn('{{%v2_posts}}', 'id');
         $this->execute('DROP TYPE "enum_itt_v2_posts_lang"');
         $this->alterColumn('{{%v2_posts}}', 'active', "SET DEFAULT 'f'");
+        $this->alterColumn('{{%v2_posts}}', 'created_by_id', "DROP NOT NULL");
     }
 }

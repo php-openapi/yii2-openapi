@@ -9,7 +9,7 @@ class m200000_000000_create_table_deliveries extends \yii\db\Migration
     {
         $this->createTable('{{%deliveries}}', [
             'id' => $this->primaryKey(),
-            'title' => $this->text()->null(),
+            'title' => $this->text()->notNull(),
         ]);
     }
 

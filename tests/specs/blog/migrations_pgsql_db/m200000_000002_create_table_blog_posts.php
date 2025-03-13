@@ -10,11 +10,11 @@ class m200000_000002_create_table_blog_posts extends \yii\db\Migration
         $this->createTable('{{%blog_posts}}', [
             0 => '"uid" varchar(128) NOT NULL',
             'title' => $this->string(255)->notNull(),
-            'slug' => $this->string(200)->null()->defaultValue(null),
+            'slug' => $this->string(200)->notNull(),
             'category_id' => $this->integer()->notNull()->comment('Category of posts'),
             'active' => $this->boolean()->notNull()->defaultValue(false),
-            'created_at' => $this->date()->null()->defaultValue(null),
-            'created_by_id' => $this->integer()->null()->defaultValue(null)->comment('The User'),
+            'created_at' => $this->date()->notNull(),
+            'created_by_id' => $this->integer()->notNull()->comment('The User'),
         ]);
         $this->addPrimaryKey('pk_blog_posts_uid', '{{%blog_posts}}', 'uid');
         $this->createIndex('blog_posts_title_key', '{{%blog_posts}}', 'title', true);

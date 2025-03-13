@@ -7,7 +7,7 @@ class m200000_000000_change_table_fruits extends \yii\db\Migration
 {
     public function safeUp()
     {
-        $this->alterColumn('{{%fruits}}', 'colourName', 'text NULL USING "colourName"::text');
+        $this->alterColumn('{{%fruits}}', 'colourName', 'text NOT NULL USING "colourName"::text');
     }
 
     public function safeDown()

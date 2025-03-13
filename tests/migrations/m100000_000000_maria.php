@@ -3,7 +3,7 @@ use yii\db\Migration;
 use yii\db\Schema;
 
 /**
- * Initial migration for blog_v2 (based on blog.yaml), so result for blog_v2 should be as secondary mogration
+ * Initial migration for blog_v2 (based on blog.yaml), so result for blog_v2 should be as secondary migration
  **/
 class m100000_000000_maria extends Migration
 {
