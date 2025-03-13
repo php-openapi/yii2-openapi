@@ -10,11 +10,11 @@ namespace app\models\base;
  * This is the model class for table "bars".
  *
  * @property int $id
- * @property int $task_id
- * @property int $related_task_id
+ * @property int $address_id
+ * @property int $related_address_id
  *
- * @property \app\models\Address $task
- * @property \app\models\Address $relatedTask
+ * @property \app\models\Address $address
+ * @property \app\models\Address $relatedAddress
  */
 abstract class Bar extends \yii\db\ActiveRecord
 {
@@ -26,20 +26,20 @@ abstract class Bar extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            'task_id_integer' => [['task_id'], 'integer'],
-            'task_id_exist' => [['task_id'], 'exist', 'targetRelation' => 'task'],
-            'related_task_id_integer' => [['related_task_id'], 'integer'],
-            'related_task_id_exist' => [['related_task_id'], 'exist', 'targetRelation' => 'relatedTask'],
+            'address_id_integer' => [['address_id'], 'integer'],
+            'address_id_exist' => [['address_id'], 'exist', 'targetRelation' => 'address'],
+            'related_address_id_integer' => [['related_address_id'], 'integer'],
+            'related_address_id_exist' => [['related_address_id'], 'exist', 'targetRelation' => 'relatedAddress'],
         ];
     }
 
-    public function getTask()
+    public function getAddress()
     {
-        return $this->hasOne(\app\models\Address::class, ['id' => 'task_id']);
+        return $this->hasOne(\app\models\Address::class, ['id' => 'address_id']);
     }
 
-    public function getRelatedTask()
+    public function getRelatedAddress()
     {
-        return $this->hasOne(\app\models\Address::class, ['id' => 'related_task_id']);
+        return $this->hasOne(\app\models\Address::class, ['id' => 'related_address_id']);
     }
 }

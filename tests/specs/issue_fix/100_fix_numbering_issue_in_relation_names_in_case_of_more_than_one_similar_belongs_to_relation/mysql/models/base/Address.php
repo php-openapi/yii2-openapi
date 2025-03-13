@@ -39,12 +39,12 @@ abstract class Address extends \yii\db\ActiveRecord
     # belongs to relation
     public function getBar()
     {
-        return $this->hasOne(\app\models\Bar::class, ['task_id' => 'id']);
+        return $this->hasOne(\app\models\Bar::class, ['address_id' => 'id']);
     }
 
     # belongs to relation
     public function getBar2()
     {
-        return $this->hasOne(\app\models\Bar::class, ['related_task_id' => 'id']);
+        return $this->hasOne(\app\models\Bar::class, ['related_address_id' => 'id']);
     }
 }

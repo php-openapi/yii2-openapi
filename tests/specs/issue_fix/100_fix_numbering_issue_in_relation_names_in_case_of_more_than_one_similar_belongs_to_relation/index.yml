@@ -36,7 +36,7 @@ components:
       properties:
         id:
           type: integer
-        task:
+        address:
           $ref: '#/components/schemas/Address'
-        related_task:
+        related_address:
           $ref: '#/components/schemas/Address'
