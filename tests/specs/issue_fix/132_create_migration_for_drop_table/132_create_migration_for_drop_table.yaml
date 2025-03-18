@@ -1,0 +1,35 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 132_create_migration_for_drop_table \#132
+
+x-deleted-schemas:
+  - Pristine
+  - Fruit # Example: table name is evaluated to `itt_fruits`, if `itt_` is prefix set in DB config
+  - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
+  - Animal: the_animal_table_name
+  - Upk
+  - Bigpk
+  - Ubigpk
+
+paths:
+  /:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+
+components:
+  schemas:
+    Foo: # if you remove this entire schema and want to remove its table then you need to add its table name in `x-deleted-schemas`
+      type: object
+      description: 132_create_migration_for_drop_table
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+        factor:
+          type: integer

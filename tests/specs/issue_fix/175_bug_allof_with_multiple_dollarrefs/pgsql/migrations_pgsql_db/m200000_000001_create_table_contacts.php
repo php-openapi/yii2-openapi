@@ -9,7 +9,7 @@ class m200000_000001_create_table_contacts extends \yii\db\Migration
     {
         $this->createTable('{{%contacts}}', [
             'id' => $this->primaryKey(),
-            'account_id' => $this->integer()->notNull(),
+            'account_id' => $this->integer()->notNull()->comment('Account'),
             'active' => $this->boolean()->null()->defaultValue(false),
             'nickname' => $this->text()->null(),
         ]);

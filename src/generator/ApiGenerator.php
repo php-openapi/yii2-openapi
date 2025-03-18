@@ -7,9 +7,10 @@
 
 namespace cebe\yii2openapi\generator;
 
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
+use cebe\openapi\exceptions\IOException;
+use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\exceptions\UnresolvableReferenceException;
+use cebe\yii2openapi\lib\items\DbModel;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use cebe\yii2openapi\lib\Config;
@@ -20,9 +21,15 @@ use cebe\yii2openapi\lib\generators\ModelsGenerator;
 use cebe\yii2openapi\lib\generators\RestActionGenerator;
 use cebe\yii2openapi\lib\generators\TransformersGenerator;
 use cebe\yii2openapi\lib\generators\UrlRulesGenerator;
+use cebe\yii2openapi\lib\items\FractalAction;
+use cebe\yii2openapi\lib\items\RestAction;
 use cebe\yii2openapi\lib\PathAutoCompletion;
 use cebe\yii2openapi\lib\SchemaToDatabase;
+use Exception;
 use Yii;
+use yii\db\mysql\Schema as MySqlSchema;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
+use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\gii\CodeFile;
 use yii\gii\Generator;
 use yii\helpers\Html;
@@ -134,6 +141,17 @@ class ApiGenerator extends Generator
     public $excludeModels = [];
 
     /**
+     * @var array Map for custom dbModels
+     *
+     * @see DbModel::$scenarioDefaultDescription with Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}.
+     * @example
+     *  'dbModel' => [
+     *      'scenarioDefaultDescription' => "Scenario {scenarioName}",
+     *  ]
+     */
+    public $dbModel = [];
+
+    /**
      * @var array Map for custom controller names not based on model name for exclusive cases
      * @example
      *  'controllerModelMap' => [
@@ -176,7 +194,7 @@ class ApiGenerator extends Generator
     private $_openApiWithoutRef;
 
     /**
-     * @var \cebe\yii2openapi\lib\Config $config
+     * @var Config $config
      **/
     private $config;
 
@@ -283,11 +301,11 @@ class ApiGenerator extends Generator
 
     /**
      * @param $attribute
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      */
-    public function validateSpec($attribute):void
+    public function validateSpec($attribute): void
     {
         if ($this->ignoreSpecErrors) {
             return;
@@ -299,7 +317,7 @@ class ApiGenerator extends Generator
         }
     }
 
-    public function validateUrlPrefixes($attribute):void
+    public function validateUrlPrefixes($attribute): void
     {
         if (empty($this->urlPrefixes)) {
             return;
@@ -427,7 +445,7 @@ class ApiGenerator extends Generator
         );
     }
 
-    public function makeConfig():Config
+    public function makeConfig(): Config
     {
         if (!$this->config) {
             $props = get_object_vars($this);
@@ -457,11 +475,12 @@ class ApiGenerator extends Generator
      * Please refer to [[\yii\gii\generators\controller\Generator::generate()]] as an example
      * on how to implement this method.
      * @return CodeFile[] a list of code files to be created.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function generate():array
+    public function generate(): array
     {
         $config = $this->makeConfig();
+
         $actionsGenerator = $this->useJsonApi
             ? Yii::createObject(JsonActionGenerator::class, [$config])
             : Yii::createObject(RestActionGenerator::class, [$config]);
@@ -473,6 +492,7 @@ class ApiGenerator extends Generator
         $urlRulesGenerator = Yii::createObject(UrlRulesGenerator::class, [$config, $actions]);
         $files = $urlRulesGenerator->generate();
 
+        $actions = static::removeDuplicateActions($actions); // in case of non-crud actions having custom route `x-route` set
         $controllersGenerator = Yii::createObject(ControllersGenerator::class, [$config, $actions]);
         $files->merge($controllersGenerator->generate());
 
@@ -489,12 +509,12 @@ class ApiGenerator extends Generator
     }
 
     /**
-     * @return \cebe\openapi\spec\OpenApi
-     * @throws \cebe\openapi\exceptions\IOException
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
+     * @return OpenApi
+     * @throws IOException
+     * @throws TypeErrorException
+     * @throws UnresolvableReferenceException
      */
-    protected function getOpenApiWithoutReferences():OpenApi
+    protected function getOpenApiWithoutReferences(): OpenApi
     {
         if ($this->_openApiWithoutRef === null) {
             $file = Yii::getAlias($this->openApiPath);
@@ -507,18 +527,45 @@ class ApiGenerator extends Generator
         return $this->_openApiWithoutRef;
     }
 
-    public static function isPostgres():bool
+    public static function isPostgres(): bool
     {
         return Yii::$app->db->schema instanceof PgSqlSchema;
     }
 
-    public static function isMysql():bool
+    public static function isMysql(): bool
     {
         return (Yii::$app->db->schema instanceof MySqlSchema && !static::isMariaDb());
     }
 
-    public static function isMariaDb():bool
+    public static function isMariaDb(): bool
     {
         return strpos(Yii::$app->db->schema->getServerVersion(), 'MariaDB') !== false;
+    }
+
+    /**
+     * @param RestAction[]|FractalAction[] $actions
+     * @return RestAction[]|FractalAction[]
+     * https://github.com/cebe/yii2-openapi/issues/84
+     */
+    public static function removeDuplicateActions(array $actions): array
+    {
+        $actions = array_filter($actions, function ($action) {
+            /** @var $action RestAction|FractalAction */
+            if ($action instanceof RestAction && $action->isDuplicate) {
+                return false;
+            }
+            return true;
+        });
+
+        $actions = array_map(function ($action) {
+            /** @var $action RestAction|FractalAction */
+            if ($action instanceof RestAction && $action->zeroParams) {
+                $action->idParam = null;
+                $action->params = [];
+            }
+            return $action;
+        }, $actions);
+
+        return $actions;
     }
 }

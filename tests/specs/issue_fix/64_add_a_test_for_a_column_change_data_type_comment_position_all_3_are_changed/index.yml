@@ -1,0 +1,27 @@
+openapi: 3.0.3
+x-description-is-comment: true
+info:
+  title: 'Add a test for: a column change: data type + comment + position; all 3 are changed #64'
+  version: 1.0.0
+
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        col:
+          type: string
+        name:
+          type: integer
+          description: new desc
+
+paths:
+  '/':
+    get:
+      responses:
+        '200':
+          description: OK

@@ -59,7 +59,7 @@ class ControllersGenerator
             $controllerPath = $path;
             /**
              * @var RestAction|FractalAction $action
-            **/
+             **/
             $action = $actions[0];
             if ($action->prefix && !empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
@@ -126,6 +126,23 @@ PHP;
         ];
         $reflection->addMethod('checkAccess', $params, AbstractMemberGenerator::FLAG_PUBLIC, '//TODO implement checkAccess');
         foreach ($abstractActions as $action) {
+            $responseHttpStatusCodes = '';
+            foreach ($this->config->getOpenApi()->paths->getPaths()[$action->urlPath]->getOperations() as $verb => $operation) {
+                $codes = array_keys($operation->responses->getResponses());
+
+                $only200OrDefault = false;
+                if ($codes === [200] || $codes === ['default']) {
+                    $only200OrDefault = true;
+                }
+                if (in_array('default', $codes) && in_array(200, $codes) && count($codes) === 2) {
+                    $only200OrDefault = true;
+                }
+
+                if ($verb === strtolower($action->requestMethod) && !$only200OrDefault) {
+                    $responseHttpStatusCodes = implode(', ', $codes);
+                }
+            }
+
             $params = array_map(static function ($param) {
                 return ['name' => $param];
             }, $action->getParamNames());
@@ -133,7 +150,7 @@ PHP;
                 $action->actionMethodName,
                 $params,
                 AbstractMemberGenerator::FLAG_PUBLIC,
-                '//TODO implement ' . $action->actionMethodName
+                '//TODO implement ' . $action->actionMethodName . ($responseHttpStatusCodes ? PHP_EOL . '// In order to conform with OpenAPI spec, response of this action must have one of the following HTTP status code: ' . $responseHttpStatusCodes : '')
             );
         }
         $classFileGenerator->setClasses([$reflection]);

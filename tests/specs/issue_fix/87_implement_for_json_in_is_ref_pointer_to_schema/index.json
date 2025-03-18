@@ -1,0 +1,39 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "\\#87"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "The information"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Invoice": {
+        "type": "object",
+        "required": [
+          "vat_rate"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "vat_rate": {
+            "$ref": "./Product.json#/properties/vat_rate"
+          }
+        }
+      },
+      "Product": {
+        "$ref": "./Product.json"
+      }
+    }
+  }
+}

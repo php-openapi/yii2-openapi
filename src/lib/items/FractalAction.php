@@ -32,6 +32,8 @@ use function strpos;
  */
 final class FractalAction extends BaseObject
 {
+    use OptionsRoutesTrait;
+
     /**@var string* */
     public $id;
 
@@ -100,16 +102,6 @@ final class FractalAction extends BaseObject
             return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
         }
         return $this->controllerId.'/'.$this->id;
-    }
-
-    public function getOptionsRoute():string
-    {
-        //@TODO: re-check
-        if ($this->prefix && !empty($this->prefixSettings)) {
-            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/').'/'.$this->controllerId.'/options';
-        }
-        return $this->controllerId.'/options';
     }
 
     public function getBaseModelName():string
@@ -202,7 +194,6 @@ final class FractalAction extends BaseObject
 
     public function getTemplate():?string
     {
-        //@TODO: Model scenarios for create/update actions
         return $this->templateFactory()->getTemplate();
     }
 

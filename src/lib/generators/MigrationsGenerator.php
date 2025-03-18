@@ -110,7 +110,10 @@ class MigrationsGenerator
     public function buildMigrations():array
     {
         $junctions = [];
+
         foreach ($this->models as $model) {
+            /** @var DbModel $model */
+
             $migration = $this->createBuilder($model)->build();
             if ($migration->notEmpty()) {
                 $this->migrations[$model->tableAlias] = $migration;
@@ -126,6 +129,7 @@ class MigrationsGenerator
                 $junctions[] = $relation->viaTableName;
             }
         }
+
         return !empty($this->migrations) ? $this->sortMigrationsByDeps() : [];
     }
 
@@ -134,10 +138,11 @@ class MigrationsGenerator
      */
     protected function createBuilder(DbModel $model):BaseMigrationBuilder
     {
+        $params = [$this->db, $model, $this->config];
         if ($this->db->getDriverName() === 'pgsql') {
-            return Yii::createObject(PostgresMigrationBuilder::class, [$this->db, $model]);
+            return Yii::createObject(PostgresMigrationBuilder::class, $params);
         }
-        return Yii::createObject(MysqlMigrationBuilder::class, [$this->db, $model]);
+        return Yii::createObject(MysqlMigrationBuilder::class, $params);
     }
 
     /**
@@ -147,7 +152,9 @@ class MigrationsGenerator
     protected function sortMigrationsByDeps():array
     {
         $this->sorted = [];
-        ksort($this->migrations);
+        if ($this->shouldSortMigrationsForDropTables($this->migrations)) {
+            ksort($this->migrations);
+        }
         foreach ($this->migrations as $migration) {
             //echo "adding {$migration->tableAlias}\n";
             $this->sortByDependencyRecurse($migration);
@@ -171,10 +178,36 @@ class MigrationsGenerator
                 //echo "adding dep $dependency\n";
                 $this->sortByDependencyRecurse($this->migrations[$dependency]);
             }
-            unset($this->sorted[$migration->tableAlias]);//necessary for provide valid order
+            unset($this->sorted[$migration->tableAlias]); // necessary for provide valid order
             $this->sorted[$migration->tableAlias] = $migration;
         } elseif ($this->sorted[$migration->tableAlias] === false) {
             throw new Exception("A circular dependency is detected for table '{$migration->tableAlias}'.");
         }
+    }
+
+    /**
+     * Are tables to drop are internally dependent? If yes then don't sort (ksort)
+     * @param $migrations array (tableAlias => MigrationModel)[]
+     */
+    public function shouldSortMigrationsForDropTables(array $migrations): bool
+    {
+        $tables = array_keys($migrations);
+
+        foreach ($this->models as $dbModel) {
+            /** @var DbModel $dbModel */
+            if ($dbModel->drop) {
+                $ts = Yii::$app->db->getTableSchema('{{%'.$dbModel->tableName.'}}', true);
+                if ($ts) {
+                    foreach ($ts->foreignKeys as $fk) {
+                        $fkTableName = str_replace(Yii::$app->db->tablePrefix, '{{%', $fk[0]);
+                        $fkTableName .= '}}';
+                        if (in_array($fkTableName, $tables)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

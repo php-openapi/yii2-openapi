@@ -76,7 +76,9 @@ return $config;
 
 To use the web generator, open `index.php?r=gii` and select the `REST API Generator`.
 
-On console you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml` should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
+On console, you can run the generator with `./yii gii/api --openApiPath=@app/openapi.yaml`. Where `@app/openapi.yaml`
+should be the absolute path to your OpenAPI spec file. This can be JSON as well as YAML (see
+also [php-openapi/php-openapi](https://github.com/php-openapi/php-openapi/) for supported formats).
 
 Run `./yii gii/api --help` for all options. Example: Disable generation of migrations files `./yii gii/api --generateMigrations=0`
 
@@ -184,6 +186,224 @@ Such values are not allowed:
 
 If `enum` and `x-db-type` both are provided then for database column schema (migrations), only `x-db-type` will be considered ignoring `enum`.
 
+### `x-scenarios`
+
+Automatically generated scenarios from the model 'x-scenarios'.
+Each scenario is assigned attributes as in the 'default' scenario.
+The advantage is that the scenario can be used immediately.
+This can be overridden in the child model if needed.
+
+The 'default' scenario and all scenarios mentioned in the rules() using 'on' and 'except'
+are automatically included in the scenarios() function for the model.
+
+There are three ways to define the scenarios `description`:
+- use scenario description default settings `public $scenarioDefaultDescription = "Scenario {scenarioName}"`.
+- use custom `scenarioDefaultDescription` at `dbModel`.
+- use custom `description` for individual scenario.
+
+1. Example with default setting.
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * Scenario create
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * Scenario update
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {
+            $parentScenarios = parent::scenarios();
+
+            /**
+             * Each scenario is assigned attributes as in the 'default' scenario.
+             * The advantage is that the scenario can be used immediately.
+             * This can be overridden in the child model if needed.
+             */
+            $default = $parentScenarios[self::SCENARIO_DEFAULT];
+
+            return [
+               self::SCENARIO_CREATE => $default,
+               self::SCENARIO_UPDATE => $default,
+               /**
+                * The 'default' scenario and all scenarios mentioned in the rules() using 'on' and 'except'
+                * are automatically included in the scenarios() function for the model.
+                */
+               ...$parentScenarios,
+            ];
+        }
+      }
+      ```
+
+2. Example with custom `description` for individual scenario.
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+              description: My custom description for scenario create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * My custom description for scenario create
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * Scenario update
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {...}
+      }
+      ```
+
+3. Example with custom `scenarioDefaultDescription`.
+
+   Set custom `scenarioDefaultDescription` at `dbModel`.
+   `scenarioDefaultDescription` Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}.
+
+   For example, for the `create` scenario in the `Invoice` model, the placeholders would result in the following:
+   `{scenarioName}` = `create`
+   `{scenarioConst}` = `SCENARIO_CREATE`
+   `{modelName}` = `Invoice`
+
+    php-config-settings
+    ```php
+    $config['modules']['gii']['generators']['api'] = [
+        'class' => \cebe\yii2openapi\generator\ApiGenerator::class,
+        'dbModel' => [
+            /** Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}. @see DbModel::$scenarioDefaultDescription */
+            'scenarioDefaultDescription' => "This scenario \"{scenarioName}\" at Model \"{modelName}\" has Constant {scenarioConst}.",
+        ],
+        ...
+    ];
+    ```
+
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+              description: My custom description for scenario create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * My custom description for scenario create
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * This scenario "update" at Model "Invoice" has Constant SCENARIO_UPDATE.
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {...}
+      }
+      ```
+
+4. Example with custom `scenarioDefaultDescription`
+   and use-case: both '\cebe\yii2openapi\generator\ApiGenerator::class' and '\common\client_generator\{your_ApiClientGenerator}::class' are used.
+
+   Set custom `scenarioDefaultDescription` at `dbModel`.
+   `scenarioDefaultDescription` Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}.
+
+    php-config-settings
+    ```php
+    $config['modules']['gii']['generators']['api'] = [
+        'class' => \cebe\yii2openapi\generator\ApiGenerator::class,
+        'dbModel' => [
+            /** Accepted-Placeholder: {scenarioName}, {scenarioConst}, {modelName}. @see DbModel::$scenarioDefaultDescription */
+            'scenarioDefaultDescription' => implode("\n", [
+                "This Backend-Scenario \"{scenarioName}\" exist in both the frontend model and the backend model.",
+                "@see \common\client\models\{modelName}::{scenarioConst}",
+            ]),
+        ],
+        ...
+    ];
+
+   $config['modules']['gii']['generators']['api-client'] = [
+       'class' => \common\client_generator\{your_ApiClientGenerator}::class,
+       'dbModel' => [
+           /** AcceptedInputs: {scenarioName}, {scenarioConst}, {modelName}. @see DbModel::$scenarioDefaultDescription */
+           'scenarioDefaultDescription' => implode("\n", [
+               "This Frontend-Scenario \"{scenarioName}\" exist in both the frontend model and the backend model.",
+               "@see \common\models\base\{modelName}::{scenarioConst}",
+           ]),
+       ],
+       ...
+    ```
+
+    ```yaml
+        Invoice:
+          type: object
+          x-scenarios:
+            - name: create
+            - name: update
+    ```
+
+   The following code is generated in the abstract model:
+    ```php
+    abstract class Invoice extends \yii\db\ActiveRecord
+    {
+        /**
+         * This Backend-Scenario "create" exist in both the frontend model and the backend model.
+         * @see \common\client\models\Invoice::SCENARIO_CREATE
+         */
+        public const SCENARIO_CREATE = 'create';
+
+        /**
+         * This Backend-Scenario "update" exist in both the frontend model and the backend model.
+         * @see \common\client\models\Invoice::SCENARIO_UPDATE
+         */
+        public const SCENARIO_UPDATE = 'update';
+
+        /**
+         * Automatically generated scenarios from the model 'x-scenarios'.
+         * @return array a list of scenarios and the corresponding active attributes.
+         */
+        public function scenarios()
+        {...}
+    }
+    ```
+
 ### `x-indexes`
 
 Specify table indexes
@@ -210,6 +430,14 @@ Specify table indexes
            type: object
            x-db-type: JSON
            default: '{}' 
+```
+
+If raw DB expression is needed in index, then it must be for only one column. Example:
+
+```yaml
+    x-indexes:
+       - "gin(to_tsvector('english', search::text)):search" # valid
+       - "gin(to_tsvector('english', search::text)):search,column2" # invalid
 ```
 
 ### `x-db-default-expression`
@@ -309,6 +537,206 @@ Provide custom database table column name in case of relationship column. This w
               - x-fk-column-name: redelivery_of # this will create `redelivery_of` column instead of `redelivery_of_id`
 ```
 
+
+### `x-deleted-schemas`
+
+This is root level key used to generate "drop table" migration for the deleted component schema. If a component schema (DB model) is removed from OpenAPI spec then its following entities should be also deleted from the code:
+
+ - DB table (migrations)
+ - model
+ - faker
+
+So to generate appropriate migration for the removed schema, explicitly setting schema name or schema name + custom table name is required in this key. Only then the migrations will be generated. It should be set as:
+
+```yaml
+x-deleted-schemas:
+  - Fruit # Example: table name is evaluated to `itt_fruits`, if `itt_` is prefix set in DB config
+  - Mango: the_mango_table_name # custom table name; see `x-table` in README.md
+```
+
+### `x-no-relation`
+
+To differentiate a component schema property from one-to-many or many-to-many relation in favour of array(json) of
+related objects, `x-no-relation` (type: boolean, default: false) is used.
+
+```yaml
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+```
+
+This will not generate 'comments' column in database migrations. But it will generate `getComments()` relation in Yii model file.
+
+In order to make it real database column, OpenAPI extension `x-no-relation` can be used.
+
+```yaml
+        comments:
+          type: array
+          x-no-relation: true
+          items:
+            $ref: "#/components/schemas/Comment"
+```
+
+Database column type can be `array`, `json` etc. to store such data.
+
+Now if the Comment schema from the above example is
+
+```yaml
+    Comment:
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+```
+
+then the value for `comments` can be
+
+```json
+[
+  {
+    "id": 1,
+    "content": "Hi there"
+  },
+  {
+    "id": 2,
+    "content": "Hi there 2"
+  }
+]
+```
+
+`x-no-relation` can be only used with OpenAPI schema data type `array`.
+
+### `x-route`
+
+To customize route (controller ID/action ID) for a path, use custom key `x-route` with value `<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
+directly under the `paths` key of OpenAPI spec. Example:
+
+```yaml
+paths:
+  /payments/invoice/{invoice}:
+    parameters:
+      - name: invoice
+        in: path
+        description: lorem ipsum
+        required: true
+        schema:
+          type: integer
+    post:
+      x-route: 'payments/invoice'
+      summary: Pay Invoice
+      description: Pay for Invoice with given invoice number
+      requestBody:
+        description: Record new payment for an invoice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      responses:
+        '200':
+          description: Successfully paid the invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+```
+
+It won't generate `actionCreateInvoice` in `PaymentsController.php` file, but will generate `actionInvoice` instead in
+same file.
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'POST payments/invoice/<invoice:\d+>' => 'payments/invoice',
+    'payments/invoice/<invoice:\d+>' => 'payments/options',
+```
+
+Also, if same action is needed for HTTP GET and POST then use same value for `x-route`. Example:
+
+```yaml
+paths:
+  /a1/b1:
+    get:
+      x-route: 'abc/xyz'
+      operationId: opnid1
+      summary: List
+      description: Lists
+      responses:
+        '200':
+          description: The Response
+    post:
+      x-route: 'abc/xyz'
+      operationId: opnid2
+      summary: create
+      description: create
+      responses:
+        '200':
+          description: The Response
+```
+
+Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
+```php
+    'GET a1/b1' => 'abc/xyz',
+    'POST a1/b1' => 'abc/xyz',
+    'a1/b1' => 'abc/options',
+```
+`x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).
+
+### `x-description-is-comment`
+
+    boolean; default: false
+
+When a new database table is created from new OpenAPI component schema, description of a property will be used as
+comment of column (of database table).
+
+This extension is used when a description is edited for existing property, and you want to generate migration for its
+corresponding column comment changes.
+
+This extension can be used at 3 place:
+
+**1. root level (highest priority)**
+
+```yaml
+openapi: 3.0.3
+x-description-is-comment: true
+info:
+  title: Description
+```
+
+This will create migration of any changed description of component schema property present throughout the spec.
+
+**2. component schema level**
+
+```yaml
+components:
+  schemas:
+    Fruit:
+      type: object
+      x-description-is-comment: true
+```
+
+This will create migration of changed description of only properties of component schema which have this extension.
+
+**3. property level (lowest priority)**
+
+```yaml
+components:
+  schemas:
+    Fruit:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          nullable: false
+          x-description-is-comment: true
+          description: Hi there
+```
+
+Migrations will be only generated for changed description of properties having this extension.
+
 ## Many-to-Many relation definition
 
 There are two ways for define many-to-many relations:
@@ -316,8 +744,8 @@ There are two ways for define many-to-many relations:
 ### Simple many-to-many without junction model
 
    - property name for many-to-many relation should be equal lower-cased, pluralized related schema name
-     
-   - referenced schema should contains mirrored reference to current schema
+
+- referenced schema should contain mirrored reference to current schema
      
    - migration for junction table can be generated automatically - table name should be [pluralized, lower-cased
  schema_name1]2[pluralized, lower-cased schema name2], in alphabetical order;
@@ -390,7 +818,7 @@ User:
 `NOT NULL` in DB migrations is determined by `nullable` and `required` properties of the OpenAPI schema.
 e.g. attribute = 'my_property'.
 
-- If you define attribute neither "required" nor via "nullable", then it is by default `NULL`:
+- If you define attribute neither "required" nor via "nullable", then it is by default `NULL` ([opposite of OpenAPI spec](https://swagger.io/specification/v3/?sbsearch=nullable)):
 
 ```yaml
   ExampleSchema:
@@ -508,12 +936,13 @@ created_at:
 ## Assumptions
 
 When generating code from an OpenAPI description there are many possible ways to achive a fitting result.
-Thus there are some assumptions and limitations that are currently applied to make this work.
+Thus, there are some assumptions and limitations that are currently applied to make this work.
 Here is a (possibly incomplete) list:
 
 - The current implementation works best with OpenAPI description that follows the [JSON:API](https://jsonapi.org/) guidelines.
   - The request and response format/schema is currently not extracted from OpenAPI schema and may need to be adjusted manually if it does not follow JSON:API
-- column/field/property with name `id` is considered as Primary Key by this library and it is automatically handled by DB/Yii; so remove it from validation `rules()`
+- column/field/property with name `id` is considered as Primary Key by this library, and it is automatically handled by
+  DB/Yii; so remove it from validation `rules()`
   - other fields can currently be used as primary keys using the `x-pk` OpenAPI extension (see below) but it may not be work correctly in all cases, please report bugs if you find them.
 
 Other things to keep in mind:

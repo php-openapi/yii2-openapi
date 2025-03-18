@@ -3,12 +3,13 @@
 namespace tests;
 
 use cebe\yii2openapi\generator\ApiGenerator;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use Yii;
-use yii\di\Container;
+use yii\db\IndexConstraint;
 use yii\db\mysql\Schema as MySqlSchema;
 use yii\db\pgsql\Schema as PgSqlSchema;
-use \SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\helpers\{ArrayHelper, VarDumper, StringHelper, Console};
+use yii\di\Container;
+use yii\helpers\{ArrayHelper, StringHelper};
 use yii\helpers\FileHelper;
 
 class DbTestCase extends \PHPUnit\Framework\TestCase
@@ -101,7 +102,6 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         foreach ($actual as $file) {
             $expectedFile = str_replace('@app', substr($testFile, 0, -4), $file);
             $actualFile = str_replace('@app', Yii::getAlias('@app'), $file);
-            // exec('cp '.$actualFile.' '.$expectedFile);
             $this->checkFiles([$actualFile], [$expectedFile]);
         }
     }
@@ -127,6 +127,7 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
                 );
             }
 
+            // exec('cp '.$file.' '.$expectedFilePath);
             $this->assertFileEquals($expectedFilePath, $file, "Failed asserting that file contents of\n$file\nare equal to file contents of\n$expectedFilePath \n\n cp $file $expectedFilePath \n\n ");
         }
     }
@@ -167,8 +168,8 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.' --interactive=0', $upOutput, $upExitCode);
         $last = count($upOutput) - 1;
         $lastThird = count($upOutput) - 3;
-        $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$last], 'Migrated up successfully.');
+        $this->assertSame($upExitCode, 0);
         $this->assertSame($upOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' applied.');
         // 1 migration was applied.
         // 2 migrations were applied.
@@ -180,8 +181,30 @@ class DbTestCase extends \PHPUnit\Framework\TestCase
         exec('cd tests; php -dxdebug.mode=develop ./yii migrate-'.$db.'/down --interactive=0 '.$number, $downOutput, $downExitCode);
         $last = count($downOutput) - 1;
         $lastThird = count($downOutput) - 3;
-        $this->assertSame($downExitCode, 0);
         $this->assertSame($downOutput[$last], 'Migrated down successfully.');
+        $this->assertSame($downExitCode, 0);
         $this->assertSame($downOutput[$lastThird], $number.' '.(($number === 1) ? 'migration was' : 'migrations were').' reverted.');
+    }
+
+    protected function dropFkIfExists(string $table, string $fk): void
+    {
+        $tableSchema = Yii::$app->db->schema->getTableSchema($table);
+        if ($tableSchema && array_key_exists($fk, $tableSchema->foreignKeys)) {
+            Yii::$app->db->createCommand()->dropForeignKey($fk, $table)->execute();
+        }
+    }
+
+    protected function indexExists(string $indexName): bool
+    {
+        $indices = Yii::$app->db->schema->schemaIndexes;
+        foreach ($indices as $subIndices) {
+            foreach ($subIndices as $index) {
+                /** @var IndexConstraint $index */
+                if ($index->name === $indexName) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

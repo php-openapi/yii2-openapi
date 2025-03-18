@@ -349,6 +349,7 @@ components:
           $ref: "#/components/schemas/User"
         comments:
           type: array
+          #          x-no-relation: true
           items:
             $ref: "#/components/schemas/Comment"
         tags:

@@ -1,0 +1,38 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 3_bug_add_remove_property_and_at_the_same_time_change_it_at_x_indexes
+paths:
+  /:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+
+components:
+  schemas:
+    Address:
+      type: object
+      description: desc
+      x-indexes:
+        - 'unique:shortName,postCode'
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          readOnly: true
+
+        name:
+          type: string
+          maxLength: 64
+
+        shortName:
+          type: string
+          maxLength: 64
+
+        postCode:
+          type: string
+          maxLength: 64

@@ -7,29 +7,27 @@
 
 namespace cebe\yii2openapi\lib\openapi;
 
-use yii\db\ColumnSchema;
-use cebe\yii2openapi\generator\ApiGenerator;
-use yii\db\mysql\Schema as MySqlSchema;
-use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
-use yii\db\pgsql\Schema as PgSqlSchema;
-use cebe\yii2openapi\lib\items\Attribute;
-use yii\base\NotSupportedException;
 use BadMethodCallException;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\Reference;
 use cebe\openapi\SpecObjectInterface;
+use cebe\yii2openapi\generator\ApiGenerator;
 use cebe\yii2openapi\lib\CustomSpecAttr;
 use cebe\yii2openapi\lib\exceptions\InvalidDefinitionException;
+use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
 use Throwable;
 use Yii;
+use yii\base\NotSupportedException;
+use yii\db\ColumnSchema;
+use yii\db\mysql\Schema as MySqlSchema;
+use yii\db\pgsql\Schema as PgSqlSchema;
 use yii\db\Schema as YiiDbSchema;
 use yii\helpers\Inflector;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
-use yii\helpers\VarDumper;
 use function is_int;
 use function strpos;
-use cebe\yii2openapi\lib\traits\ForeignKeyConstraints;
 
 class PropertySchema
 {
@@ -49,7 +47,7 @@ class PropertySchema
     /**
      * @var null|bool|string
      * If `false`, no faker will be generated in faker model
-     * See more about usage in README.md file present in root directory of the project
+     * See more about usage in README.md file present in root directory of this library
      */
     public $xFaker;
 
@@ -72,6 +70,7 @@ class PropertySchema
 
     /** @var string $refPointer */
     private $refPointer;
+    private $uri;
 
     /** @var \cebe\yii2openapi\lib\openapi\ComponentSchema $refSchema */
     private $refSchema;
@@ -146,6 +145,11 @@ class PropertySchema
             $property = $this->property;
         }
 
+        // don't go reference part if `x-no-relation` is true
+        if ($this->getAttr(CustomSpecAttr::NO_RELATION)) {
+            return;
+        }
+
         if ($property instanceof Reference) {
             $this->initReference();
         } elseif (
@@ -172,6 +176,7 @@ class PropertySchema
     {
         $this->isReference = true;
         $this->refPointer = $this->property->getJsonReference()->getJsonPointer()->getPointer();
+        $this->uri = $this->property->getJsonReference()->getDocumentUri();
         $refSchemaName = $this->getRefSchemaName();
         if ($this->isRefPointerToSelf()) {
             $this->refSchema = $this->schema;
@@ -196,6 +201,7 @@ class PropertySchema
             return;
         }
         $this->refPointer = $items->getJsonReference()->getJsonPointer()->getPointer();
+        $this->uri = $items->getJsonReference()->getDocumentUri();
         if ($this->isRefPointerToSelf()) {
             $this->refSchema = $this->schema;
         } elseif ($this->isRefPointerToSchema()) {
@@ -266,11 +272,33 @@ class PropertySchema
 
     public function isRefPointerToSchema():bool
     {
-        return $this->refPointer && strpos($this->refPointer, self::REFERENCE_PATH) === 0;
+        return $this->refPointer &&
+            (
+                (strpos($this->refPointer, self::REFERENCE_PATH) === 0) ||
+                (str_ends_with($this->uri, '.yml')) || (str_ends_with($this->uri, '.yaml')) || (str_ends_with($this->uri, '.json'))
+            );
     }
 
     public function isRefPointerToSelf():bool
     {
+        $allOfInSchema = null;
+        if (isset($this->schema->getSchema()->properties[$this->name]->allOf)) {
+            $allOfInSchema = $this->schema->getSchema()->properties[$this->name]->allOf;
+        }
+
+        if ($allOfInSchema) { # fixes https://github.com/php-openapi/yii2-openapi/issues/68
+            $refCounter = 0;
+            foreach ($allOfInSchema as $aAllOfElement) {
+                if ($aAllOfElement instanceof Reference) {
+                    $refCounter++;
+                }
+            }
+            if ($refCounter === 1) {
+                return $this->isRefPointerToSchema()
+                    && str_ends_with($this->refPointer, '/' . $this->schema->getName()) !== false;
+            }
+        }
+
         return $this->isRefPointerToSchema()
             && strpos($this->refPointer, '/' . $this->schema->getName() . '/') !== false
             && strpos($this->refPointer, '/properties/') !== false;
@@ -284,8 +312,13 @@ class PropertySchema
         $pattern = strpos($this->refPointer, '/properties/') !== false ?
             '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)/properties/(?<propName>.+)$~'
             : '~^'.self::REFERENCE_PATH.'(?<schemaName>.+)$~';
+        $separateFilePattern = '/((\.\/)*)(?<schemaName>.+)(\.)(yml|yaml|json)(.*)/'; # https://github.com/php-openapi/yii2-openapi/issues/74
         if (!\preg_match($pattern, $this->refPointer, $matches)) {
-            throw new InvalidDefinitionException('Invalid schema reference');
+            if (!\preg_match($separateFilePattern, $this->uri, $separateFilePatternMatches)) {
+                throw new InvalidDefinitionException('Invalid schema reference');
+            } else {
+                return $separateFilePatternMatches['schemaName'];
+            }
         }
         return $matches['schemaName'];
     }
@@ -410,8 +443,6 @@ class PropertySchema
                 return 'bool';
             case 'number': // can be double and float
                 return $this->getAttr('format') === 'double' ? 'double' : 'float';
-//            case 'array':
-//                return $property->type;
             default:
                 return $this->getAttr('type', 'string');
         }
@@ -473,6 +504,7 @@ class PropertySchema
                 }
                 return YiiDbSchema::TYPE_TEXT;
             case 'object':
+            case 'array':
             {
                 return YiiDbSchema::TYPE_JSON;
             }
