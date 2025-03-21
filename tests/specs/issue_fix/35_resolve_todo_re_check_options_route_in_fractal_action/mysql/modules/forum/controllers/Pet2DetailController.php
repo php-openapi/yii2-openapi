@@ -4,6 +4,7 @@ namespace app\modules\forum\controllers;
 
 class Pet2DetailController extends \app\modules\forum\controllers\base\Pet2DetailController
 {
+
     public function checkAccess($action, $model = null, $params = [])
     {
         //TODO implement checkAccess
@@ -13,5 +14,7 @@ class Pet2DetailController extends \app\modules\forum\controllers\base\Pet2Detai
     {
         //TODO implement actionList
     }
+
+
 }
 
