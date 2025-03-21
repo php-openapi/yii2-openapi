@@ -4,7 +4,6 @@ namespace app\some\controllers;
 
 class CommentController extends \app\some\controllers\base\CommentController
 {
-
     public function checkAccess($action, $model = null, $params = [])
     {
         //TODO implement checkAccess
@@ -14,7 +13,5 @@ class CommentController extends \app\some\controllers\base\CommentController
     {
         //TODO implement actionList
     }
-
-
 }
 

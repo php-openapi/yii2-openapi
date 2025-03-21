@@ -1,19 +1,24 @@
 <?php
 
-namespace app\api\v1\controllers\base;
+namespace app\controllers\base;
 
 abstract class PetController extends \yii\rest\Controller
 {
     public function actions()
     {
         return [
-            'list' => [
-                'class' => \yii\rest\IndexAction::class,
+            'view' => [
+                'class' => \yii\rest\ViewAction::class,
                 'modelClass' => \app\models\Pet::class,
                 'checkAccess' => [$this, 'checkAccess'],
             ],
-            'create' => [
-                'class' => \yii\rest\CreateAction::class,
+            'delete' => [
+                'class' => \yii\rest\DeleteAction::class,
+                'modelClass' => \app\models\Pet::class,
+                'checkAccess' => [$this, 'checkAccess'],
+            ],
+            'update' => [
+                'class' => \yii\rest\UpdateAction::class,
                 'modelClass' => \app\models\Pet::class,
                 'checkAccess' => [$this, 'checkAccess'],
             ],
