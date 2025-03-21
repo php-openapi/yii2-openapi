@@ -113,6 +113,7 @@ paths:
           description: list of details
   /fgh/pet-detail2s:
     get:
+#      x-route: f/l789898
       description: list all pet details
       responses:
         '200':

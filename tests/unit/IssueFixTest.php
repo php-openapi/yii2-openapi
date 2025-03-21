@@ -549,12 +549,12 @@ class IssueFixTest extends DbTestCase
     {
         $testFile = Yii::getAlias("@specs/issue_fix/controller_namespace_issue_for_modules_in_urlprefixes/index.php");
         $this->runGenerator($testFile);
-        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
-            'recursive' => true,
-        ]);
-        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/controller_namespace_issue_for_modules_in_urlprefixes/mysql"), [
-            'recursive' => true,
-        ]);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/controller_namespace_issue_for_modules_in_urlprefixes/mysql"), [
+//            'recursive' => true,
+//        ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
     }
 
