@@ -544,6 +544,20 @@ class IssueFixTest extends DbTestCase
         $this->checkFiles($actualFiles, $expectedFiles);
     }
 
+    //
+    public function testControllerNamespaceIssueForModulesInUrlPrefixes()
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/controller_namespace_issue_for_modules_in_urlprefixes/index.php");
+        $this->runGenerator($testFile);
+//        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+//            'recursive' => true,
+//        ]);
+//        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/controller_namespace_issue_for_modules_in_urlprefixes/mysql"), [
+//            'recursive' => true,
+//        ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
     // https://github.com/php-openapi/yii2-openapi/issues/60
     public function test60DescriptionOfAPropertyInSpecMustCorrespondToDbTableColumnComment()
     {
@@ -903,14 +917,17 @@ PHP;
     // https://github.com/php-openapi/yii2-openapi/issues/35
     public function test35ResolveTodoReCheckOptionsRouteInRestAction()
     {
-        $testFile = Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/index.php");
-        $content = str_replace("'useJsonApi' => true,", "'useJsonApi' => false,", file_get_contents($testFile));
-        file_put_contents($testFile, $content);
-        $this->runGenerator($testFile);
+        $config = [];
+        $config = require Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/index.php");
+        $config['useJsonApi'] = false;
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config-35.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+        $this->runGenerator($tmpConfigFile);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
-        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/mysql"), [
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_rest_action/mysql"), [
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);

@@ -5,12 +5,6 @@ namespace app\controllers;
 class PetCommentController extends \app\controllers\base\PetCommentController
 {
 
-    public function actions()
-    {
-        $actions = parent::actions();
-        return $actions;
-    }
-
     public function checkAccess($action, $model = null, $params = [])
     {
         //TODO implement checkAccess

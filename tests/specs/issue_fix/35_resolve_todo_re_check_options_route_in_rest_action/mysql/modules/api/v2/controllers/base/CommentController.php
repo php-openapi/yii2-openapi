@@ -1,22 +1,12 @@
 <?php
 
-namespace app\api\v1\controllers\base;
+namespace app\some\controllers\base;
 
-abstract class PetController extends \yii\rest\Controller
+abstract class CommentController extends \yii\rest\Controller
 {
     public function actions()
     {
         return [
-            'list' => [
-                'class' => \yii\rest\IndexAction::class,
-                'modelClass' => \app\models\Pet::class,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'create' => [
-                'class' => \yii\rest\CreateAction::class,
-                'modelClass' => \app\models\Pet::class,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
             'options' => [
                 'class' => \yii\rest\OptionsAction::class,
             ],
@@ -36,5 +26,7 @@ abstract class PetController extends \yii\rest\Controller
      * @throws \yii\web\ForbiddenHttpException if the user does not have access
      */
     abstract public function checkAccess($action, $model = null, $params = []);
+
+    abstract public function actionList();
 
 }

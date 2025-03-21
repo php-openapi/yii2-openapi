@@ -1,21 +1,37 @@
 <?php
+namespace app\controllers\base;
 
-namespace app\api\v1\controllers\base;
+use insolita\fractal\JsonApiController;
+use Yii;
 
-abstract class PetController extends \yii\rest\Controller
+abstract class PetController extends JsonApiController
 {
     public function actions()
     {
         return [
-            'list' => [
-                'class' => \yii\rest\IndexAction::class,
-                'modelClass' => \app\models\Pet::class,
+            'view' => [
+                'class' => \insolita\fractal\actions\ViewAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
+                'transformer' => \app\transformers\PetTransformer::class,
+                'modelClass' => \app\models\Pet::class,
+                'resourceKey' => 'pets',
+                'findModel' => null
             ],
-            'create' => [
-                'class' => \yii\rest\CreateAction::class,
-                'modelClass' => \app\models\Pet::class,
+            'delete' => [
+                'class' => \insolita\fractal\actions\DeleteAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
+                'modelClass' => \app\models\Pet::class,
+                'findModel' => null
+          ],
+            'update' => [
+                'class' => \insolita\fractal\actions\UpdateAction::class,
+                'checkAccess' => [$this, 'checkAccess'],
+                'transformer' => \app\transformers\PetTransformer::class,
+                'modelClass' => \app\models\Pet::class,
+                'resourceKey' => 'pets',
+                'findModel' => null,
+                'allowedRelations'=>[],
+                'scenario' => 'default'
             ],
             'options' => [
                 'class' => \yii\rest\OptionsAction::class,
@@ -36,5 +52,4 @@ abstract class PetController extends \yii\rest\Controller
      * @throws \yii\web\ForbiddenHttpException if the user does not have access
      */
     abstract public function checkAccess($action, $model = null, $params = []);
-
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace app\forum2\controllers;
+namespace app\controllers;
 
-class Pet3DetailController extends \app\forum2\controllers\base\Pet3DetailController
+class PetController extends \app\controllers\base\PetController
 {
 
     public function actions()
@@ -14,11 +14,6 @@ class Pet3DetailController extends \app\forum2\controllers\base\Pet3DetailContro
     public function checkAccess($action, $model = null, $params = [])
     {
         //TODO implement checkAccess
-    }
-
-    public function actionList()
-    {
-        //TODO implement actionList
     }
 
 

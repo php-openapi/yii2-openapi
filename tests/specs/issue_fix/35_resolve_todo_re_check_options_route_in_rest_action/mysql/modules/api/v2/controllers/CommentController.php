@@ -1,15 +1,9 @@
 <?php
 
-namespace app\controllers;
+namespace app\some\controllers;
 
-class PetCommentController extends \app\controllers\base\PetCommentController
+class CommentController extends \app\some\controllers\base\CommentController
 {
-
-    public function actions()
-    {
-        $actions = parent::actions();
-        return $actions;
-    }
 
     public function checkAccess($action, $model = null, $params = [])
     {

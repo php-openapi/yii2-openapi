@@ -18,7 +18,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Yii;
 use yii\gii\CodeFile;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
 
 class ControllersGenerator
@@ -38,7 +37,9 @@ class ControllersGenerator
     public function __construct(Config $config, array $actions = [])
     {
         $this->config = $config;
-        $this->controllers = ArrayHelper::index($actions, null, 'controllerId');
+        foreach ($actions as $action) {
+            $this->controllers[$action->prefix . '/' . $action->controllerId][] = $action;
+        }
         $this->files = new CodeFiles([]);
     }
 
@@ -54,7 +55,7 @@ class ControllersGenerator
         $path = $this->config->getPathFromNamespace($namespace);
         $templateName = $this->config->useJsonApi ? 'controller_jsonapi.php' : 'controller.php';
 
-        foreach ($this->controllers as $controller => $actions) {
+        foreach ($this->controllers as $controllerWithPrefix => $actions) {
             $controllerNamespace = $namespace;
             $controllerPath = $path;
             /**
@@ -66,7 +67,10 @@ class ControllersGenerator
                 $controllerPath = $action->prefixSettings['path']
                     ?? $this->config->getPathFromNamespace($controllerNamespace);
             }
-            $className = Inflector::id2camel($controller) . 'Controller';
+
+            $routeParts = explode('/', $controllerWithPrefix);
+
+            $className = Inflector::id2camel(end($routeParts)) . 'Controller';
             $this->files->add(new CodeFile(
                 Yii::getAlias($controllerPath . "/base/$className.php"),
                 $this->config->render(
