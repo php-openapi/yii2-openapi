@@ -124,6 +124,12 @@ paths:
       responses:
         '200':
           description: list of details
+  /theprefix/ctrl:
+    get:
+      description: list all pet details
+      responses:
+        '200':
+          description: list of details
 
 components:
   schemas:
