@@ -1,26 +1,37 @@
 <?php
-
 namespace app\controllers\base;
 
-abstract class PetController extends \yii\rest\Controller
+use insolita\fractal\JsonApiController;
+use Yii;
+
+abstract class PetController extends JsonApiController
 {
     public function actions()
     {
         return [
             'view' => [
-                'class' => \yii\rest\ViewAction::class,
-                'modelClass' => \app\models\Pet::class,
+                'class' => \insolita\fractal\actions\ViewAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
+                'transformer' => \app\transformers\PetTransformer::class,
+                'modelClass' => \app\models\Pet::class,
+                'resourceKey' => 'pets',
+                'findModel' => null
             ],
             'delete' => [
-                'class' => \yii\rest\DeleteAction::class,
-                'modelClass' => \app\models\Pet::class,
+                'class' => \insolita\fractal\actions\DeleteAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
-            ],
+                'modelClass' => \app\models\Pet::class,
+                'findModel' => null
+          ],
             'update' => [
-                'class' => \yii\rest\UpdateAction::class,
-                'modelClass' => \app\models\Pet::class,
+                'class' => \insolita\fractal\actions\UpdateAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
+                'transformer' => \app\transformers\PetTransformer::class,
+                'modelClass' => \app\models\Pet::class,
+                'resourceKey' => 'pets',
+                'findModel' => null,
+                'allowedRelations'=>[],
+                'scenario' => 'default'
             ],
             'options' => [
                 'class' => \yii\rest\OptionsAction::class,
@@ -41,5 +52,4 @@ abstract class PetController extends \yii\rest\Controller
      * @throws \yii\web\ForbiddenHttpException if the user does not have access
      */
     abstract public function checkAccess($action, $model = null, $params = []);
-
 }

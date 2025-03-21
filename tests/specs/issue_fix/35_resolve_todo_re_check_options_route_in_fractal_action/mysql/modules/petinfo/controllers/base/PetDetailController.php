@@ -1,8 +1,10 @@
 <?php
-
 namespace app\modules\petinfo\controllers\base;
 
-abstract class PetDetailController extends \yii\rest\Controller
+use insolita\fractal\JsonApiController;
+use Yii;
+
+abstract class PetDetailController extends JsonApiController
 {
     public function actions()
     {
@@ -28,5 +30,4 @@ abstract class PetDetailController extends \yii\rest\Controller
     abstract public function checkAccess($action, $model = null, $params = []);
 
     abstract public function actionList();
-
 }
