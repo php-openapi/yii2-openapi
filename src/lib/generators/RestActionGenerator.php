@@ -155,7 +155,6 @@ class RestActionGenerator
                 'responseWrapper' => $responseWrapper,
                 'prefix' => $routeData->getPrefix(),
                 'prefixSettings' => $routeData->getPrefixSettings(),
-                'xRoute' => $customRoute # TODO
             ],
         ]);
     }

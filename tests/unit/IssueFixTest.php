@@ -917,10 +917,18 @@ PHP;
     // https://github.com/php-openapi/yii2-openapi/issues/35
     public function test35ResolveTodoReCheckOptionsRouteInRestAction()
     {
-        $testFile = Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/index.php");
-        $content = str_replace("'useJsonApi' => true,", "'useJsonApi' => false,", file_get_contents($testFile));
-        file_put_contents($testFile, $content);
-        $this->runGenerator($testFile);
+        $config = require_once Yii::getAlias("@specs/issue_fix/35_resolve_todo_re_check_options_route_in_fractal_action/index.php");
+//        $content = str_replace("'useJsonApi' => true,", "'useJsonApi' => false,", file_get_contents($testFile));
+//        file_put_contents($testFile, $content); # TODO this is erroneous
+
+        $config['useJsonApi'] = false;
+
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config-35.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+
+
+        $this->runGenerator($tmpConfigFile);
         $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
             'recursive' => true,
         ]);
