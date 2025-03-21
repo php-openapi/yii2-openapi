@@ -154,7 +154,7 @@ class RestActionGenerator
                     : null,
                 'responseWrapper' => $responseWrapper,
                 'prefix' => $routeData->getPrefix(),
-                'prefixSettings' => $routeData->getPrefixSettings(),
+                'prefixSettings' => $routeData->getPrefixSettings()
             ],
         ]);
     }
