@@ -7,7 +7,9 @@
 
 namespace cebe\yii2openapi\lib\items;
 
+use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use yii\base\BaseObject;
 use yii\base\InvalidCallException;
 use yii\helpers\ArrayHelper;
@@ -164,12 +166,49 @@ final class RouteData extends BaseObject
      */
     private $urlPrefixes;
 
-    public function __construct(PathItem $pathItem, string $path, array $urlPrefixes = [], $config = [])
-    {
+    /**
+     * @var string
+     */
+    private $method;
+
+    /**
+     * @var Operation
+     */
+    private $operation;
+
+    public function __construct(
+        string    $path,
+        PathItem  $pathItem,
+        string    $method,
+        Operation $operation,
+        array     $urlPrefixes = [],
+        $config = []
+    ) {
         $this->path = $this->unprefixedPath = $path;
         $this->parts = explode('/', trim($path, '/'));
         $this->pathItem = $pathItem;
+        $this->method = $method;
+        $this->operation = $operation;
         $this->urlPrefixes = $urlPrefixes;
+
+        if (isset($operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
+            $customRoute = $operation->{CustomSpecAttr::ROUTE};
+            $parts = explode('/', $customRoute);
+            array_pop($parts);
+            array_pop($parts);
+            $this->prefix = implode('/', $parts); # add everything except controller ID and action ID
+
+            $modulesPath = [];
+            foreach ($parts as $module) {
+                $modulesPath[] = 'modules/' . $module;
+            }
+
+            $this->prefixSettings = [
+                'namespace' => 'app\\' . implode('\\', $parts) . '\\controllers',
+                'path' => 'app/' . implode('/', $modulesPath) . '/controllers'
+            ];
+        }
+
         parent::__construct($config);
     }
 

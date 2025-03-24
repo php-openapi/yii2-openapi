@@ -1,0 +1,14 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Issue14Test testNestedModuleInXRoute \#14
+
+paths:
+  /:
+    get:
+      x-route: fruit/mango/alphonso/view
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information

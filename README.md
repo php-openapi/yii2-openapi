@@ -689,10 +689,15 @@ Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
 
 Route, path and namespace for controller/action will be resolved in following manner (from highest priority to lowest):
 
- - `x-route`
- - `urlPrefixes`
- - `controllerNamespace` of this lib
- - `controllerNamespace` of Yii app
+- [`x-route`](#x-route)
+- [
+  `urlPrefixes`](https://github.com/php-openapi/yii2-openapi/blob/649743cf0a78743f550edcbd4e93fdffc55c76fd/src/lib/Config.php#L51)
+- [
+  `controllerNamespace`](https://github.com/php-openapi/yii2-openapi/blob/649743cf0a78743f550edcbd4e93fdffc55c76fd/src/lib/Config.php#L77)
+  of this lib
+- [
+  `controllerNamespace`](https://github.com/yiisoft/yii2/blob/16f50626e1aa81200f109c1a455a5c9b18acfdda/framework/base/Application.php#L93)
+  of Yii app
 
 ### `x-description-is-comment`
 

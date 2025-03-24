@@ -71,6 +71,11 @@ final class RestAction extends BaseObject
     public $responseWrapper;
 
     /**
+     * @var ?string
+     */
+    public $xRoute;
+
+    /**
      * @var bool
      * @see $isDuplicate
      * https://github.com/cebe/yii2-openapi/issues/84
@@ -91,10 +96,15 @@ final class RestAction extends BaseObject
 
     public function getRoute():string
     {
+        if ($this->xRoute) {
+            return $this->xRoute;
+        }
+
         if ($this->prefix && !empty($this->prefixSettings)) {
             $prefix = $this->prefixSettings['module'] ?? $this->prefix;
             return trim($prefix, '/') . '/' . $this->controllerId . '/' . $this->id;
         }
+
         return $this->controllerId . '/' . $this->id;
     }
 
