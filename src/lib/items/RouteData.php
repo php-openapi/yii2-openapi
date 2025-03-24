@@ -205,7 +205,7 @@ final class RouteData extends BaseObject
 
             $this->prefixSettings = [
                 'namespace' => 'app\\' . implode('\\', $parts) . '\\controllers',
-                'path' => 'app/' . implode('/', $modulesPath) . '/controllers'
+                'path' => '@app/' . implode('/', $modulesPath) . '/controllers'
             ];
         }
 
