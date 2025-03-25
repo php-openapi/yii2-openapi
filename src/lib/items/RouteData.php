@@ -209,10 +209,12 @@ final class RouteData extends BaseObject
             }
             $this->moduleList = $modulesPath;
 
-            $this->prefixSettings = [
-                'namespace' => 'app\\' . implode('\\', $parts) . '\\controllers',
-                'path' => '@app/' . implode('/', $modulesPathSection) . '/controllers'
-            ];
+            if ($parts) {
+                $this->prefixSettings = [
+                    'namespace' => 'app\\' . implode('\\', $parts) . '\\controllers',
+                    'path' => '@app/' . implode('/', $modulesPathSection) . '/controllers'
+                ];
+            }
         }
 
         parent::__construct($config);
