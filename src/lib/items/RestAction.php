@@ -100,7 +100,7 @@ final class RestAction extends BaseObject
             return $this->xRoute;
         }
 
-        if ($this->prefix && !empty($this->prefixSettings)) {
+        if (!empty($this->prefixSettings)) {
             $prefix = $this->prefixSettings['module'] ?? $this->prefix;
             return trim($prefix, '/') . '/' . $this->controllerId . '/' . $this->id;
         }

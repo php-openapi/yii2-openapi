@@ -97,7 +97,7 @@ final class FractalAction extends BaseObject
 
     public function getRoute():string
     {
-        if ($this->prefix && !empty($this->prefixSettings)) {
+        if (!empty($this->prefixSettings)) {
             $prefix = $this->prefixSettings['module'] ?? $this->prefix;
             return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
         }

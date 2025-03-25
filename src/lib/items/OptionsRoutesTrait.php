@@ -11,7 +11,7 @@ trait OptionsRoutesTrait
 {
     public function getOptionsRoute():string
     {
-        if ($this->prefix && !empty($this->prefixSettings)) {
+        if (!empty($this->prefixSettings)) {
             if (isset($this->prefixSettings['module'])) {
                 $prefix = $this->prefixSettings['module'];
                 return static::finalOptionsRoute($prefix, $this->controllerId);

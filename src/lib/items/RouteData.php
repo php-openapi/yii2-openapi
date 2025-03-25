@@ -176,6 +176,8 @@ final class RouteData extends BaseObject
      */
     private $operation;
 
+    private $moduleList = [];
+
     public function __construct(
         string    $path,
         PathItem  $pathItem,
@@ -196,16 +198,20 @@ final class RouteData extends BaseObject
             $parts = explode('/', $customRoute);
             array_pop($parts);
             array_pop($parts);
-            $this->prefix = implode('/', $parts); # add everything except controller ID and action ID
+            // $this->prefix = implode('/', $parts); # add everything (modules) except controller ID and action ID
 
-            $modulesPath = [];
+            $modulesPathSection = $modulesPath = [];
+            $container = '';
             foreach ($parts as $module) {
-                $modulesPath[] = 'modules/' . $module;
+                $modulesPathSection[$module] = 'modules/' . $module;
+                $container .= ($container !== '' ? '/' : '') . ('modules/' . $module);
+                $modulesPath[$module] = '@app/'.$container;
             }
+            $this->moduleList = $modulesPath;
 
             $this->prefixSettings = [
                 'namespace' => 'app\\' . implode('\\', $parts) . '\\controllers',
-                'path' => '@app/' . implode('/', $modulesPath) . '/controllers'
+                'path' => '@app/' . implode('/', $modulesPathSection) . '/controllers'
             ];
         }
 
@@ -470,5 +476,13 @@ final class RouteData extends BaseObject
     public function isNonCrudAction():bool
     {
         return in_array($this->type, [self::TYPE_DEFAULT, self::TYPE_RESOURCE_OPERATION]);
+    }
+
+    /**
+     * Returns list of modules this action is part of
+     */
+    public function listModules(): array
+    {
+        return $this->moduleList;
     }
 }

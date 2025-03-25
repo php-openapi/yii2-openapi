@@ -62,7 +62,7 @@ class ControllersGenerator
              * @var RestAction|FractalAction $action
              **/
             $action = $actions[0];
-            if ($action->prefix && !empty($action->prefixSettings)) {
+            if (!empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
                 $controllerPath = $action->prefixSettings['path']
                     ?? $this->config->getPathFromNamespace($controllerNamespace);
