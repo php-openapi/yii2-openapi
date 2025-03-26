@@ -201,11 +201,12 @@ final class RouteData extends BaseObject
             // $this->prefix = implode('/', $parts); # add everything (modules) except controller ID and action ID
 
             $modulesPathSection = $modulesPath = [];
-            $container = '';
-            foreach ($parts as $module) {
-                $modulesPathSection[$module] = 'modules/' . $module;
-                $container .= ($container !== '' ? '/' : '') . ('modules/' . $module);
-                $modulesPath[$module] = '@app/'.$container;
+            $container = $modulesNamespaceSection = '';
+            foreach ($parts as $moduleId) {
+                $modulesPathSection[$moduleId] = 'modules/' . $moduleId;
+                $container .= ($container !== '' ? '/' : '') . ('modules/' . $moduleId);
+                $modulesNamespaceSection .= ($modulesNamespaceSection ? '\\' : '') . ($moduleId);
+                $modulesPath[$moduleId] = ['path' => '@app/' . $container, 'namespace' => 'app\\' . $modulesNamespaceSection];
             }
             $this->moduleList = $modulesPath;
 

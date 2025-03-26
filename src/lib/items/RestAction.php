@@ -76,6 +76,11 @@ final class RestAction extends BaseObject
     public $xRoute;
 
     /**
+     * @var array list of module this action is part of. 'key' is module ID and 'value' is path where Module.php file must be generated
+     */
+    public $modulesList = [];
+
+    /**
      * @var bool
      * @see $isDuplicate
      * https://github.com/cebe/yii2-openapi/issues/84

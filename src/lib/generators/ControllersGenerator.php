@@ -90,6 +90,18 @@ class ControllersGenerator
                     $classFileGenerator->generate()
                 ));
             }
+
+            foreach ($action->modulesList as $moduleId => $moduleDetail) {
+                // only generate Module.php file if they do not exist, do not override
+                if (!file_exists(Yii::getAlias($moduleDetail['path'] . "/Module.php"))) {
+                    // $moduleNamespace = str_replace('\controllers', '', $action->prefixSettings['namespace']);
+                    $moduleFileGenerator = $this->makeModuleFile('Module', $moduleDetail['namespace'], $moduleId, $action);
+                    $this->files->add(new CodeFile(
+                        Yii::getAlias($moduleDetail['path'] . "/Module.php"),
+                        $moduleFileGenerator->generate()
+                    ));
+                }
+            }
         }
         return $this->files;
     }
@@ -159,5 +171,39 @@ PHP;
         }
         $classFileGenerator->setClasses([$reflection]);
         return $classFileGenerator;
+    }
+
+    /**
+     * @param RestAction|FractalAction $action
+     */
+    public function makeModuleFile(string $class, string $namespace, $moduleId, $action): FileGenerator
+    {
+        $file = new FileGenerator;
+        $reflection = new ClassGenerator(
+            $class,
+            $namespace,
+            null,
+            'yii\base\Module'
+        );
+
+        $moduleIds = array_keys($action->modulesList);
+        $position = array_search($moduleId, $moduleIds);
+        $childModuleId = $childModuleCode = null;
+        if (array_key_exists($position + 1, $moduleIds)) { # if `true`, child module exists
+            $childModuleId = $moduleIds[$position + 1];
+            $childModuleNamespace = $action->modulesList[$childModuleId]['namespace'];
+            $childModuleCode = <<<PHP
+\$this->modules = [
+    '{$childModuleId}' => [
+        // you should consider using a shorter namespace here!
+        'class' => \\{$childModuleNamespace}\Module::class,
+    ],
+];
+PHP;
+        }
+
+        $reflection->addMethod('init', [], AbstractMemberGenerator::FLAG_PUBLIC, 'parent::init();' . PHP_EOL . $childModuleCode);
+        $file->setClasses([$reflection]);
+        return $file;
     }
 }
