@@ -69,42 +69,4 @@ trait ActionHelperTrait
     {
         return trim($prefix, '/') . '/' . $controllerId . '/options';
     }
-
-//    TODO remove
-//    public function getRouteInfo(): array
-//    {
-//        /** @var ?array $modules */
-//        $modules = $controllerId = $path = $namespace = null;
-//
-//        if ($this->xRoute) {
-//            $routeParts = explode('/', $this->xRoute);
-//            $controllerId = $routeParts[count($routeParts)-2]; # last second part is controller ID
-////            $actionId = $routeParts[count($routeParts)-1];
-//            unset($routeParts[count($routeParts)-1], $routeParts[count($routeParts)-2]);
-//            $modules = $routeParts;
-//        }
-//
-//        return [
-//            'modules' => $modules,
-//            'controller_id' => $controllerId,
-////            'action_id' => $actionId,
-//            'path' => $path,
-//            'namespace' => $namespace,
-//        ];
-//    }
-
-//    public function getRoute(): string
-//    {
-//
-//    }
-//
-//    public function getPath(): string
-//    {
-//
-//    }
-//
-//    public function getNamespace(): string
-//    {
-//
-//    }
 }
