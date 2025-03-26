@@ -9,15 +9,10 @@ namespace cebe\yii2openapi\lib\items;
 
 trait ActionHelperTrait
 {
-    /**
-     * @var ?string
-     */
-    public $xRoute;
+    public ?string $xRoute;
 
-    /**
-     * @var array list of module this action is part of. 'key' is module ID and 'value' is path where Module.php file must be generated
-     */
-    public $modulesList = [];
+    # list of module this action is part of. 'key' is module ID and 'value' is path where Module.php file must be generated
+    public array $modulesList = [];
 
     public function getOptionsRoute():string
     {
