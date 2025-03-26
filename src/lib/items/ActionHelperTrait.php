@@ -7,8 +7,18 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-trait OptionsRoutesTrait
+trait ActionHelperTrait
 {
+    /**
+     * @var ?string
+     */
+    public $xRoute;
+
+    /**
+     * @var array list of module this action is part of. 'key' is module ID and 'value' is path where Module.php file must be generated
+     */
+    public $modulesList = [];
+
     public function getOptionsRoute():string
     {
         if (!empty($this->prefixSettings)) {
