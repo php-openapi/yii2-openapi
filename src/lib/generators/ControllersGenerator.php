@@ -91,10 +91,10 @@ class ControllersGenerator
                 ));
             }
 
+            // generate Module.php file for modules
             foreach ($action->modulesList as $moduleId => $moduleDetail) {
                 // only generate Module.php file if they do not exist, do not override
                 if (!file_exists(Yii::getAlias($moduleDetail['path'] . "/Module.php"))) {
-                    // $moduleNamespace = str_replace('\controllers', '', $action->prefixSettings['namespace']);
                     $moduleFileGenerator = $this->makeModuleFile('Module', $moduleDetail['namespace'], $moduleId, $action);
                     $this->files->add(new CodeFile(
                         Yii::getAlias($moduleDetail['path'] . "/Module.php"),
@@ -195,7 +195,6 @@ PHP;
             $childModuleCode = <<<PHP
 \$this->modules = [
     '{$childModuleId}' => [
-        // you should consider using a shorter namespace here!
         'class' => \\{$childModuleNamespace}\Module::class,
     ],
 ];
