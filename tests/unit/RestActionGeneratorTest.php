@@ -475,6 +475,7 @@ class RestActionGeneratorTest extends TestCase
                         'params' => [],
                         'modelName' => 'Post',
                         'modelFqn' => 'app\models\Post',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'array'],
                     ]),
                     new RestAction([
@@ -487,6 +488,7 @@ class RestActionGeneratorTest extends TestCase
                         'params' => ['id' => ['type' => 'integer']],
                         'modelName' => 'Post',
                         'modelFqn' => 'app\models\Post',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => 'post', 'list' => null, 'type' => 'object'],
                     ]),
                     new RestAction([
@@ -501,6 +503,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Post',
                         'modelFqn' => 'app\models\Post',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => 'category', 'list' => null, 'type' => 'object'],
                     ]),
                     new RestAction([
@@ -515,6 +518,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Post',
                         'modelFqn' => 'app\models\Post',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'array'],
                     ]),
                     new RestAction([
@@ -529,6 +533,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Comment',
                         'modelFqn' => 'app\models\Comment',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'array'],
                     ]),
                     new RestAction([
@@ -543,6 +548,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Comment',
                         'modelFqn' => 'app\models\Comment',
+                        'xRoute' => null,
                         'responseWrapper' => null,
                     ]),
                     new RestAction([
@@ -558,6 +564,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Post',
                         'modelFqn' => 'app\models\Post',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'object'],
                     ]),
                     new RestAction([
@@ -573,6 +580,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Comment',
                         'modelFqn' => 'app\models\Comment',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'object'],
                     ]),
                     new RestAction([
@@ -588,6 +596,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Comment',
                         'modelFqn' => 'app\models\Comment',
+                        'xRoute' => null,
                         'responseWrapper' => null,
                     ]),
                     new RestAction([
@@ -603,6 +612,7 @@ class RestActionGeneratorTest extends TestCase
                         ],
                         'modelName' => 'Comment',
                         'modelFqn' => 'app\models\Comment',
+                        'xRoute' => null,
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'object'],
                     ]),
                 ],
