@@ -1,0 +1,13 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Issue14Test 14_module_config_in_url_prefixes \#14
+
+paths:
+  /hi:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information

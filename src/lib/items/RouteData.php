@@ -322,6 +322,14 @@ final class RouteData extends BaseObject
             $this->unprefixedPath = '/' . trim(str_replace($prefix, '', $this->path), '/');
             $this->parts = explode('/', trim($this->unprefixedPath, '/'));
             $this->prefixSettings = is_array($rule) ? $rule : [];
+
+            $modulesPath = [];
+            if(isset($rule['module'])) {
+//                var_dump($rule['module'], $prefix);
+                $modulesPath[$modulesPath] = ['path' => '@app/TODO' , 'namespace' => 'app\\TODO' . ];
+
+            }
+            $this->moduleList = [...$this->moduleList, ...$modulesPath];
         }
         foreach (self::$patternMap as $type => $pattern) {
             if (preg_match($pattern, $this->unprefixedPath, $matches)) {
