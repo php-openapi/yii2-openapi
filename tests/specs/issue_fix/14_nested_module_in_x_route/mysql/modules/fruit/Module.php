@@ -10,7 +10,6 @@ class Module extends \yii\base\Module
         parent::init();
         $this->modules = [
             'mango' => [
-                // you should consider using a shorter namespace here!
                 'class' => \app\fruit\mango\Module::class,
             ],
         ];
