@@ -52,7 +52,7 @@ class ControllersGenerator
             return new CodeFiles([]);
         }
         $namespace = $this->config->controllerNamespace ?? Yii::$app->controllerNamespace;
-        $path = $this->config->getPathFromNamespace($namespace);
+        $path = Config::getPathFromNamespace($namespace);
         $templateName = $this->config->useJsonApi ? 'controller_jsonapi.php' : 'controller.php';
 
         foreach ($this->controllers as $controllerWithPrefix => $actions) {
@@ -65,7 +65,7 @@ class ControllersGenerator
             if (!empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
                 $controllerPath = $action->prefixSettings['path']
-                    ?? $this->config->getPathFromNamespace($controllerNamespace);
+                    ?? Config::getPathFromNamespace($controllerNamespace);
             }
 
             $routeParts = explode('/', $controllerWithPrefix);

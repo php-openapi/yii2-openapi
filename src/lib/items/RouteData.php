@@ -9,6 +9,7 @@ namespace cebe\yii2openapi\lib\items;
 
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
+use cebe\yii2openapi\lib\Config;
 use cebe\yii2openapi\lib\CustomSpecAttr;
 use yii\base\BaseObject;
 use yii\base\InvalidCallException;
@@ -324,12 +325,18 @@ final class RouteData extends BaseObject
             $this->prefixSettings = is_array($rule) ? $rule : [];
 
             $modulesPath = [];
-            if(isset($rule['module'])) {
-//                var_dump($rule['module'], $prefix);
-                $modulesPath[$modulesPath] = ['path' => '@app/TODO' , 'namespace' => 'app\\TODO' . ];
-
+            if (isset($rule['module'])) {
+                $modPath = $rule['path'] ?? Config::getPathFromNamespace($rule['namespace']);
+                if (str_ends_with($modPath, '/controllers')) {
+                    $modPath = substr($modPath, 0, -12);
+                }
+                $modNs = $rule['namespace'];
+                if (str_ends_with($modNs, '\controllers')) {
+                    $modNs = substr($modNs, 0, -12);
+                }
+                $modulesPath[$rule['module']] = ['path' => $modPath, 'namespace' => $modNs];
             }
-            $this->moduleList = [...$this->moduleList, ...$modulesPath];
+            $this->moduleList = array_merge($this->moduleList, $modulesPath);
         }
         foreach (self::$patternMap as $type => $pattern) {
             if (preg_match($pattern, $this->unprefixedPath, $matches)) {

@@ -379,7 +379,8 @@ class RestActionGeneratorTest extends TestCase
                             'namespace' => '\app\api\v1\controllers',
                         ],
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'array'],
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => []
                     ]),
                     new RestAction([
                         'id' => 'create',
@@ -397,7 +398,8 @@ class RestActionGeneratorTest extends TestCase
                             'namespace' => '\app\api\v1\controllers',
                         ],
                         'responseWrapper' => null,
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => []
                     ]),
                     new RestAction([
                         'id' => 'view',
@@ -412,7 +414,8 @@ class RestActionGeneratorTest extends TestCase
                         'prefix' => 'animals',
                         'prefixSettings' => [],
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'object'],
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => []
                     ]),
                     new RestAction([
                         'id' => 'delete',
@@ -427,7 +430,8 @@ class RestActionGeneratorTest extends TestCase
                         'prefix' => 'animals',
                         'prefixSettings' => [],
                         'responseWrapper' => null,
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => []
                     ]),
                     new RestAction([
                         'id' => 'update',
@@ -442,7 +446,8 @@ class RestActionGeneratorTest extends TestCase
                         'prefix' => 'animals',
                         'prefixSettings' => [],
                         'responseWrapper' => ['item' => '', 'list' => '', 'type' => 'object'],
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => []
                     ]),
                     new RestAction([
                         'id' => 'list',
@@ -455,7 +460,8 @@ class RestActionGeneratorTest extends TestCase
                         'modelName' => null,
                         'modelFqn' => null,
                         'responseWrapper' => null,
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => []
                     ]),
                     new RestAction([
                         'id' => 'list',
@@ -474,7 +480,13 @@ class RestActionGeneratorTest extends TestCase
                             'namespace' => '\app\modules\petinfo\controllers',
                         ],
                         'responseWrapper' => null,
-                        'xRoute' => null
+                        'xRoute' => null,
+                        'modulesList' => [
+                            'pet-info' => [
+                                'path' => '@app/modules/petinfo',
+                                'namespace' => '\app\modules\petinfo',
+                            ]
+                        ]
                     ]),
                 ],
             ],
