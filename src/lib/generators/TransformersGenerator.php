@@ -48,7 +48,7 @@ class TransformersGenerator
         if (!$this->config->generateControllers || !$this->config->useJsonApi) {
             return $this->files;
         }
-        $transformerPath = $this->config->getPathFromNamespace($this->config->transformerNamespace);
+        $transformerPath = Config::getPathFromNamespace($this->config->transformerNamespace);
         foreach ($this->models as $model) {
             $transformer = Yii::createObject(Transformer::class, [
                $model,

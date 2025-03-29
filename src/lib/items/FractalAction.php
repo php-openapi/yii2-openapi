@@ -32,7 +32,7 @@ use function strpos;
  */
 final class FractalAction extends BaseObject
 {
-    use OptionsRoutesTrait;
+    use ActionHelperTrait;
 
     /**@var string* */
     public $id;
@@ -97,7 +97,11 @@ final class FractalAction extends BaseObject
 
     public function getRoute():string
     {
-        if ($this->prefix && !empty($this->prefixSettings)) {
+        if ($this->xRoute) {
+            return $this->xRoute;
+        }
+
+        if (!empty($this->prefixSettings)) {
             $prefix = $this->prefixSettings['module'] ?? $this->prefix;
             return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
         }

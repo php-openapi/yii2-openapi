@@ -7,11 +7,33 @@
 
 namespace cebe\yii2openapi\lib\items;
 
-trait OptionsRoutesTrait
+trait ActionHelperTrait
 {
+    public ?string $xRoute = null;
+
+    # list of module this action is part of. 'key' is module ID and 'value' is path where Module.php file must be generated
+    public array $modulesList = [];
+
+    /**
+     * @see $isDuplicate
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * see `x-route` in README.md
+     * Used for generating only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * If duplicates routes have same params then `false`, else action is generated with no (0) params `true`
+     */
+    public bool $zeroParams = false;
+
+    /**
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * Generate only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * @see $zeroParams
+     * see `x-route` in README.md
+     */
+    public bool $isDuplicate = false;
+
     public function getOptionsRoute():string
     {
-        if ($this->prefix && !empty($this->prefixSettings)) {
+        if (!empty($this->prefixSettings)) {
             if (isset($this->prefixSettings['module'])) {
                 $prefix = $this->prefixSettings['module'];
                 return static::finalOptionsRoute($prefix, $this->controllerId);

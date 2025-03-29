@@ -9,7 +9,7 @@ return [
     ],
     'generateControllers' => true,
     'generateMigrations' => false,
-    'useJsonApi' => false,
+    'useJsonApi' => true,
     'urlPrefixes' => [
         'animals' => '',
         '/info' => ['module' => 'petinfo', 'namespace' => '\app\modules\petinfo\controllers'],

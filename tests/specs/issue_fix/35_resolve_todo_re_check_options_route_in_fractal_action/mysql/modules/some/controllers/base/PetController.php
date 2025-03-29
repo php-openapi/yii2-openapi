@@ -1,36 +1,32 @@
 <?php
-
 namespace app\api\v1\controllers\base;
 
-abstract class PetController extends \yii\rest\Controller
+use insolita\fractal\JsonApiController;
+use Yii;
+
+abstract class PetController extends JsonApiController
 {
     public function actions()
     {
         return [
             'list' => [
-                'class' => \yii\rest\IndexAction::class,
-                'modelClass' => \app\models\Pet::class,
+                'class' => \insolita\fractal\actions\ListAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
+                'transformer' => \app\transformers\PetTransformer::class,
+                'modelClass' => \app\models\Pet::class,
+                'resourceKey' => 'pets',
+                'dataFilter' => null,
+                'prepareDataProvider' => null
             ],
             'create' => [
-                'class' => \yii\rest\CreateAction::class,
-                'modelClass' => \app\models\Pet::class,
+                'class' => \insolita\fractal\actions\CreateAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'view' => [
-                'class' => \yii\rest\ViewAction::class,
+                'transformer' => \app\transformers\PetTransformer::class,
                 'modelClass' => \app\models\Pet::class,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'delete' => [
-                'class' => \yii\rest\DeleteAction::class,
-                'modelClass' => \app\models\Pet::class,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'update' => [
-                'class' => \yii\rest\UpdateAction::class,
-                'modelClass' => \app\models\Pet::class,
-                'checkAccess' => [$this, 'checkAccess'],
+                'resourceKey' => 'pets',
+                'allowedRelations'=>[],
+                'viewRoute' => 'view',
+                'scenario' => 'default'
             ],
             'options' => [
                 'class' => \yii\rest\OptionsAction::class,
@@ -51,5 +47,4 @@ abstract class PetController extends \yii\rest\Controller
      * @throws \yii\web\ForbiddenHttpException if the user does not have access
      */
     abstract public function checkAccess($action, $model = null, $params = []);
-
 }
