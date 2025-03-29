@@ -22,7 +22,26 @@ class Issue14Test extends DbTestCase
         $this->checkFiles($actualFiles, $expectedFiles);
     }
 
-    public function testModuleConfigInUrlPrefixes()
+    public function testNestedModuleInXRouteFractalAction()
+    {
+        $config = [];
+        $config = require Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/index.php");
+        $config['useJsonApi'] = true;
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config-35.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+        $testFile = Yii::getAlias($tmpConfigFile);
+        $this->runGenerator($testFile);
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    public function testModuleConfigInUrlPrefixes() # RestAction
     {
         $testFile = Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/index.php");
         $this->runGenerator($testFile);
@@ -33,5 +52,25 @@ class Issue14Test extends DbTestCase
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    public function testModuleConfigInUrlPrefixesFractalAction()
+    {
+        $config = [];
+        $config = require Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/index.php");
+        $config['useJsonApi'] = true;
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config-35.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+
+        $testFile = Yii::getAlias($tmpConfigFile);
+        $this->runGenerator($testFile);
+        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+        //     'recursive' => true,
+        // ]);
+        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/mysql"), [
+        //     'recursive' => true,
+        // ]);
+        // $this->checkFiles($actualFiles, $expectedFiles);
     }
 }
