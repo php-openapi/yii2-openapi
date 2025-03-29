@@ -11,4 +11,8 @@ return [
     'generateControllers' => true,
     'generateMigrations' => false,
     'generateModelFaker' => false,
+    // 'urlPrefixes' => [
+    //     'hi' => ['module' => 'greet', 'namespace' => 'app\greet'],
+    //     'abc' => ['module' => 'abc', 'namespace' => 'app\abc'],
+    // ]
 ];

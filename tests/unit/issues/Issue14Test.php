@@ -9,7 +9,7 @@ use yii\helpers\FileHelper;
 # https://github.com/php-openapi/yii2-openapi/issues/14
 class Issue14Test extends DbTestCase
 {
-    public function testNestedModuleInXRoute()
+    public function testNestedModuleInXRoute() # RestAction
     {
         $testFile = Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/index.php");
         $this->runGenerator($testFile);

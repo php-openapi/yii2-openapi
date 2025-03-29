@@ -38,7 +38,11 @@ class ControllersGenerator
     {
         $this->config = $config;
         foreach ($actions as $action) {
-            $this->controllers[$action->prefix . '/' . $action->controllerId][] = $action;
+            $r = $action->getRoute();
+            $r = explode('/', $r);
+            array_pop($r);
+            array_pop($r);
+            $this->controllers[implode('/', $r) . '/' . $action->controllerId][] = $action;
         }
         $this->files = new CodeFiles([]);
     }
