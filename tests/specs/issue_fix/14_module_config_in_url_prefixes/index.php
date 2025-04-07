@@ -12,7 +12,7 @@ return [
     'generateMigrations' => false,
     'generateModelFaker' => false,
     'urlPrefixes' => [
-        'hi' => ['module' => 'greet', 'namespace' => 'app\greet'],
+        'hi' => ['module' => 'greet', 'namespace' => 'app\greet'], // TODO `hi/` trailing slash in generated URL rules config
         'abc' => ['module' => 'abc', 'namespace' => 'app\abc'],
     ]
 ];

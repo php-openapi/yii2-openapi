@@ -14,7 +14,6 @@ use function array_keys;
 use function array_map;
 use function implode;
 use function strtr;
-use function trim;
 use function var_export;
 
 /**
@@ -70,19 +69,7 @@ final class RestAction extends BaseObject
      */
     public $responseWrapper;
 
-    public function getRoute():string
-    {
-        if ($this->xRoute) {
-            return $this->xRoute;
-        }
 
-        if (!empty($this->prefixSettings)) {
-            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/') . '/' . $this->controllerId . '/' . $this->id;
-        }
-
-        return $this->controllerId . '/' . $this->id;
-    }
 
     public function getBaseModelName():string
     {

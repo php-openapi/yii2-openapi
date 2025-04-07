@@ -95,18 +95,18 @@ final class FractalAction extends BaseObject
         return $this->templateFactory;
     }
 
-    public function getRoute():string
-    {
-        if ($this->xRoute) {
-            return $this->xRoute;
-        }
-
-        if (!empty($this->prefixSettings)) {
-            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
-        }
-        return $this->controllerId.'/'.$this->id;
-    }
+//    public function getRoute():string
+//    {
+//        if ($this->xRoute) {
+//            return $this->xRoute;
+//        }
+//
+//        if (!empty($this->prefixSettings)) {
+//            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
+//            return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
+//        }
+//        return $this->controllerId.'/'.$this->id;
+//    }
 
     public function getBaseModelName():string
     {

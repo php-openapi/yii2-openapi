@@ -119,7 +119,10 @@ class RestActionGenerator
             $this->knownModelClasses[$routeData->path] = $modelClass;
         }
 
-        if ($routeData->isRelationship()) {
+        if (!empty($customRoute)) {
+            $parts = explode('/', $customRoute);
+            $controllerId = $parts[count($parts) - 2];
+        } elseif ($routeData->isRelationship()) {
             $controllerId = $routeData->controller;
             $modelClass = Inflector::id2camel(Inflector::singularize($controllerId));
             $controllerId = isset($this->config->controllerModelMap[$modelClass])
@@ -129,9 +132,6 @@ class RestActionGenerator
             $controllerId = isset($this->config->controllerModelMap[$modelClass])
                 ? Inflector::camel2id($this->config->controllerModelMap[$modelClass])
                 : Inflector::camel2id($modelClass);
-        } elseif (!empty($customRoute)) {
-            $parts = explode('/', $customRoute);
-            $controllerId = $parts[count($parts) - 2];
         } else {
             $controllerId = $routeData->controller;
         }
