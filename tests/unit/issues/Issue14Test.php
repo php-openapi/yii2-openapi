@@ -39,6 +39,7 @@ class Issue14Test extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
+        FileHelper::unlink($tmpConfigFile);
     }
 
     public function testModuleConfigInUrlPrefixes() # RestAction
@@ -72,5 +73,7 @@ class Issue14Test extends DbTestCase
         //     'recursive' => true,
         // ]);
         // $this->checkFiles($actualFiles, $expectedFiles);
+
+        FileHelper::unlink($tmpConfigFile);
     }
 }

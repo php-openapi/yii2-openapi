@@ -6,5 +6,7 @@
  */
 return [
     'GET ' => 'fruit/mango/alphonso/view',
-    '' => 'fruit/alphonso/options',
+    'GET task/<id:\d+>' => 'fruit2/mango/alphonso/view',
+    '' => 'fruit/mango/alphonso/options',
+    'task/<id:\d+>' => 'fruit2/mango/alphonso/options',
 ];

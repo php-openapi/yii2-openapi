@@ -724,6 +724,7 @@ PHP;
         $this->assertSame($expected, $actual);
         $this->runActualMigrations('mysql', 1);
         Yii::$app->db->createCommand('DROP TABLE IF EXISTS {{%fruits}}')->execute();
+        FileHelper::unlink($tmpConfigFile);
     }
 
     private function createTableFor60DescriptionOfAProperty()
@@ -931,6 +932,7 @@ PHP;
             'recursive' => true,
         ]);
         $this->checkFiles($actualFiles, $expectedFiles);
+        FileHelper::unlink($tmpConfigFile);
     }
 
     // https://github.com/php-openapi/yii2-openapi/issues/63
