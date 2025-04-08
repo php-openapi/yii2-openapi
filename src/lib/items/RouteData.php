@@ -276,7 +276,7 @@ final class RouteData extends BaseObject
         }
         $this->pattern = implode('/', $patternParts);
         if ($this->prefix) {
-            $this->pattern = trim($this->prefix, '/').'/'.$this->pattern;
+            $this->pattern = trim($this->prefix, '/') . ($this->pattern ? '/' . $this->pattern : '');
         }
         if ($this->hasParams && $this->isRelationship()) {
             $this->relatedModel = $this->getFirstParam()['model'] ?? null;
