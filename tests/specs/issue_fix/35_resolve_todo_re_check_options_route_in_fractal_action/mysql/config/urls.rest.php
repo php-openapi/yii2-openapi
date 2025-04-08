@@ -5,8 +5,8 @@
  * This file is auto generated.
  */
 return [
-    'GET api/v1/pets' => 'api/v1/pet/list',
-    'POST api/v1/pets' => 'api/v1/pet/create',
+    'GET api/v1/pets' => 'some/pet/list',
+    'POST api/v1/pets' => 'some/pet/create',
     'GET animals/pets/<id:[\w-]+>' => 'pet/view',
     'DELETE animals/pets/<id:[\w-]+>' => 'pet/delete',
     'PATCH animals/pets/<id:[\w-]+>' => 'pet/update',
