@@ -77,7 +77,6 @@ class JsonActionGenerator extends RestActionGenerator
         $actionId = $routeData->isNonCrudAction() ? trim("{$actionType}-{$routeData->action}", '-')
             : "$actionType{$routeData->action}";
         if (!empty($customRoute)) {
-            // $actionType = '';
             $parts = explode('/', $customRoute);
             $controllerId = $parts[count($parts) - 2];
             $actionId = $parts[count($parts) - 1];

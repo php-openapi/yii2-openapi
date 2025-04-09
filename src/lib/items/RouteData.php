@@ -199,7 +199,6 @@ final class RouteData extends BaseObject
             $parts = explode('/', $customRoute);
             array_pop($parts);
             array_pop($parts);
-            // $this->prefix = implode('/', $parts); # add everything (modules) except controller ID and action ID
 
             $modulesPathSection = $modulesPath = [];
             $container = $modulesNamespaceSection = '';
@@ -310,7 +309,7 @@ final class RouteData extends BaseObject
     protected function detectUrlPattern():void
     {
         if ($this->path === '/') {
-            $this->type = self::TYPE_DEFAULT; //  issue is here https://github.com/php-openapi/yii2-openapi/issues/102
+            $this->type = self::TYPE_DEFAULT;
             $this->action = '';
             $this->controller = 'default';
             if (isset($this->operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144

@@ -37,24 +37,6 @@ trait ActionHelperTrait
         $r = explode('/', $r);
         array_pop($r);
         return implode('/', $r) . '/options';
-
-//        if (!empty($this->prefixSettings)) {
-//            if (isset($this->prefixSettings['module'])) {
-//                $prefix = $this->prefixSettings['module'];
-//                return static::finalOptionsRoute($prefix, $this->controllerId);
-//            } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) { # if `module` not present then check in namespace and then in path
-//                $prefix = static::computeModule('\\', $this->prefixSettings['namespace']);
-//                if ($prefix) {
-//                    return static::finalOptionsRoute($prefix, $this->controllerId);
-//                }
-//            } elseif (isset($this->prefixSettings['path']) && str_contains($this->prefixSettings['path'], '/modules/')) {
-//                $prefix = static::computeModule('/', $this->prefixSettings['path']);
-//                if ($prefix) {
-//                    return static::finalOptionsRoute($prefix, $this->controllerId);
-//                }
-//            }
-//        }
-//        return $this->controllerId.'/options';
     }
 
     /**
@@ -96,27 +78,19 @@ trait ActionHelperTrait
         if (!empty($this->prefixSettings)) {
             if (isset($this->prefixSettings['module'])) {
                 $prefix = $this->prefixSettings['module'];
-//                return static::finalOptionsRoute($prefix, $this->controllerId);
                 return trim($prefix, '/') . '/' . $this->controllerId . ($this->id ? '/' . $this->id : '');
             } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) { # if `module` not present then check in namespace and then in path
                 $prefix = static::computeModule('\\', $this->prefixSettings['namespace']);
                 if ($prefix) {
-//                    return static::finalOptionsRoute($prefix, $this->controllerId);
                     return trim($prefix, '/') . '/' . $this->controllerId . ($this->id ? '/' . $this->id : '');
                 }
             } elseif (isset($this->prefixSettings['path']) && str_contains($this->prefixSettings['path'], '/modules/')) {
                 $prefix = static::computeModule('/', $this->prefixSettings['path']);
                 if ($prefix) {
-//                    return static::finalOptionsRoute($prefix, $this->controllerId);
                     return trim($prefix, '/') . '/' . $this->controllerId . ($this->id ? '/' . $this->id : '');
                 }
             }
         }
-
-//        if (!empty($this->prefixSettings)) {
-//            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-//            return trim($prefix, '/') . '/' . $this->controllerId . '/' . $this->id;
-//        }
 
         return $this->controllerId . ($this->id ? '/' . $this->id : '');
     }
