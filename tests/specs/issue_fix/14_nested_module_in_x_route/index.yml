@@ -4,14 +4,13 @@ info:
   title: Issue14Test testNestedModuleInXRoute \#14
 
 paths:
-  /:
+  '/tasks':
     get:
-      x-route: fruit/mango/alphonso/view
-      summary: List
-      operationId: list
+      x-route: fruit/mango/alphonso/list # action ID `list` is mandatory for fractal standalone action generation
+      operationId: listTasks
       responses:
         '200':
-          $ref: '#/components/responses/Task'
+          $ref: '#/components/responses/Tasks'
 
   '/task/{id}':
     parameters:
@@ -22,7 +21,7 @@ paths:
         schema:
           type: integer
     get:
-      x-route: fruit2/mango/alphonso/view
+      x-route: fruit2/mango/alphonso/view  # action ID `view` is mandatory for fractal standalone action generation
       operationId: getTask
       summary: Get a Task by ID
       description: Returns a single task by its unique ID.
@@ -82,5 +81,18 @@ components:
             properties:
               data:
                 $ref: '#/components/schemas/_TaskResource'
+              links:
+                $ref: '#/components/schemas/JSONAPI_links'
+    Tasks:
+      description: 'An array of Tasks'
+      content:
+        application/vnd.api+json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/_TaskResource'
               links:
                 $ref: '#/components/schemas/JSONAPI_links'

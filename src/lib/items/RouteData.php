@@ -310,11 +310,18 @@ final class RouteData extends BaseObject
     protected function detectUrlPattern():void
     {
         if ($this->path === '/') {
-            $this->type = self::TYPE_DEFAULT;
+            $this->type = self::TYPE_DEFAULT; //  issue is here https://github.com/php-openapi/yii2-openapi/issues/102
             $this->action = '';
             $this->controller = 'default';
+            if (isset($this->operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
+                $customRoute = $this->operation->{CustomSpecAttr::ROUTE};
+                $parts = explode('/', $customRoute);
+                $this->action = array_pop($parts);
+                $this->controller = array_pop($parts);
+            }
             return;
         }
+
         foreach ($this->urlPrefixes as $prefix => $rule) {
             if (!str_starts_with(trim($this->path, '/'), trim($prefix, '/'))) {
                 continue;

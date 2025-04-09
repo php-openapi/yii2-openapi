@@ -32,13 +32,13 @@ class Issue14Test extends DbTestCase
 
         $testFile = Yii::getAlias($tmpConfigFile);
         $this->runGenerator($testFile);
-        // $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [ TODO
-        //     'recursive' => true,
-        // ]);
-        // $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/mysql"), [
-        //     'recursive' => true,
-        // ]);
-        // $this->checkFiles($actualFiles, $expectedFiles);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/fractal"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
         FileHelper::unlink($tmpConfigFile);
     }
 

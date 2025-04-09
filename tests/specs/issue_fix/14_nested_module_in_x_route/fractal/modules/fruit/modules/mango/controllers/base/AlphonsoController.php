@@ -1,16 +1,22 @@
 <?php
-
 namespace app\fruit\mango\controllers\base;
 
-abstract class AlphonsoController extends \yii\rest\Controller
+use insolita\fractal\JsonApiController;
+use Yii;
+
+abstract class AlphonsoController extends JsonApiController
 {
     public function actions()
     {
         return [
             'list' => [
-                'class' => \yii\rest\IndexAction::class,
-                'modelClass' => \app\models\Task::class,
+                'class' => \insolita\fractal\actions\ListAction::class,
                 'checkAccess' => [$this, 'checkAccess'],
+                'transformer' => \app\transformers\TaskTransformer::class,
+                'modelClass' => \app\models\Task::class,
+                'resourceKey' => 'tasks',
+                'dataFilter' => null,
+                'prepareDataProvider' => null
             ],
             'options' => [
                 'class' => \yii\rest\OptionsAction::class,
@@ -31,5 +37,4 @@ abstract class AlphonsoController extends \yii\rest\Controller
      * @throws \yii\web\ForbiddenHttpException if the user does not have access
      */
     abstract public function checkAccess($action, $model = null, $params = []);
-
 }
