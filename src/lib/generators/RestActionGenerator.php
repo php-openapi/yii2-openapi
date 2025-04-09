@@ -136,6 +136,9 @@ class RestActionGenerator
             $controllerId = $routeData->controller;
         }
         $action = Inflector::camel2id($routeData->action);
+        if (!$action && !$actionType) {
+            $action = 'index';
+        }
         if (!empty($customRoute)) {
             $actionType = '';
             $parts = explode('/', $customRoute);

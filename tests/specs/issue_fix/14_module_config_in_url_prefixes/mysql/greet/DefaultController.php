@@ -10,9 +10,9 @@ class DefaultController extends \app\greet\base\DefaultController
         //TODO implement checkAccess
     }
 
-    public function action()
+    public function actionIndex()
     {
-        //TODO implement action
+        //TODO implement actionIndex
     }
 
 

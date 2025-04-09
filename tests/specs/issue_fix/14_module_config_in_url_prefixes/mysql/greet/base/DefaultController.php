@@ -27,6 +27,6 @@ abstract class DefaultController extends \yii\rest\Controller
      */
     abstract public function checkAccess($action, $model = null, $params = []);
 
-    abstract public function action();
+    abstract public function actionIndex();
 
 }

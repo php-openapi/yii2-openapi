@@ -684,7 +684,7 @@ Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
 
 `x-route` must not start with slash `/`. For example `x-route: /user/posts` is incorrect. It must start with [module ID](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules) or [controller ID](https://www.yiiframework.com/doc/guide/2.0/en/structure-controllers#controller-ids)
 
-#### Route, path and namespace TODO
+#### Route, path and namespace
 
 Route, path and namespace for controller/action will be resolved in following manner (from highest priority to lowest):
 
