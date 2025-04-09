@@ -4,7 +4,6 @@ return [
     'openApiPath' => '@specs/issue_fix/14_module_config_in_url_prefixes/index.yml',
     'generateUrls' => true,
     'generateModels' => true,
-    // 'useJsonApi' => true, // TODO for FractalAction
     'excludeModels' => [
         'Error',
     ],
@@ -12,7 +11,7 @@ return [
     'generateMigrations' => false,
     'generateModelFaker' => false,
     'urlPrefixes' => [
-        'hi' => ['module' => 'greet', 'namespace' => 'app\greet'], // TODO `hi/` trailing slash in generated URL rules config
+        'hi' => ['module' => 'greet', 'namespace' => 'app\greet'],
         'abc' => ['module' => 'abc', 'namespace' => 'app\abc'],
     ]
 ];
