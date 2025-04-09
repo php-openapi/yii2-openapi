@@ -7,7 +7,10 @@
 
 namespace cebe\yii2openapi\lib\items;
 
+use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
+use cebe\yii2openapi\lib\Config;
+use cebe\yii2openapi\lib\CustomSpecAttr;
 use yii\base\BaseObject;
 use yii\base\InvalidCallException;
 use yii\helpers\ArrayHelper;
@@ -164,12 +167,57 @@ final class RouteData extends BaseObject
      */
     private $urlPrefixes;
 
-    public function __construct(PathItem $pathItem, string $path, array $urlPrefixes = [], $config = [])
-    {
+    /**
+     * @var string
+     */
+    private $method;
+
+    /**
+     * @var Operation
+     */
+    private $operation;
+
+    private $moduleList = [];
+
+    public function __construct(
+        string    $path,
+        PathItem  $pathItem,
+        string    $method,
+        Operation $operation,
+        array     $urlPrefixes = [],
+        $config = []
+    ) {
         $this->path = $this->unprefixedPath = $path;
         $this->parts = explode('/', trim($path, '/'));
         $this->pathItem = $pathItem;
+        $this->method = $method;
+        $this->operation = $operation;
         $this->urlPrefixes = $urlPrefixes;
+
+        if (isset($operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
+            $customRoute = $operation->{CustomSpecAttr::ROUTE};
+            $parts = explode('/', $customRoute);
+            array_pop($parts);
+            array_pop($parts);
+
+            $modulesPathSection = $modulesPath = [];
+            $container = $modulesNamespaceSection = '';
+            foreach ($parts as $moduleId) {
+                $modulesPathSection[$moduleId] = 'modules/' . $moduleId;
+                $container .= ($container !== '' ? '/' : '') . ('modules/' . $moduleId);
+                $modulesNamespaceSection .= ($modulesNamespaceSection ? '\\' : '') . ($moduleId);
+                $modulesPath[$moduleId] = ['path' => '@app/' . $container, 'namespace' => 'app\\' . $modulesNamespaceSection];
+            }
+            $this->moduleList = $modulesPath;
+
+            if ($parts) {
+                $this->prefixSettings = [
+                    'namespace' => 'app\\' . implode('\\', $parts) . '\\controllers',
+                    'path' => '@app/' . implode('/', $modulesPathSection) . '/controllers'
+                ];
+            }
+        }
+
         parent::__construct($config);
     }
 
@@ -227,7 +275,7 @@ final class RouteData extends BaseObject
         }
         $this->pattern = implode('/', $patternParts);
         if ($this->prefix) {
-            $this->pattern = trim($this->prefix, '/').'/'.$this->pattern;
+            $this->pattern = trim($this->prefix, '/') . ($this->pattern ? '/' . $this->pattern : '');
         }
         if ($this->hasParams && $this->isRelationship()) {
             $this->relatedModel = $this->getFirstParam()['model'] ?? null;
@@ -264,8 +312,15 @@ final class RouteData extends BaseObject
             $this->type = self::TYPE_DEFAULT;
             $this->action = '';
             $this->controller = 'default';
+            if (isset($this->operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
+                $customRoute = $this->operation->{CustomSpecAttr::ROUTE};
+                $parts = explode('/', $customRoute);
+                $this->action = array_pop($parts);
+                $this->controller = array_pop($parts);
+            }
             return;
         }
+
         foreach ($this->urlPrefixes as $prefix => $rule) {
             if (!str_starts_with(trim($this->path, '/'), trim($prefix, '/'))) {
                 continue;
@@ -274,6 +329,20 @@ final class RouteData extends BaseObject
             $this->unprefixedPath = '/' . trim(str_replace($prefix, '', $this->path), '/');
             $this->parts = explode('/', trim($this->unprefixedPath, '/'));
             $this->prefixSettings = is_array($rule) ? $rule : [];
+
+            $modulesPath = [];
+            if (isset($rule['module'])) {
+                $modPath = $rule['path'] ?? Config::getPathFromNamespace($rule['namespace']);
+                if (str_ends_with($modPath, '/controllers')) {
+                    $modPath = substr($modPath, 0, -12);
+                }
+                $modNs = $rule['namespace'];
+                if (str_ends_with($modNs, '\controllers')) {
+                    $modNs = substr($modNs, 0, -12);
+                }
+                $modulesPath[$rule['module']] = ['path' => $modPath, 'namespace' => $modNs];
+            }
+            $this->moduleList = array_merge($this->moduleList, $modulesPath);
         }
         foreach (self::$patternMap as $type => $pattern) {
             if (preg_match($pattern, $this->unprefixedPath, $matches)) {
@@ -431,5 +500,13 @@ final class RouteData extends BaseObject
     public function isNonCrudAction():bool
     {
         return in_array($this->type, [self::TYPE_DEFAULT, self::TYPE_RESOURCE_OPERATION]);
+    }
+
+    /**
+     * Returns list of modules this action is part of
+     */
+    public function listModules(): array
+    {
+        return $this->moduleList;
     }
 }

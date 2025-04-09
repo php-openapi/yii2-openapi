@@ -183,7 +183,7 @@ class Config extends BaseObject
         return $this->openApi;
     }
 
-    public function getPathFromNamespace(string $namespace):string
+    public static function getPathFromNamespace(string $namespace): string
     {
         return Yii::getAlias('@' . str_replace('\\', '/', ltrim($namespace, '\\')));
     }
