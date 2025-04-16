@@ -71,8 +71,8 @@ class RestActionGenerator
     {
         $actions = [];
 
-        $routeData = Yii::createObject(RouteData::class, [$pathItem, $path, $this->config->urlPrefixes]);
         foreach ($pathItem->getOperations() as $method => $operation) {
+            $routeData = Yii::createObject(RouteData::class, [$path, $pathItem, $method, $operation, $this->config->urlPrefixes]);
             $customRoute = null;
             if (isset($operation->{CustomSpecAttr::ROUTE})) { # https://github.com/cebe/yii2-openapi/issues/144
                 $customRoute = $operation->{CustomSpecAttr::ROUTE};
@@ -119,7 +119,10 @@ class RestActionGenerator
             $this->knownModelClasses[$routeData->path] = $modelClass;
         }
 
-        if ($routeData->isRelationship()) {
+        if (!empty($customRoute)) {
+            $parts = explode('/', $customRoute);
+            $controllerId = $parts[count($parts) - 2];
+        } elseif ($routeData->isRelationship()) {
             $controllerId = $routeData->controller;
             $modelClass = Inflector::id2camel(Inflector::singularize($controllerId));
             $controllerId = isset($this->config->controllerModelMap[$modelClass])
@@ -129,15 +132,17 @@ class RestActionGenerator
             $controllerId = isset($this->config->controllerModelMap[$modelClass])
                 ? Inflector::camel2id($this->config->controllerModelMap[$modelClass])
                 : Inflector::camel2id($modelClass);
-        } elseif (!empty($customRoute)) {
-            $controllerId = explode('/', $customRoute)[0];
         } else {
             $controllerId = $routeData->controller;
         }
         $action = Inflector::camel2id($routeData->action);
+        if (!$action && !$actionType) {
+            $action = 'index';
+        }
         if (!empty($customRoute)) {
             $actionType = '';
-            $action = explode('/', $customRoute)[1];
+            $parts = explode('/', $customRoute);
+            $action = $parts[count($parts) - 1];
         }
         return Yii::createObject(RestAction::class, [
             [
@@ -154,7 +159,9 @@ class RestActionGenerator
                     : null,
                 'responseWrapper' => $responseWrapper,
                 'prefix' => $routeData->getPrefix(),
-                'prefixSettings' => $routeData->getPrefixSettings()
+                'prefixSettings' => $routeData->getPrefixSettings(),
+                'xRoute' => $customRoute,
+                'modulesList' => $routeData->listModules()
             ],
         ]);
     }

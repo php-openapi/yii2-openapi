@@ -1,0 +1,79 @@
+<?php
+
+namespace tests\unit\issues;
+
+use tests\DbTestCase;
+use Yii;
+use yii\helpers\FileHelper;
+
+# https://github.com/php-openapi/yii2-openapi/issues/14
+class Issue14Test extends DbTestCase
+{
+    public function testNestedModuleInXRoute() # RestAction
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    public function testNestedModuleInXRouteFractalAction()
+    {
+        $config = [];
+        $config = require Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/index.php");
+        $config['useJsonApi'] = true;
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config-35.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+        $testFile = Yii::getAlias($tmpConfigFile);
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_nested_module_in_x_route/fractal"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+        FileHelper::unlink($tmpConfigFile);
+    }
+
+    public function testModuleConfigInUrlPrefixes() # RestAction
+    {
+        $testFile = Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/index.php");
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/mysql"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+    }
+
+    public function testModuleConfigInUrlPrefixesFractalAction()
+    {
+        $config = [];
+        $config = require Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/index.php");
+        $config['useJsonApi'] = true;
+        $tmpConfigFile = Yii::getAlias("@runtime") . "/tmp-config-35.php";
+        file_put_contents($tmpConfigFile, '<?php return ' . var_export($config, true) . ';');
+
+
+        $testFile = Yii::getAlias($tmpConfigFile);
+        $this->runGenerator($testFile);
+        $actualFiles = FileHelper::findFiles(Yii::getAlias('@app'), [
+            'recursive' => true,
+        ]);
+        $expectedFiles = FileHelper::findFiles(Yii::getAlias("@specs/issue_fix/14_module_config_in_url_prefixes/fractal"), [
+            'recursive' => true,
+        ]);
+        $this->checkFiles($actualFiles, $expectedFiles);
+
+        FileHelper::unlink($tmpConfigFile);
+    }
+}
