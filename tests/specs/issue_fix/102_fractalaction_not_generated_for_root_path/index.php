@@ -7,6 +7,7 @@ return [
     'excludeModels' => [
         'Error',
     ],
+    'useJsonApi' => true,
     'generateControllers' => true,
     'generateMigrations' => false,
     'generateModelFaker' => false,

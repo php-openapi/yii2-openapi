@@ -317,6 +317,12 @@ final class RouteData extends BaseObject
                 $parts = explode('/', $customRoute);
                 $this->action = array_pop($parts);
                 $this->controller = array_pop($parts);
+
+                if ($this->action === 'list') {
+                    $this->type = self::TYPE_COLLECTION;
+                } elseif ($this->action === 'view') {
+                    $this->type = self::TYPE_RESOURCE;
+                }
             }
             return;
         }
