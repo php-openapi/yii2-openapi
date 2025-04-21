@@ -18,7 +18,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Yii;
 use yii\gii\CodeFile;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
 
 class ControllersGenerator
@@ -38,7 +37,13 @@ class ControllersGenerator
     public function __construct(Config $config, array $actions = [])
     {
         $this->config = $config;
-        $this->controllers = ArrayHelper::index($actions, null, 'controllerId');
+        foreach ($actions as $action) {
+            $r = $action->getRoute();
+            $r = explode('/', $r);
+            array_pop($r);
+            array_pop($r);
+            $this->controllers[implode('/', $r) . '/' . $action->controllerId][] = $action;
+        }
         $this->files = new CodeFiles([]);
     }
 
@@ -51,22 +56,25 @@ class ControllersGenerator
             return new CodeFiles([]);
         }
         $namespace = $this->config->controllerNamespace ?? Yii::$app->controllerNamespace;
-        $path = $this->config->getPathFromNamespace($namespace);
+        $path = Config::getPathFromNamespace($namespace);
         $templateName = $this->config->useJsonApi ? 'controller_jsonapi.php' : 'controller.php';
 
-        foreach ($this->controllers as $controller => $actions) {
+        foreach ($this->controllers as $controllerWithPrefix => $actions) {
             $controllerNamespace = $namespace;
             $controllerPath = $path;
             /**
              * @var RestAction|FractalAction $action
              **/
             $action = $actions[0];
-            if ($action->prefix && !empty($action->prefixSettings)) {
+            if (!empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
                 $controllerPath = $action->prefixSettings['path']
-                    ?? $this->config->getPathFromNamespace($controllerNamespace);
+                    ?? Config::getPathFromNamespace($controllerNamespace);
             }
-            $className = Inflector::id2camel($controller) . 'Controller';
+
+            $routeParts = explode('/', $controllerWithPrefix);
+
+            $className = Inflector::id2camel(end($routeParts)) . 'Controller';
             $this->files->add(new CodeFile(
                 Yii::getAlias($controllerPath . "/base/$className.php"),
                 $this->config->render(
@@ -85,6 +93,18 @@ class ControllersGenerator
                     Yii::getAlias("$controllerPath/$className.php"),
                     $classFileGenerator->generate()
                 ));
+            }
+
+            // generate Module.php file for modules
+            foreach ($action->modulesList as $moduleId => $moduleDetail) {
+                // only generate Module.php file if they do not exist, do not override
+                if (!file_exists(Yii::getAlias($moduleDetail['path'] . "/Module.php"))) {
+                    $moduleFileGenerator = $this->makeModuleFile('Module', $moduleDetail['namespace'], $moduleId, $action);
+                    $this->files->add(new CodeFile(
+                        Yii::getAlias($moduleDetail['path'] . "/Module.php"),
+                        $moduleFileGenerator->generate()
+                    ));
+                }
             }
         }
         return $this->files;
@@ -155,5 +175,38 @@ PHP;
         }
         $classFileGenerator->setClasses([$reflection]);
         return $classFileGenerator;
+    }
+
+    /**
+     * @param RestAction|FractalAction $action
+     */
+    public function makeModuleFile(string $class, string $namespace, $moduleId, $action): FileGenerator
+    {
+        $file = new FileGenerator;
+        $reflection = new ClassGenerator(
+            $class,
+            $namespace,
+            null,
+            'yii\base\Module'
+        );
+
+        $moduleIds = array_keys($action->modulesList);
+        $position = array_search($moduleId, $moduleIds);
+        $childModuleId = $childModuleCode = null;
+        if (array_key_exists($position + 1, $moduleIds)) { # if `true`, child module exists
+            $childModuleId = $moduleIds[$position + 1];
+            $childModuleNamespace = $action->modulesList[$childModuleId]['namespace'];
+            $childModuleCode = <<<PHP
+\$this->modules = [
+    '{$childModuleId}' => [
+        'class' => \\{$childModuleNamespace}\Module::class,
+    ],
+];
+PHP;
+        }
+
+        $reflection->addMethod('init', [], AbstractMemberGenerator::FLAG_PUBLIC, 'parent::init();' . PHP_EOL . $childModuleCode);
+        $file->setClasses([$reflection]);
+        return $file;
     }
 }

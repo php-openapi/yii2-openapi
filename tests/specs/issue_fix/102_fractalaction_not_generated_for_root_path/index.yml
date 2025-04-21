@@ -1,0 +1,76 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: 96_component_schema_should_be_optional
+
+paths:
+  '/':
+    get:
+      x-route: fruit/mango/alphonso/list # action ID `list` is mandatory for fractal standalone action generation
+      operationId: listTasks
+      responses:
+        '200':
+          $ref: '#/components/responses/Tasks'
+
+
+components:
+  schemas:
+    _TaskResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          enum:
+            - tasks
+        attributes:
+          $ref: '#/components/schemas/Task'
+        relationships:
+          type: object
+    JSONAPI_links:
+      type: object
+      example:
+        self: 'https://api.example.com/...'
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: object
+            properties:
+              href:
+                type: string
+              meta:
+                type: object
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+  responses:
+    Task:
+      description: Task
+      content:
+        application/vnd.api+json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/_TaskResource'
+              links:
+                $ref: '#/components/schemas/JSONAPI_links'
+    Tasks:
+      description: 'An array of Tasks'
+      content:
+        application/vnd.api+json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/_TaskResource'
+              links:
+                $ref: '#/components/schemas/JSONAPI_links'

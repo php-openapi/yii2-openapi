@@ -9,13 +9,13 @@ return [
     ],
     'generateControllers' => true,
     'generateMigrations' => false,
-    'useJsonApi' => false,
+    'useJsonApi' => true,
     'urlPrefixes' => [
         'animals' => '',
         '/info' => ['module' => 'petinfo', 'namespace' => '\app\modules\petinfo\controllers'],
         '/forum' => ['namespace' => '\app\modules\forum\controllers'], # namespace contains "\modules\"
         '/forum2' => ['path' => '@app/modules/forum2/controllers', 'namespace' => '\app\forum2\controllers'], # path contains "/modules/"
-        '/api/v1' => ['path' => '@app/modules/some/controllers', 'namespace' => '\app\api\v1\controllers'], # namespace contains "\modules\"; module will be "api/v1"
-        '/api/v2' => ['path' => '@app/modules/api/v2/controllers', 'namespace' => '\app\some\controllers'], # namespace contains "\modules\"; module will be "api/v2"
+        '/api/v1' => ['path' => '@app/modules/some/controllers', 'namespace' => '\app\api\v1\controllers'],
+        '/api/v2' => ['path' => '@app/modules/api/v2/controllers', 'namespace' => '\app\some\controllers'],
     ]
 ];
