@@ -28,8 +28,9 @@ abstract class D123 extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getRouting()
     {
-        return $this->hasOne(\app\models\Routing::class, ['d123_id' => 'id'])->inverseOf('d123');
+        return $this->hasOne(\app\models\Routing::class, ['d123_id' => 'id']);
     }
 }

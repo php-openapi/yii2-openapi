@@ -28,8 +28,9 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
+    # belongs to relation
     public function getPost()
     {
-        return $this->hasOne(\app\models\Post::class, ['user' => 'id'])->inverseOf('user');
+        return $this->hasOne(\app\models\Post::class, ['user' => 'id']);
     }
 }

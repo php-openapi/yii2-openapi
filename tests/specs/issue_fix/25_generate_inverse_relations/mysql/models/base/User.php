@@ -35,18 +35,21 @@ abstract class User extends \yii\db\ActiveRecord
         return $this->hasMany(\app\models\Account::class, ['user_id' => 'id'])->inverseOf('user');
     }
 
+    # belongs to relation
     public function getAccount()
     {
-        return $this->hasOne(\app\models\Account::class, ['user_id' => 'id'])->inverseOf('user');
+        return $this->hasOne(\app\models\Account::class, ['user_id' => 'id']);
     }
 
+    # belongs to relation
     public function getAccount2()
     {
-        return $this->hasOne(\app\models\Account::class, ['user2_id' => 'id'])->inverseOf('user2');
+        return $this->hasOne(\app\models\Account::class, ['user2_id' => 'id']);
     }
 
+    # belongs to relation
     public function getAccount3()
     {
-        return $this->hasOne(\app\models\Account::class, ['user3' => 'id'])->inverseOf('user3');
+        return $this->hasOne(\app\models\Account::class, ['user3' => 'id']);
     }
 }
