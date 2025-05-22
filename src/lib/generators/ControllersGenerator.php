@@ -59,7 +59,7 @@ class ControllersGenerator
             $controllerPath = $path;
             /**
              * @var RestAction|FractalAction $action
-             **/
+             */
             $action = $actions[0];
             if ($action->prefix && !empty($action->prefixSettings)) {
                 $controllerNamespace = trim($action->prefixSettings['namespace'], '\\');
