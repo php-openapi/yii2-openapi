@@ -7,9 +7,9 @@ class m200000_000001_change_table_addtwonewcolinbetweens extends \yii\db\Migrati
 {
     public function up()
     {
-        $this->addColumn('{{%addtwonewcolinbetweens}}', 'password', $this->text()->null()->defaultValue(null)->after('name'));
-        $this->addColumn('{{%addtwonewcolinbetweens}}', 'screen_name', $this->text()->null()->defaultValue(null)->after('last_name'));
-        $this->addColumn('{{%addtwonewcolinbetweens}}', 'nick_name', $this->text()->null()->defaultValue(null)->after('screen_name'));
+        $this->addColumn('{{%addtwonewcolinbetweens}}', 'password', $this->text()->notNull()->after('name'));
+        $this->addColumn('{{%addtwonewcolinbetweens}}', 'screen_name', $this->text()->notNull()->after('last_name'));
+        $this->addColumn('{{%addtwonewcolinbetweens}}', 'nick_name', $this->text()->notNull()->after('screen_name'));
     }
 
     public function down()

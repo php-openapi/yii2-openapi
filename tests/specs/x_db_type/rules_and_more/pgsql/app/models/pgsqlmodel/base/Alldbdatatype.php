@@ -127,7 +127,7 @@ abstract class Alldbdatatype extends \yii\db\ActiveRecord
             'jsonb_def_default' => [['jsonb_def'], 'default', 'value' => [
                 'ba' => 'bb',
             ]],
-            'required' => [['char_6_col', 'char_7_col', 'smallserial_col', 'serial2_col', 'bigserial_col', 'bigserial_col_2', 'serial_col', 'serial4_col'], 'required'],
+            'required' => [['char_6_col'], 'required'],
             'string_col_string' => [['string_col'], 'string'],
             'varchar_col_string' => [['varchar_col'], 'string'],
             'text_col_string' => [['text_col'], 'string'],

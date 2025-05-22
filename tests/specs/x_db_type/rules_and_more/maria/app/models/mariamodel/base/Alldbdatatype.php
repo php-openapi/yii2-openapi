@@ -75,7 +75,7 @@ abstract class Alldbdatatype extends \yii\db\ActiveRecord
             'json_def_default' => [['json_def'], 'default', 'value' => [
                 'a' => 'b',
             ]],
-            'required' => [['char_6_col', 'char_7_col'], 'required'],
+            'required' => [['char_6_col'], 'required'],
             'string_col_string' => [['string_col'], 'string', 'max' => 255],
             'varchar_col_string' => [['varchar_col'], 'string', 'max' => 132],
             'text_col_string' => [['text_col'], 'string'],

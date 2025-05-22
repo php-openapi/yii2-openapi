@@ -32,8 +32,8 @@ class Issue58FixTest extends DbTestCase
     {
         Yii::$app->db->createCommand()->createTable('{{%fruits}}', [
             'id' => 'pk',
-            'description' => 'text',
-            'name' => 'text',
+            'description' => 'text not null',
+            'name' => 'text not null',
         ])->execute();
     }
 
@@ -380,7 +380,8 @@ components:
         id:
           type: integer
         name:
-          type: boolean        
+          type: boolean
+          nullable: true        
 paths:
   '/':
     get:
@@ -442,8 +443,10 @@ components:
       properties:        
         col_6:
           type: boolean
+          nullable: true
         col_7:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:
@@ -828,13 +831,17 @@ components:
         id:
           type: integer
         colour:
-          type: boolean          
+          type: boolean
+          nullable: true          
         size:
           type: boolean
+          nullable: true
         name:
           type: boolean
+          nullable: true
         description:
-          type: boolean        
+          type: boolean 
+          nullable: true
 paths:
   '/':
     get:
@@ -892,14 +899,19 @@ components:
       properties:
         id:
           type: integer
+          nullable: true
         colour:
           type: boolean
+          nullable: true
         name:
           type: boolean
+          nullable: true
         description:
           type: boolean
+          nullable: true
         col_6:
           type: integer
+          nullable: true
 paths:
   '/':
     get:
@@ -960,13 +972,17 @@ components:
           type: integer
         name:
           type: boolean
+          nullable: true
         description_new:
           type: integer
           default: 7
+          nullable: true
         colour:
           type: boolean
+          nullable: true
         size:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:
@@ -1025,14 +1041,19 @@ components:
           type: integer
         col_6:
           type: boolean
+          nullable: true
         name:
           type: boolean
+          nullable: true
         col_7:
           type: boolean
+          nullable: true
         col_8:
           type: boolean
+          nullable: true
         size:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:
@@ -1160,15 +1181,20 @@ components:
       type: object
       properties:
         id:
-          type: integer        
+          type: integer
+          nullable: true
         description:
           type: boolean
+          nullable: true
         colour:
           type: integer
+          nullable: true
         name:
           type: boolean
+          nullable: true
         size:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:
@@ -1227,12 +1253,16 @@ components:
           type: integer        
         description:
           type: boolean
+          nullable: true
         colour:
           type: boolean
+          nullable: true
         name:
           type: boolean
+          nullable: true
         size:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:
@@ -1286,15 +1316,19 @@ components:
       type: object
       properties:
         id:
-          type: integer        
+          type: integer
         colour:
           type: boolean
+          nullable: true
         name:
           type: boolean
+          nullable: true
         description:
           type: boolean
+          nullable: true
         size:
           type: boolean
+          nullable: true
 paths:
   '/':
     get:

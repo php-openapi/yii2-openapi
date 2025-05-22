@@ -9,8 +9,8 @@ class m200000_000000_create_table_pristines extends \yii\db\Migration
     {
         $this->createTable('{{%pristines}}', [
             'id' => $this->primaryKey(),
-            'firstName' => $this->text()->null(),
-            0 => 'newColumn varchar(255) NULL DEFAULT NULL',
+            'firstName' => $this->text()->notNull(),
+            0 => 'newColumn varchar(255) NOT NULL',
         ]);
     }
 

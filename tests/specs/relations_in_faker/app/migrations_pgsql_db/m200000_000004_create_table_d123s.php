@@ -9,7 +9,7 @@ class m200000_000004_create_table_d123s extends \yii\db\Migration
     {
         $this->createTable('{{%d123s}}', [
             'id' => $this->primaryKey(),
-            'name' => $this->text()->null()->defaultValue(null),
+            'name' => $this->text()->notNull(),
         ]);
     }
 

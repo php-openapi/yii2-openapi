@@ -9,8 +9,8 @@ class m200000_000001_create_table_fruits extends \yii\db\Migration
     {
         $this->createTable('{{%fruits}}', [
             'id' => $this->primaryKey(),
-            'name' => $this->text()->null()->defaultValue(null)->comment('desc with \' quote'),
-            0 => '"description" double precision NULL DEFAULT NULL',
+            'name' => $this->text()->notNull()->comment('desc with \' quote'),
+            0 => '"description" double precision NOT NULL',
         ]);
         $this->addCommentOnColumn('{{%fruits}}', 'name', 'desc with \' quote');
         $this->addCommentOnColumn('{{%fruits}}', 'description', 'desc \' 2');

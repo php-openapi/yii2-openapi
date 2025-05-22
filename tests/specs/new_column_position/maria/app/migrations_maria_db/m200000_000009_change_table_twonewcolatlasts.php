@@ -7,8 +7,8 @@ class m200000_000009_change_table_twonewcolatlasts extends \yii\db\Migration
 {
     public function up()
     {
-        $this->addColumn('{{%twonewcolatlasts}}', 'name', $this->integer()->null()->defaultValue(null)->after('email'));
-        $this->addColumn('{{%twonewcolatlasts}}', 'last_name', $this->integer()->null()->defaultValue(null));
+        $this->addColumn('{{%twonewcolatlasts}}', 'name', $this->integer()->notNull()->after('email'));
+        $this->addColumn('{{%twonewcolatlasts}}', 'last_name', $this->integer()->notNull());
     }
 
     public function down()
