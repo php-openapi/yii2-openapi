@@ -1,0 +1,96 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Issue14Test 14_module_config_in_url_prefixes \#14
+
+paths:
+  /hi:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+  /bye:
+    get:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+    post:
+      summary: List
+      operationId: list
+      responses:
+        '200':
+          description: The information
+  '/abc/task/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: ID of the task.
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getTask
+      summary: Get a Task by ID
+      description: Returns a single task by its unique ID.
+      responses:
+        '200':
+          $ref: '#/components/responses/Task'
+        '403':
+          description: Response if the currently authenticated user has no access to this task.
+        '404':
+          description: Response if the task does not exist.
+      tags:
+        - Tasks
+
+components:
+  schemas:
+    _TaskResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          enum:
+            - tasks
+        attributes:
+          $ref: '#/components/schemas/Task'
+        relationships:
+          type: object
+    JSONAPI_links:
+      type: object
+      example:
+        self: 'https://api.example.com/...'
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: object
+            properties:
+              href:
+                type: string
+              meta:
+                type: object
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+  responses:
+    Task:
+      description: Task
+      content:
+        application/vnd.api+json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/_TaskResource'
+              links:
+                $ref: '#/components/schemas/JSONAPI_links'

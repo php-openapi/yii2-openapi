@@ -610,8 +610,8 @@ then the value for `comments` can be
 
 ### `x-route`
 
-To customize route (controller ID/action ID) for a path, use custom key `x-route` with value `<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
-directly under the `paths` key of OpenAPI spec. Example:
+To customize [route](https://www.yiiframework.com/doc/guide/2.0/en/runtime-routing) (controller ID/action ID) for a path, use custom key `x-route` with value `[<module ID>/<child module ID>/...]<controller ID>/<action ID>`. It can be used for non-crud paths. It must be used under HTTP method key but not
+directly under the `paths` key of OpenAPI spec. Providing `<controller ID>` and `<action ID>` is required. Example:
 
 ```yaml
 paths:
@@ -681,7 +681,17 @@ Generated URL rules config for above is (in `urls.rest.php` or pertinent file):
     'POST a1/b1' => 'abc/xyz',
     'a1/b1' => 'abc/options',
 ```
-`x-route` does not support [Yii Modules](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules).
+
+`x-route` must not start with slash `/`. For example `x-route: /user/posts` is incorrect. It must start with [module ID](https://www.yiiframework.com/doc/guide/2.0/en/structure-modules) or [controller ID](https://www.yiiframework.com/doc/guide/2.0/en/structure-controllers#controller-ids)
+
+#### Route, path and namespace
+
+Route, path and namespace for controller/action will be resolved in following manner (from highest priority to lowest):
+
+- [`x-route`](#x-route)
+- [`urlPrefixes`](https://github.com/php-openapi/yii2-openapi/blob/649743cf0a78743f550edcbd4e93fdffc55c76fd/src/lib/Config.php#L51)
+- [`controllerNamespace`](https://github.com/php-openapi/yii2-openapi/blob/649743cf0a78743f550edcbd4e93fdffc55c76fd/src/lib/Config.php#L77) of this lib
+- [`controllerNamespace`](https://github.com/yiisoft/yii2/blob/16f50626e1aa81200f109c1a455a5c9b18acfdda/framework/base/Application.php#L93) of Yii app
 
 ### `x-description-is-comment`
 
