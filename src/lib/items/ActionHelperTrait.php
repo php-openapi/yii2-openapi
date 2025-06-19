@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @copyright Copyright (c) 2018 Carsten Brandt <mail@cebe.cc> and contributors
+ * @license https://github.com/cebe/yii2-openapi/blob/master/LICENSE
+ */
+
+namespace cebe\yii2openapi\lib\items;
+
+trait ActionHelperTrait
+{
+    public ?string $xRoute = null;
+
+    # list of module this action is part of. 'key' is module ID and 'value' is path where Module.php file must be generated
+    public array $modulesList = [];
+
+    /**
+     * @see $isDuplicate
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * see `x-route` in README.md
+     * Used for generating only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * If duplicates routes have same params then `false`, else action is generated with no (0) params `true`
+     */
+    public bool $zeroParams = false;
+
+    /**
+     * https://github.com/cebe/yii2-openapi/issues/84
+     * Generate only one action for paths like: `GET /calendar/domains` and `GET /calendar/domains/{id}` given that they have same `x-route`.
+     * @see $zeroParams
+     * see `x-route` in README.md
+     */
+    public bool $isDuplicate = false;
+
+    public function getOptionsRoute():string
+    {
+        $r = $this->getRoute();
+        $r = explode('/', $r);
+        array_pop($r);
+        return implode('/', $r) . '/options';
+    }
+
+    /**
+     * @param string $separator
+     * @param string $entity path or namespace
+     * @return void
+     */
+    public static function computeModule(string $separator, string $entity): ?string
+    {
+        $parts = explode($separator . 'modules' . $separator, $entity); # /app/modules/forum/controllers => /forum/controllers
+        if (empty($parts[1])) {
+            return null;
+        }
+        if (str_contains($parts[1], 'controller')) {
+            $result = explode($separator . 'controller', $parts[1]); // compute everything in between "modules" and "controllers" e.g. api/v1
+            $result = array_map(function ($val) {
+                return str_replace('\\', '/', $val);
+            }, $result);
+        } else {
+            $result = explode($separator, $parts[1]); # forum/controllers => forum
+        }
+        if (empty($result[0])) {
+            return null;
+        }
+        return $result[0];
+    }
+
+    public static function finalOptionsRoute(string $prefix, string $controllerId): string
+    {
+        return trim($prefix, '/') . '/' . $controllerId . '/options';
+    }
+
+    public function getRoute(): string
+    {
+        if ($this->xRoute) {
+            return $this->xRoute;
+        }
+
+        if (!empty($this->prefixSettings)) {
+            if (isset($this->prefixSettings['module'])) {
+                $prefix = $this->prefixSettings['module'];
+                return trim($prefix, '/') . '/' . $this->controllerId . ($this->id ? '/' . $this->id : '');
+            } elseif (isset($this->prefixSettings['namespace']) && str_contains($this->prefixSettings['namespace'], '\modules\\')) { # if `module` not present then check in namespace and then in path
+                $prefix = static::computeModule('\\', $this->prefixSettings['namespace']);
+                if ($prefix) {
+                    return trim($prefix, '/') . '/' . $this->controllerId . ($this->id ? '/' . $this->id : '');
+                }
+            } elseif (isset($this->prefixSettings['path']) && str_contains($this->prefixSettings['path'], '/modules/')) {
+                $prefix = static::computeModule('/', $this->prefixSettings['path']);
+                if ($prefix) {
+                    return trim($prefix, '/') . '/' . $this->controllerId . ($this->id ? '/' . $this->id : '');
+                }
+            }
+        }
+
+        return $this->controllerId . ($this->id ? '/' . $this->id : '');
+    }
+}

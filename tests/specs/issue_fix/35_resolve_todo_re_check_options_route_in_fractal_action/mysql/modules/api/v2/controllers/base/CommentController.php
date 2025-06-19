@@ -1,8 +1,10 @@
 <?php
-
 namespace app\some\controllers\base;
 
-abstract class CommentController extends \yii\rest\Controller
+use insolita\fractal\JsonApiController;
+use Yii;
+
+abstract class CommentController extends JsonApiController
 {
     public function actions()
     {
@@ -28,5 +30,4 @@ abstract class CommentController extends \yii\rest\Controller
     abstract public function checkAccess($action, $model = null, $params = []);
 
     abstract public function actionList();
-
 }
