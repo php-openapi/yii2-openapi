@@ -288,7 +288,7 @@ SQL;
         foreach ($this->newColumns as $column) {
             /** @var ColumnSchema $column */
             if ($column->comment) {
-                if (!empty($column->xDbType) && is_string($column->xDbType)) { # see \cebe\yii2openapi\lib\migrations\MigrationRecordBuilder::createTable()
+                if (MigrationRecordBuilder::isXDbType($column)) {
                     $this->migration
                         ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
                 }
