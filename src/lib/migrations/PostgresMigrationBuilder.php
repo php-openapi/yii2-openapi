@@ -288,7 +288,7 @@ SQL;
         foreach ($this->newColumns as $column) {
             /** @var ColumnSchema $column */
             if ($column->comment) {
-                if (MigrationRecordBuilder::isXDbType($column)) {
+                if (MigrationRecordBuilder::isXDbTypePresent($column)) {
                     $this->migration
                         ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
                 }

@@ -77,7 +77,7 @@ final class MigrationRecordBuilder
     {
         $codeColumns = [];
         foreach ($columns as $columnName => $cebeDbColumnSchema) {
-            if (static::isXDbType($cebeDbColumnSchema)) {
+            if (static::isXDbTypePresent($cebeDbColumnSchema)) {
                 $name = static::quote($columnName);
                 $codeColumns[] = $name.' '.$this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
             } else {
@@ -394,7 +394,7 @@ final class MigrationRecordBuilder
         return sprintf(self::RENAME_COLUMN, $table, $fromColumn, $toColumn);
     }
 
-    public static function isXDbType(ColumnSchema $columnSchema): bool
+    public static function isXDbTypePresent(ColumnSchema $columnSchema): bool
     {
         return (!empty($columnSchema->xDbType) && is_string($columnSchema->xDbType));
     }
