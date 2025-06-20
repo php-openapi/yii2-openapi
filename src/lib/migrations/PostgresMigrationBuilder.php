@@ -286,9 +286,12 @@ SQL;
     {
         $tableAlias = $this->model->getTableAlias();
         foreach ($this->newColumns as $column) {
+            /** @var ColumnSchema $column */
             if ($column->comment) {
-                $this->migration
-                    ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
+                if (MigrationRecordBuilder::isXDbTypePresent($column)) {
+                    $this->migration
+                        ->addUpCode($this->recordBuilder->addCommentOnColumn($tableAlias, $column->name, $column->comment));
+                }
             }
         }
     }

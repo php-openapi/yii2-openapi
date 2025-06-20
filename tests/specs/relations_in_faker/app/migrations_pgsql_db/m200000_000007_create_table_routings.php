@@ -21,9 +21,6 @@ class m200000_000007_create_table_routings extends \yii\db\Migration
         $this->addForeignKey('fk_routings_domain_id_domains_id', '{{%routings}}', 'domain_id', '{{%domains}}', 'id');
         $this->addForeignKey('fk_routings_d123_id_d123s_id', '{{%routings}}', 'd123_id', '{{%d123s}}', 'id');
         $this->addForeignKey('fk_routings_a123_id_a123s_id', '{{%routings}}', 'a123_id', '{{%a123s}}', 'id');
-        $this->addCommentOnColumn('{{%routings}}', 'domain_id', 'domain');
-        $this->addCommentOnColumn('{{%routings}}', 'd123_id', 'desc');
-        $this->addCommentOnColumn('{{%routings}}', 'a123_id', 'desc');
     }
 
     public function safeDown()

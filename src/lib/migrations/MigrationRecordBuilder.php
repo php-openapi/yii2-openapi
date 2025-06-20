@@ -69,7 +69,7 @@ final class MigrationRecordBuilder
 
     /**
      * @param string                     $tableAlias
-     * @param array|\yii\db\ColumnSchema $columns
+     * @param array|ColumnSchema $columns
      * @return string
      * @throws \yii\base\InvalidConfigException
      */
@@ -77,7 +77,7 @@ final class MigrationRecordBuilder
     {
         $codeColumns = [];
         foreach ($columns as $columnName => $cebeDbColumnSchema) {
-            if (!empty($cebeDbColumnSchema->xDbType) && is_string($cebeDbColumnSchema->xDbType)) {
+            if (static::isXDbTypePresent($cebeDbColumnSchema)) {
                 $name = static::quote($columnName);
                 $codeColumns[] = $name.' '.$this->columnToCode($tableAlias, $cebeDbColumnSchema, false)->getCode();
             } else {
@@ -392,5 +392,10 @@ final class MigrationRecordBuilder
     public function renameColumn(string $table, string $fromColumn, string $toColumn): string
     {
         return sprintf(self::RENAME_COLUMN, $table, $fromColumn, $toColumn);
+    }
+
+    public static function isXDbTypePresent(ColumnSchema $columnSchema): bool
+    {
+        return (!empty($columnSchema->xDbType) && is_string($columnSchema->xDbType));
     }
 }

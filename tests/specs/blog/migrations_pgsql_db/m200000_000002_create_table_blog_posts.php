@@ -21,8 +21,6 @@ class m200000_000002_create_table_blog_posts extends \yii\db\Migration
         $this->createIndex('blog_posts_slug_key', '{{%blog_posts}}', 'slug', true);
         $this->addForeignKey('fk_blog_posts_category_id_categories_id', '{{%blog_posts}}', 'category_id', '{{%categories}}', 'id');
         $this->addForeignKey('fk_blog_posts_created_by_id_users_id', '{{%blog_posts}}', 'created_by_id', '{{%users}}', 'id');
-        $this->addCommentOnColumn('{{%blog_posts}}', 'category_id', 'Category of posts');
-        $this->addCommentOnColumn('{{%blog_posts}}', 'created_by_id', 'The User');
     }
 
     public function safeDown()
