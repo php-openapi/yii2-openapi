@@ -11,7 +11,8 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
 RUN apt-get update && \
     apt-get -y install \
         gnupg2 && \
-    apt-key update && \
+    # Remove the deprecated apt-key update command
+    # apt-key update && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
             imagemagick \
@@ -26,7 +27,7 @@ RUN apt-get update && \
             libonig-dev \
             nano \
             git \
-            unzip\
+            unzip \
             libxml2-dev \
             curl \
             libcurl4-openssl-dev \
@@ -35,7 +36,7 @@ RUN apt-get update && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
         # https://xdebug.org/docs/compat \
-        && if [ "$BUILD_PHP_VERSION" = "8.2" ] || [ "$BUILD_PHP_VERSION" = "8.3" ] ; then pecl install xdebug ; else pecl install xdebug-3.1.5 ; fi \
+        && if [ "$BUILD_PHP_VERSION" = "8.2" ] || [ "$BUILD_PHP_VERSION" = "8.3" ] || [ "$BUILD_PHP_VERSION" = "8.4" ] ; then pecl install xdebug ; else pecl install xdebug-3.1.5 ; fi \
         && docker-php-ext-enable xdebug \
         && docker-php-ext-install \
                 zip \
