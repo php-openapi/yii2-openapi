@@ -27,8 +27,8 @@ final class MigrationRecordBuilder
     public const ADD_UNIQUE = MigrationRecordBuilder::INDENT . "\$this->createIndex('%s', '%s', %s, true);";
     public const ADD_INDEX = MigrationRecordBuilder::INDENT . "\$this->createIndex('%s', '%s', %s, %s);";
     public const DROP_COLUMN = MigrationRecordBuilder::INDENT . "\$this->dropColumn('%s', '%s');";
-    public const ADD_ENUM = MigrationRecordBuilder::INDENT . "\$this->execute('CREATE TYPE \"enum_%s_%s\" AS ENUM(%s)');";
-    public const DROP_ENUM = MigrationRecordBuilder::INDENT . "\$this->execute('DROP TYPE \"enum_%s_%s\"');";
+    public const ADD_ENUM = MigrationRecordBuilder::INDENT . "\$this->execute('CREATE TYPE \"%s\" AS ENUM(%s)');";
+    public const DROP_ENUM = MigrationRecordBuilder::INDENT . "\$this->execute('DROP TYPE \"%s\"');";
     public const DROP_TABLE = MigrationRecordBuilder::INDENT . "\$this->dropTable('%s');";
 
     public const ADD_FK = MigrationRecordBuilder::INDENT . "\$this->addForeignKey('%s', '%s', '%s', '%s', '%s');";
@@ -203,10 +203,20 @@ final class MigrationRecordBuilder
         return sprintf(self::ALTER_COLUMN, $tableAlias, $column->name, '"DROP NOT NULL"');
     }
 
-    public function createEnum(string $tableAlias, string $columnName, array $values):string
+    public function createEnum(string $tableAlias, string $columnName, array $values, ?string $enumType = null): string
     {
         $rawTableName = $this->dbSchema->getRawTableName($tableAlias);
-        return sprintf(self::ADD_ENUM, $rawTableName, $columnName, ColumnToCode::enumToString($values));
+
+        if (is_string($enumType)) {
+            $enumType = trim($enumType);
+        }
+
+        // -- Decide the final enum type name
+        //    If a custom name is provided, use it verbatim (trim extra quotes).
+        //    Otherwise derive the legacy name "enum_<table>_<column>" (old behavior).
+        $typeName = $enumType ?: sprintf('enum_%s_%s', $rawTableName, $columnName);
+
+        return sprintf(self::ADD_ENUM, $typeName, ColumnToCode::enumToString($values));
     }
 
     public function addFk(string $fkName, string $tableAlias, string $fkCol, string $refTable, string $refCol, ?string $onDelete = null, ?string $onUpdate = null):string

@@ -390,6 +390,22 @@ class PropertySchema
 
     public function guessPhpType():string
     {
+        if (isset($this->property->{'x-enum-type'})) {
+            return 'string';
+        }
+//
+//
+//        // Keep original DB type string (do NOT lowercase yet)
+//        $rawDbType = isset($this->property->{CustomSpecAttr::DB_TYPE})
+//            ? (string)$this->property->{CustomSpecAttr::DB_TYPE}
+//            : null;
+//
+//        // --- Special-case: x-db-type: enum(<existing_pg_enum_type>)
+//        if ($rawDbType && preg_match('/^enum\(\s*("?[^")]+"?)\s*\)$/i', trim($rawDbType))) {
+//            // Treat as string in PHP regardless of DB enum
+//            return 'string';
+//        }
+
         $customDbType = isset($this->property->{CustomSpecAttr::DB_TYPE})
             ? strtolower($this->property->{CustomSpecAttr::DB_TYPE}) : null;
         if ($customDbType !== null

@@ -23,7 +23,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         foreach ($columns as $column) {
             $tableName = $this->model->getTableAlias();
             if (static::isEnum($column)) {
-                $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $column->name, $column->enumValues))
+                $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $column->name, $column->enumValues, $column->xEnumType))
                                 ->addDownCode($this->recordBuilder->dropEnum($tableName, $column->name), true);
             }
             $this->migration->addUpCode($this->recordBuilder->addColumn($tableName, $column))
@@ -42,7 +42,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
             $this->migration->addDownCode($this->recordBuilder->addDbColumn($tableName, $column))
                             ->addUpCode($this->recordBuilder->dropColumn($tableName, $column->name));
             if (static::isEnum($column)) {
-                $this->migration->addDownCode($this->recordBuilder->createEnum($tableName, $column->name, $column->enumValues))
+                $this->migration->addDownCode($this->recordBuilder->createEnum($tableName, $column->name, $column->enumValues, $column->xEnumType))
                                 ->addUpCode($this->recordBuilder->dropEnum($tableName, $column->name));
             }
         }
@@ -92,7 +92,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
             }
         }
         if ($isChangeToEnum) {
-            $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $desired->name, $desired->enumValues), true);
+            $this->migration->addUpCode($this->recordBuilder->createEnum($tableName, $desired->name, $desired->enumValues, $desired->xEnumType), true);
         }
         if ($isChangeFromEnum) {
             $this->migration->addUpCode($this->recordBuilder->dropEnum($tableName, $current->name));
@@ -100,7 +100,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
 
         if ($isChangeFromEnum) {
             $this->migration
-                ->addDownCode($this->recordBuilder->createEnum($tableName, $current->name, $current->enumValues));
+                ->addDownCode($this->recordBuilder->createEnum($tableName, $current->name, $current->enumValues, $current->xEnumType));
         }
         if ($isChangeToEnum) {
             $this->migration->addDownCode($this->recordBuilder->dropEnum($tableName, $current->name), true);
@@ -125,6 +125,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
         $this->modifyDesiredInContextOfCurrent($current, $desiredFromDb);
         $this->modifyDesiredFromDbInContextOfDesired($desired, $desiredFromDb);
 
+        // TODO SK
         foreach (['type', 'size', 'allowNull', 'defaultValue', 'enumValues'
                     , 'dbType', 'phpType'
                     , 'precision', 'scale', 'unsigned'
@@ -152,7 +153,7 @@ final class PostgresMigrationBuilder extends BaseMigrationBuilder
                 continue;
             }
             $this->migration
-                ->addUpCode($this->recordBuilder->createEnum($tableAlias, $attr->columnName, $attr->enumValues), true)
+                ->addUpCode($this->recordBuilder->createEnum($tableAlias, $attr->columnName, $attr->enumValues, $attr->xEnumType), true)
                 ->addDownCode($this->recordBuilder->dropEnum($tableAlias, $attr->columnName), true);
         }
     }
@@ -248,4 +249,36 @@ SQL;
             $desired->size = $current->size;
         }
     }
+
+
+//    /**
+//     * Get PostgreSQL enum type name for a specific column.
+//     *
+//     * @param string $schema  e.g. 'public'
+//     * @param string $table   table name without schema quotes, e.g. 'suggestions'
+//     * @param string $column  column name, e.g. 'type'
+//     * @return string|null    enum type name like 'enum_suggestions_united_type' or null if not enum/user-defined
+//     */
+//    function pgEnumTypeName(string $schema, string $table, string $column): ?string
+//    {
+//        // information_schema exposes enum/domains as USER-DEFINED with udt_name = type name
+//        $sql = <<<SQL
+//SELECT udt_name
+//FROM information_schema.columns
+//WHERE table_schema = :schema
+//  AND table_name   = :table
+//  AND column_name  = :column
+//  AND data_type    = 'USER-DEFINED'
+//LIMIT 1
+//SQL;
+//
+//        $type = Yii::$app->db->createCommand($sql, [
+//            ':schema' => $schema,
+//            ':table'  => $table,
+//            ':column' => $column,
+//        ])->queryScalar();
+//
+//        return $type !== false ? $type : null;
+//    }
+
 }

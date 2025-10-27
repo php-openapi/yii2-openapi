@@ -116,6 +116,12 @@ class Attribute extends BaseObject
     public $defaultValue;
 
     /**
+     * Custom enum type naming
+     * string | null
+     */
+    public $xEnumType;
+
+    /**
      * @var array|null
      */
     public $enumValues;
@@ -197,6 +203,12 @@ class Attribute extends BaseObject
     public function setDefault($value):Attribute
     {
         $this->defaultValue = $value;
+        return $this;
+    }
+
+    public function setXEnumType(string $xEnumType):Attribute
+    {
+        $this->xEnumType = $xEnumType;
         return $this;
     }
 
@@ -329,6 +341,9 @@ class Attribute extends BaseObject
         } elseif ($column->allowNull) {
             //@TODO: Need to discuss
             $column->defaultValue = null;
+        }
+        if (!empty($this->xEnumType)) {
+            $column->xEnumType = $this->xEnumType;
         }
         if (is_array($this->enumValues)) {
             $column->enumValues = $this->enumValues;

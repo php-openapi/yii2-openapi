@@ -25,4 +25,11 @@ class ColumnSchema extends \yii\db\ColumnSchema
      * ```
      */
     public $xDbType;
+
+    /**
+     * @var string|null
+     * Custom Enum type
+     * @see \cebe\yii2openapi\lib\items\Attribute::$xDbType and `x-db-type` docs in README.md // TODO SK
+     */
+    public $xEnumType;
 }

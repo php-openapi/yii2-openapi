@@ -188,7 +188,7 @@ class ColumnToCode
     {
         if ($this->isEnum() && ApiGenerator::isPostgres()) {
             $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $enumTypeName = 'enum_'.$rawTableName.'_'.$this->column->name;
+            $enumTypeName = $this->column->xEnumType ?? 'enum_'.$rawTableName.'_'.$this->column->name;
             return "'" . sprintf('"'.$enumTypeName.'" USING "%1$s"::"'.$enumTypeName.'"', $this->column->name) . "'";
         }
         if ($this->column->dbType === 'tsvector') {
@@ -399,7 +399,7 @@ class ColumnToCode
     {
         if (ApiGenerator::isPostgres()) {
             $rawTableName = $this->dbSchema->getRawTableName($this->tableAlias);
-            $this->rawParts['type'] = '"enum_'.$rawTableName.'_' . $this->column->name.'"';
+            $this->rawParts['type'] = $this->column->xEnumType ?? '"enum_'.$rawTableName.'_' . $this->column->name.'"';
             return;
         }
         $this->rawParts['type'] = 'enum(' . self::mysqlEnumToString($this->column->enumValues) . ')';

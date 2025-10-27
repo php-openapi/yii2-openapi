@@ -420,8 +420,13 @@ abstract class BaseMigrationBuilder
     public function tmpSaveNewCol(string $tableAlias, \cebe\yii2openapi\db\ColumnSchema $columnSchema): \yii\db\ColumnSchema
     {
         $tmpTableName = 'tmp_table_';
-        $tmpEnumName = function (string $columnName): string {
-            return '"tmp_enum_'.$columnName.'_"';
+
+        $tmpEnumName = function (\cebe\yii2openapi\db\ColumnSchema $columnSchema): string {
+            if ($columnSchema->xEnumType) {
+//                return 'tmp_'.$columnSchema->xEnumType;
+                return $columnSchema->xEnumType;
+            }
+            return '"tmp_enum_'.$columnSchema->name.'_"';
         };
         $rawTableName = $this->db->schema->getRawTableName($tableAlias);
         $innerEnumTypeName = "\"enum_{$tmpTableName}_{$columnSchema->name}\"";
@@ -432,12 +437,12 @@ abstract class BaseMigrationBuilder
             $name = MigrationRecordBuilder::quote($columnSchema->name);
             $column = [$name.' '.$this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
-                $column = strtr($column, [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
+                $column = strtr($column, [$innerEnumTypeName => $tmpEnumName($columnSchema)]);
             }
         } else {
             $column = [$columnSchema->name => $this->newColStr($tmpTableName, $columnSchema)];
             if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {
-                $column[$columnSchema->name] = strtr($column[$columnSchema->name], [$innerEnumTypeName => $tmpEnumName($columnSchema->name)]);
+                $column[$columnSchema->name] = strtr($column[$columnSchema->name], [$innerEnumTypeName => $tmpEnumName($columnSchema)]);
             }
         }
 
@@ -448,7 +453,7 @@ abstract class BaseMigrationBuilder
                 return "'$aValue'";
             }, $allEnumValues);
             Yii::$app->db->createCommand(
-                'CREATE TYPE '.$tmpEnumName($columnSchema->name).' AS ENUM('.implode(', ', $allEnumValues).')'
+                'CREATE TYPE '.$tmpEnumName($columnSchema).' AS ENUM('.implode(', ', $allEnumValues).')'
             )->execute();
         }
 
@@ -459,13 +464,25 @@ abstract class BaseMigrationBuilder
         Yii::$app->db->createCommand()->dropTable($tmpTableName)->execute();
 
         if (ApiGenerator::isPostgres() && static::isEnum($columnSchema)) {// drop enum
-            Yii::$app->db->createCommand('DROP TYPE '.$tmpEnumName($columnSchema->name))->execute();
-            if ('"'.$table->columns[$columnSchema->name]->dbType.'"' !== $tmpEnumName($columnSchema->name)) {
-                throw new \Exception('Unknown error related to PgSQL enum '.$table->columns[$columnSchema->name]->dbType);
-            }
+            Yii::$app->db->createCommand('DROP TYPE '.$tmpEnumName($columnSchema))->execute();
+
+//            $table->columns[$columnSchema->name]->dbType = $tmpEnumName($columnSchema);
+            $table->columns[$columnSchema->name]->dbType = $columnSchema->xEnumType ?? "enum_{$rawTableName}_{$columnSchema->name}";
+
+
+//            if ('"'.$table->columns[$columnSchema->name]->dbType.'"' !== $tmpEnumName($columnSchema)) {
+//                throw new \Exception('Unknown error related to PgSQL enum '.$table->columns[$columnSchema->name]->dbType);
+//            }
             // reset back column enum name to original as we are comparing with current
             // e.g. we get different enum type name such as `enum_status` and `tmp_enum_status_` even there is no change, so below statement fix this issue
-            $table->columns[$columnSchema->name]->dbType = 'enum_'.$rawTableName.'_'.$columnSchema->name;
+//            $table->columns[$columnSchema->name]->dbType = $columnSchema->xEnumType ?? 'enum_'.$rawTableName.'_'.$columnSchema->name;
+//            $table->columns[$columnSchema->name]->dbType = 'enum_'.$rawTableName.'_'.$columnSchema->name;
+
+
+//            if (is_array($desired->enumValues)) {
+//                $desired->dbType = $columnSchema->xEnumType ?? 'enum_'.$rawTableName.'_'.$desired->name
+//            }
+
         }
 
         return $table->columns[$columnSchema->name];

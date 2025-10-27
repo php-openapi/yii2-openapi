@@ -235,7 +235,7 @@ class AttributeResolver
             if ($property->isVirtual()) {
                 throw new InvalidDefinitionException('References not supported for virtual attributes');
             }
-            
+
             if ($property->isNonDbReference()) {
                 $attribute->asNonDbReference($property->getRefClassName());
                 $relation = Yii::createObject(
@@ -287,6 +287,9 @@ class AttributeResolver
                       ->setLimits($min, $max, $property->getMinLength());
             if ($property->hasEnum()) {
                 $attribute->setEnumValues($property->getAttr('enum'));
+            }
+            if ($property->hasAttr('x-enum-type')) {
+                $attribute->setXEnumType($property->getAttr('x-enum-type'));
             }
         }
 
