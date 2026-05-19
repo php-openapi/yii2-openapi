@@ -284,7 +284,7 @@ class FakerStubResolver
         $items = $property->items;
 
         if (!$items) {
-            return $this->arbitraryArray();
+            return '[]';
         }
 
         if ($items instanceof Reference) {
@@ -306,6 +306,9 @@ class FakerStubResolver
 
         if ($type === 'object') {
             $result = $this->fakeForObject($items);
+            if ($result === '[]') {
+                return '[]';
+            }
             return $this->wrapInArray($result, $uniqueItems, $count);
         }
 
@@ -315,26 +318,28 @@ class FakerStubResolver
     /**
      * @internal
      */
-    public function fakeForObject(SpecObjectInterface $items): string
+    public function fakeForObject(SpecObjectInterface $items, int $depth = 1): string
     {
         if (!$items->properties) {
-            return $this->arbitraryArray();
+            return '[]';
         }
 
-        $props = '[' . PHP_EOL;
+        $indent = str_repeat('    ', $depth + 3);
+        $closingIndent = str_repeat('    ', $depth + 2);
+        $parts = [];
 
         foreach ($items->properties as $name => $prop) {
             /** @var SpecObjectInterface $prop */
 
             if (!empty($prop->properties)) { // nested object
-                $result = $this->{__FUNCTION__}($prop);
+                $result = $this->fakeForObject($prop, $depth + 1);
             } else {
                 $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);
             }
-            $props .= '\'' . $name . '\' => ' . $result . ',' . PHP_EOL;
+            $parts[] = $indent . '\'' . $name . '\' => ' . $result . ',';
         }
 
-        $props .= ']';
+        $props = '[' . PHP_EOL . implode(PHP_EOL, $parts) . PHP_EOL . $closingIndent . ']';
 
         return $props;
     }

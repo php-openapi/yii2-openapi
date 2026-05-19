@@ -4,9 +4,52 @@
  * @var string $namespace
  * @var string $relationNamespace
  **/
+use cebe\yii2openapi\lib\items\AttributeRelation;
 use yii\helpers\Inflector;
 use yii\helpers\VarDumper;
 
+$allCoveredClasses = array_merge(
+    array_map(fn($r) => $r->getClassName(), (array)$model->relations),
+    array_map(fn($r) => $r->relatedClassName, (array)$model->many2many),
+    array_map(fn($r) => $r->getClassName(), (array)$model->nonDbRelations)
+);
+/**
+ * Resolve inverse relation method names from the FK column name of the other model.
+ * Relations already covered by $model->relations, many2many, or nonDbRelations are skipped.
+ * Relations from models declared with "x-table: false" are skipped (no real table, no FK).
+ *
+ * Naming logic (model being generated = e.g. "Lead", $modelSnake = "lead"):
+ *   1. Take the FK column name from the other model (e.g. Order.customer_lead_id)
+ *   2. Strip trailing "_id"              → "customer_lead"
+ *   3. Strip trailing "_<modelSnake>"    → "customer"
+ *   4. If a prefix remains, prepend it to the pluralized class name:
+ *        "customer" + "Orders"           → getCustomerOrders()
+ *      If no prefix remains (plain FK like "lead_id"):
+ *        "" + "Orders"                   → getOrders()
+ *
+ * Examples: Order has three FK columns pointing to Lead ($model->name = "Lead"):
+ *
+ *   FK column (on Order)      | generated on Order      | generated on Lead (inverse)
+ *   --------------------------|-------------------------|----------------------------
+ *   lead_id                   | getLead()               | getOrders()
+ *   customer_lead_id          | getCustomerLead()       | getCustomerOrders()
+ *   billing_lead_id           | getBillingLead()        | getBillingOrders()
+ */
+$modelSnake = Inflector::underscore($model->name);
+$inverseRelations = array_map(function (AttributeRelation $relation) use ($modelSnake): array {
+    $inverseMethod = $relation->getMethod() === 'hasOne' ? 'hasMany' : 'hasOne';
+    $classBase = $inverseMethod === 'hasMany' ? Inflector::pluralize($relation->getCamelName()) : $relation->getCamelName();
+    $fkBase = preg_replace('/_id$/', '', $relation->getForeignName());
+    $prefix = preg_replace('/_?' . preg_quote($modelSnake, '/') . '$/', '', $fkBase);
+    return [
+        'relation' => $relation,
+        'inverseMethod' => $inverseMethod,
+        'inverseName' => $prefix !== '' ? Inflector::camelize($prefix) . $classBase : $classBase,
+    ];
+}, array_filter(
+    (array)$model->belongsToRelations,
+    fn(AttributeRelation $r) => !in_array($r->getClassName(), $allCoveredClasses) && $r->getTableName() !== ''
+));
 ?>
 <?= '<?php' ?>
 
@@ -45,6 +88,15 @@ namespace <?= $namespace ?>;
 <?php foreach ($model->many2many as $relation): ?>
  * @property array|\<?= trim($relationNamespace, '\\') ?>\<?= $relation->relatedClassName ?>[] $<?= Inflector::variablize($relation->name) ?>
 
+<?php endforeach; ?>
+<?php foreach ($inverseRelations as $inverse): ?>
+<?php if ($inverse['inverseMethod'] === 'hasOne'):?>
+ * @property \<?= trim($relationNamespace, '\\') ?>\<?= $inverse['relation']->getClassName() ?> $<?= Inflector::variablize($inverse['inverseName']) ?>
+
+<?php else:?>
+ * @property array|\<?= trim($relationNamespace, '\\') ?>\<?= $inverse['relation']->getClassName() ?>[] $<?= Inflector::variablize($inverse['inverseName']) ?>
+
+<?php endif?>
 <?php endforeach; ?>
  */
 abstract class <?= $model->getClassName() ?> extends \yii\db\ActiveRecord
@@ -146,14 +198,17 @@ foreach ($scenarios as $scenario): ?>
 <?php endif;?>
     }
 <?php endforeach; ?>
-<?php $i = 1; $usedRelationNames = [];
-foreach ($model->belongsToRelations as $relationName => $relation): ?><?php $number = in_array($relation->getCamelName(), $usedRelationNames) ? $i : '' ?>
+<?php foreach ($model->nonDbRelations as $nonDbRelation): ?>
 
-    # belongs to relation
-    public function get<?= $relation->getCamelName() . ($number) ?>()
+    abstract public function get<?= $nonDbRelation->getCamelName() ?>(): \yii\db\ActiveQuery;
+<?php endforeach; ?>
+<?php foreach ($inverseRelations as $inverse): ?>
+
+    # inverse relation
+    public function get<?= $inverse['inverseName'] ?>()
     {
-        return $this-><?= $relation->getMethod() ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $relation->getClassName() ?>::class, <?php
-    echo $relation->linkToString() ?>);
+        return $this-><?= $inverse['inverseMethod'] ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $inverse['relation']->getClassName() ?>::class, <?php
+    echo $inverse['relation']->linkToString() ?>);
     }
-<?php $i++; $usedRelationNames[] = $relation->getCamelName(); endforeach; ?>
+<?php endforeach; ?>
 }

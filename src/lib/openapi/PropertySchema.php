@@ -100,6 +100,7 @@ class PropertySchema
         $this->isPk = $name === $schema->getPkName();
 
         $onUpdate = $onDelete = $xFaker = $reference = $fkColName = null;
+        $xDbTypeFalse = false;
 
         foreach ($property->allOf ?? [] as $element) {
             // x-fk-on-delete | x-fk-on-update
@@ -122,6 +123,11 @@ class PropertySchema
             if (!empty($element->{CustomSpecAttr::FK_COLUMN_NAME})) {
                 $fkColName = $element->{CustomSpecAttr::FK_COLUMN_NAME};
             }
+
+            // x-db-type: false → treat as non-DB reference (no FK column, no migration)
+            if (isset($element->{CustomSpecAttr::DB_TYPE}) && $element->{CustomSpecAttr::DB_TYPE} === false) {
+                $xDbTypeFalse = true;
+            }
         }
 
         if (
@@ -143,6 +149,9 @@ class PropertySchema
             $this->xFaker = $xFaker;
             $this->property = $reference;
             $property = $this->property;
+        } elseif ($xDbTypeFalse && $reference instanceof Reference) {
+            $this->property = $reference;
+            $property = $this->property;
         }
 
         // don't go reference part if `x-no-relation` is true
@@ -152,6 +161,9 @@ class PropertySchema
 
         if ($property instanceof Reference) {
             $this->initReference();
+            if ($xDbTypeFalse) {
+                $this->isNonDbReference = true;
+            }
         } elseif (
             isset($property->type, $property->items) && $property->type === 'array'
             && $property->items instanceof Reference
