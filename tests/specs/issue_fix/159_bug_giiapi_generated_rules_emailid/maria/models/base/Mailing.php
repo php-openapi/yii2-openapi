@@ -13,6 +13,7 @@ namespace app\models\base;
  * @property string $name name
  * @property string $paymentMethodName
  *
+ * @property array|\app\models\Contact[] $contacts
  */
 abstract class Mailing extends \yii\db\ActiveRecord
 {
@@ -31,9 +32,9 @@ abstract class Mailing extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getContact()
+    # inverse relation
+    public function getContacts()
     {
-        return $this->hasOne(\app\models\Contact::class, ['mailing_id' => 'id']);
+        return $this->hasMany(\app\models\Contact::class, ['mailing_id' => 'id']);
     }
 }

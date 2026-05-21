@@ -17,6 +17,8 @@ namespace app\models\base;
  * @property int $flags
  * @property string $created_at
  *
+ * @property array|\app\models\Post[] $createdByPosts
+ * @property array|\app\models\Comment[] $authorComments
  */
 abstract class User extends \yii\db\ActiveRecord
 {
@@ -45,15 +47,15 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getPost()
+    # inverse relation
+    public function getCreatedByPosts()
     {
-        return $this->hasOne(\app\models\Post::class, ['created_by_id' => 'id']);
+        return $this->hasMany(\app\models\Post::class, ['created_by_id' => 'id']);
     }
 
-    # belongs to relation
-    public function getComment()
+    # inverse relation
+    public function getAuthorComments()
     {
-        return $this->hasOne(\app\models\Comment::class, ['author_id' => 'id']);
+        return $this->hasMany(\app\models\Comment::class, ['author_id' => 'id']);
     }
 }

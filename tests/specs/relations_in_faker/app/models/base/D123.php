@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Routing[] $routings
  */
 abstract class D123 extends \yii\db\ActiveRecord
 {
@@ -28,9 +29,9 @@ abstract class D123 extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getRouting()
+    # inverse relation
+    public function getRoutings()
     {
-        return $this->hasOne(\app\models\Routing::class, ['d123_id' => 'id']);
+        return $this->hasMany(\app\models\Routing::class, ['d123_id' => 'id']);
     }
 }

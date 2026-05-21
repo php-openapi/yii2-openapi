@@ -12,6 +12,8 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Invoice[] $invoices
+ * @property array|\app\models\Invoice[] $user2Invoices
  */
 abstract class User extends \yii\db\ActiveRecord
 {
@@ -28,15 +30,15 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getInvoice()
+    # inverse relation
+    public function getInvoices()
     {
-        return $this->hasOne(\app\models\Invoice::class, ['user_id' => 'id']);
+        return $this->hasMany(\app\models\Invoice::class, ['user_id' => 'id']);
     }
 
-    # belongs to relation
-    public function getInvoice2()
+    # inverse relation
+    public function getUser2Invoices()
     {
-        return $this->hasOne(\app\models\Invoice::class, ['user_2_id' => 'id']);
+        return $this->hasMany(\app\models\Invoice::class, ['user_2_id' => 'id']);
     }
 }

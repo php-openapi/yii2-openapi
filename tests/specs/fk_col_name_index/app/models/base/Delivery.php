@@ -12,6 +12,8 @@ namespace app\models\base;
  * @property int $id
  * @property string $title
  *
+ * @property array|\app\models\Webhook[] $redeliveryOfWebhooks
+ * @property array|\app\models\Webhook[] $rdAbc2Webhooks
  */
 abstract class Delivery extends \yii\db\ActiveRecord
 {
@@ -28,15 +30,15 @@ abstract class Delivery extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getWebhook()
+    # inverse relation
+    public function getRedeliveryOfWebhooks()
     {
-        return $this->hasOne(\app\models\Webhook::class, ['redelivery_of' => 'id']);
+        return $this->hasMany(\app\models\Webhook::class, ['redelivery_of' => 'id']);
     }
 
-    # belongs to relation
-    public function getWebhook2()
+    # inverse relation
+    public function getRdAbc2Webhooks()
     {
-        return $this->hasOne(\app\models\Webhook::class, ['rd_abc_2' => 'id']);
+        return $this->hasMany(\app\models\Webhook::class, ['rd_abc_2' => 'id']);
     }
 }

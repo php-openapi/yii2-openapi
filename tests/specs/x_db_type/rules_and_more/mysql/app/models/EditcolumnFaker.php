@@ -39,8 +39,8 @@ class EditcolumnFaker extends BaseModelFaker
         $model->json_col = $faker->sentence;
         $model->json_col_2 = $faker->words();
         $model->numeric_col = $faker->randomFloat();
-        $model->json_col_def_n = $faker->words();
-        $model->json_col_def_n_2 = $faker->words();
+        $model->json_col_def_n = [];
+        $model->json_col_def_n_2 = [];
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

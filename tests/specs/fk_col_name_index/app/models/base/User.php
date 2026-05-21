@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Webhook[] $webhooks
  */
 abstract class User extends \yii\db\ActiveRecord
 {
@@ -29,9 +30,9 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getWebhook()
+    # inverse relation
+    public function getWebhooks()
     {
-        return $this->hasOne(\app\models\Webhook::class, ['user_id' => 'id']);
+        return $this->hasMany(\app\models\Webhook::class, ['user_id' => 'id']);
     }
 }

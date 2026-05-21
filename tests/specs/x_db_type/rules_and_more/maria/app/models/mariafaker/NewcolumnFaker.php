@@ -34,10 +34,10 @@ class NewcolumnFaker extends BaseModelFaker
         $model->name = substr($faker->text(255), 0, 255);
         $model->last_name = $faker->sentence;
         $model->dec_col = $faker->randomFloat();
-        $model->json_col = $faker->words();
+        $model->json_col = [];
         $model->varchar_col = substr($faker->text(5), 0, 5);
         $model->numeric_col = $faker->randomFloat();
-        $model->json_col_def_n = $faker->words();
+        $model->json_col_def_n = [];
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

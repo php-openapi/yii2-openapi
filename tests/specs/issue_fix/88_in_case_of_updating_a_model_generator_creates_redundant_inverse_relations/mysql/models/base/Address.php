@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Human[] $humans
  */
 abstract class Address extends \yii\db\ActiveRecord
 {
@@ -28,9 +29,9 @@ abstract class Address extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getHuman()
+    # inverse relation
+    public function getHumans()
     {
-        return $this->hasOne(\app\models\Human::class, ['address_id' => 'id']);
+        return $this->hasMany(\app\models\Human::class, ['address_id' => 'id']);
     }
 }

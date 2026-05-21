@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Pet[] $pets
  */
 abstract class Store extends \yii\db\ActiveRecord
 {
@@ -29,9 +30,9 @@ abstract class Store extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getPet()
+    # inverse relation
+    public function getPets()
     {
-        return $this->hasOne(\app\models\Pet::class, ['store_id' => 'id']);
+        return $this->hasMany(\app\models\Pet::class, ['store_id' => 'id']);
     }
 }

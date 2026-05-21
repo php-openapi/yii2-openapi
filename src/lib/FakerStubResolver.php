@@ -122,6 +122,7 @@ class FakerStubResolver
 
         $example = $this->property->getAttr('example');
         $example = VarExporter::export($example);
+        $example = preg_replace('/\n/', "\n        ", $example);
         return str_replace('$faker->', '$faker->optional(0.92, ' . $example . ')->', $result);
     }
 
@@ -284,7 +285,8 @@ class FakerStubResolver
         $items = $property->items;
 
         if (!$items) {
-            return '[]';
+            // Required fields cannot use [] — Yii2's isEmpty() treats empty arrays as blank.
+            return $this->attribute->required ? $this->arbitraryArray() : '[]';
         }
 
         if ($items instanceof Reference) {
@@ -299,8 +301,8 @@ class FakerStubResolver
         if ($type === null) {
             return $this->arbitraryArray();
         }
-        $aFaker = $this->aElementFaker($this->property->getProperty(), $this->attribute->columnName);
         if (in_array($type, ['string', 'number', 'integer', 'boolean', 'array'])) {
+            $aFaker = $this->aElementFaker($this->property->getProperty(), $this->attribute->columnName);
             return $this->wrapInArray($aFaker, $uniqueItems, $count);
         }
 
@@ -316,6 +318,19 @@ class FakerStubResolver
     }
 
     /**
+     * Generates a PHP array literal string for an OpenAPI object property.
+     * The output is embedded as PHP code in Faker fixture files, not as JSON.
+     *
+     * Flow: Faker assigns a PHP array to the model property → ActiveRecord passes it
+     * to the DB driver → the driver JSON-encodes it before storing.
+     * Result in DB:
+     *   PHP []              → json_encode([])             → []           (JSON array)
+     *   PHP ['key' => 'v']  → json_encode(['key' => 'v']) → {"key": "v"} (JSON object)
+     *
+     * A non-empty associative array correctly becomes a JSON object in the DB.
+     * An empty PHP array always becomes [] in the DB, never {} — regardless of whether
+     * the OpenAPI field is typed as "object" or "array". For test/faker data without
+     * defined properties this is acceptable, as no schema is enforced.
      * @internal
      */
     public function fakeForObject(SpecObjectInterface $items, int $depth = 1): string
@@ -335,6 +350,9 @@ class FakerStubResolver
                 $result = $this->fakeForObject($prop, $depth + 1);
             } else {
                 $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);
+                if (str_starts_with($result, 'array_map')) {
+                    $result = $this->reindentArrayMapForObject($result, $depth);
+                }
             }
             $parts[] = $indent . '\'' . $name . '\' => ' . $result . ',';
         }
@@ -342,6 +360,60 @@ class FakerStubResolver
         $props = '[' . PHP_EOL . implode(PHP_EOL, $parts) . PHP_EOL . $closingIndent . ']';
 
         return $props;
+    }
+
+    /**
+     * Re-indents a compact wrapInArray() output string to match the correct depth inside fakeForObject().
+     * wrapInArray() always uses hardcoded 12/8-space indentation; when its result is embedded as a
+     * property value inside a fakeForObject() output at depth >= 1, the indentation must be adjusted.
+     * For a nested array_map body the inner call is expanded to multi-line style via expandCompactArrayMap().
+     */
+    private function reindentArrayMapForObject(string $code, int $depth): string
+    {
+        $bodyIndent  = str_repeat('    ', $depth + 4);
+        $closeIndent = str_repeat('    ', $depth + 3);
+
+        $pat = '/^array_map\(function \(\) use \(\$faker, \$uniqueFaker\) \{\n            (.*)\n        \}, range\(1, (\d+)\)\)$/s';
+        if (!preg_match($pat, $code, $m)) {
+            return $code;
+        }
+        [$body, $count] = [$m[1], $m[2]];
+
+        if (str_starts_with($body, 'return array_map(')) {
+            $inner    = substr($body, 7, -1); // strip "return " prefix and trailing ";"
+            $expanded = $this->expandCompactArrayMap($inner, $bodyIndent);
+            return "array_map(function () use (\$faker, \$uniqueFaker) {\n"
+                . $bodyIndent  . "return {$expanded};\n"
+                . $closeIndent . "},\n"
+                . $closeIndent . "range(1, {$count}))";
+        }
+
+        return "array_map(function () use (\$faker, \$uniqueFaker) {\n"
+            . $bodyIndent  . $body . "\n"
+            . $closeIndent . "},\n"
+            . $closeIndent . "range(1, {$count}))";
+    }
+
+    /**
+     * Expands a compact wrapInArray() string (single-line function + range) into multi-line style,
+     * using $baseIndent as the reference indentation level for the opening "array_map(" line.
+     */
+    private function expandCompactArrayMap(string $code, string $baseIndent): string
+    {
+        $pat = '/^array_map\(function \(\) use \(\$faker, \$uniqueFaker\) \{\n            (.*)\n        \}, range\(1, (\d+)\)\)$/s';
+        if (!preg_match($pat, $code, $m)) {
+            return $code;
+        }
+        [$body, $count] = [$m[1], $m[2]];
+        $funcIndent  = $baseIndent . '    ';
+        $innerIndent = $baseIndent . '        ';
+
+        return "array_map(\n"
+            . $funcIndent  . "function () use (\$faker, \$uniqueFaker) {\n"
+            . $innerIndent . $body . "\n"
+            . $funcIndent  . "},\n"
+            . $funcIndent  . "range(1, {$count})\n"
+            . $baseIndent  . ")";
     }
 
     /**
@@ -360,15 +432,28 @@ class FakerStubResolver
     public function handleOneOf(SpecObjectInterface $items, int $count): string
     {
         $result = '';
+        $indent = str_repeat(' ', 12);
         foreach ($items->oneOf as $key => $aDataType) {
             /** @var Schema|Reference $aDataType */
 
             $inp = $aDataType instanceof Reference ? $aDataType : ['items' => $aDataType->getSerializableData()];
             $aFaker = $this->aElementFaker($inp, $this->attribute->columnName);
+            /**
+             * Each $dataTypeN gets its own line (12-space indent = wrapInArray body level).
+             * wrapInArray output (array_map) gets +4 spaces on continuation lines (12→16, 8→12).
+             * fakeForObject output (starts with "[") is left as-is — depth=1 already gives 16/12.
+             * return goes on its own line.
+             */
+            if (str_contains($aFaker, PHP_EOL) && !str_starts_with($aFaker, '[')) {
+                $aFaker = str_replace(PHP_EOL, PHP_EOL . '    ', $aFaker);
+            }
+            if ($result !== '') {
+                $result .= PHP_EOL . $indent;
+            }
             $result .= '$dataType' . $key . ' = ' . $aFaker . ';';
         }
         $ct = count($items->oneOf) - 1;
-        $result .= 'return ${"dataType".rand(0, ' . $ct . ')}';
+        $result .= PHP_EOL . $indent . 'return ${"dataType".rand(0, ' . $ct . ')}';
         return $result;
     }
 
