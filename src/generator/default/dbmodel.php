@@ -204,7 +204,7 @@ foreach ($scenarios as $scenario): ?>
 <?php endforeach; ?>
 <?php foreach ($inverseRelations as $inverse): ?>
 
-    # inverse relation
+    // inverse relation
     public function get<?= $inverse['inverseName'] ?>()
     {
         return $this-><?= $inverse['inverseMethod'] ?>(\<?= trim($relationNamespace, '\\') ?>\<?= $inverse['relation']->getClassName() ?>::class, <?php
