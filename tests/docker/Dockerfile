@@ -9,11 +9,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
 RUN apt-get update && \
-    apt-get -y install \
-        gnupg2 && \
-    apt-key update && \
-    apt-get update && \
     apt-get install -y --no-install-recommends \
+            gnupg2 \
             imagemagick \
             libmagickwand-dev libmagickcore-dev \
             libfreetype6-dev \
