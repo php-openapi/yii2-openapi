@@ -1,0 +1,50 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Spec for array/object JSON column faker stubs (json_arr_obj)
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: OK
+
+components:
+  schemas:
+    JsonArrObj:
+      x-table: json_arr_obj
+      type: object
+      description: >
+        Schema for testing faker stub generation for JSON columns with array/object types.
+        Each property triggers a specific code path in FakerStubResolver (fakeForArray /
+        fakeForObject) that previously returned a broken faker expression.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+
+        # Bug fix 1 (fakeForArray): array with no "items" definition.
+        # Before fix: returned $faker->words() — invalid for a jsonb column.
+        # After fix:  returns [] — empty array is the correct safe default.
+        arr_no_items:
+          type: array
+          x-db-type: jsonb
+
+        # Bug fix 2 (fakeForObject): object with no "properties" definition.
+        # Before fix: returned $faker->words() — invalid for an object.
+        # After fix:  returns [] — empty array is the correct safe default.
+        obj_no_props:
+          type: object
+          x-db-type: jsonb
+
+        # Bug fix 3 (fakeForArray + fakeForObject interaction): array whose items are an
+        # object with no "properties". fakeForObject returns [] for the items, and
+        # fakeForArray must NOT wrap [] in array_map() — it must return [] directly.
+        # Before fix: produced array_map(function() { return []; }, range(1, 4)) — broken.
+        # After fix:  returns [] — early return when fakeForObject returns [].
+        arr_obj_no_props:
+          type: array
+          x-db-type: jsonb
+          items:
+            type: object

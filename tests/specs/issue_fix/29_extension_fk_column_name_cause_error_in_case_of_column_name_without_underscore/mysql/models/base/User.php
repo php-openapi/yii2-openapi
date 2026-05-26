@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Post[] $posts
  */
 abstract class User extends \yii\db\ActiveRecord
 {
@@ -28,9 +29,9 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getPost()
+    // inverse relation
+    public function getPosts()
     {
-        return $this->hasOne(\app\models\Post::class, ['user' => 'id']);
+        return $this->hasMany(\app\models\Post::class, ['user' => 'id']);
     }
 }

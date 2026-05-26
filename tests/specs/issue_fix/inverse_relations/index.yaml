@@ -1,0 +1,86 @@
+openapi: "3.0.0"
+
+info:
+  version: 1.0.0
+  title: inverse_relations
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: The response
+
+components:
+  schemas:
+    Company:
+      x-table: companies
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+    Lead:
+      x-table: leads
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        company:
+          $ref: '#/components/schemas/Company'
+    Order:
+      x-table: orders
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        lead:
+          $ref: '#/components/schemas/Lead'
+        customer_lead:
+          $ref: '#/components/schemas/Lead'
+        billing_lead:
+          $ref: '#/components/schemas/Lead'
+        invoice:
+          $ref: '#/components/schemas/Invoice'
+    Invoice:
+      x-table: invoices
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+    Booking:
+      x-table: bookings
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        bank_account_transaction:
+          $ref: '#/components/schemas/BankAccountTransaction'
+    BankAccountTransaction:
+      x-table: bank_account_transactions
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          allOf:
+            - $ref: '#/components/schemas/Booking'
+            - x-db-type: false
+    VirtualTask:
+      x-table: false
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        lead:
+          $ref: '#/components/schemas/Lead'

@@ -11,6 +11,7 @@ namespace app\models\base;
  *
  * @property int $id
  *
+ * @property array|\app\models\Address[] $addresses
  */
 abstract class User extends \yii\db\ActiveRecord
 {
@@ -24,9 +25,9 @@ abstract class User extends \yii\db\ActiveRecord
         return [];
     }
 
-    # belongs to relation
-    public function getAddress()
+    // inverse relation
+    public function getAddresses()
     {
-        return $this->hasOne(\app\models\Address::class, ['user_id' => 'id']);
+        return $this->hasMany(\app\models\Address::class, ['user_id' => 'id']);
     }
 }

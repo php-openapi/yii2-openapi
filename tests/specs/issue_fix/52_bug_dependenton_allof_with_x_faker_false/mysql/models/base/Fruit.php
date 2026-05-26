@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name
  *
+ * @property array|\app\models\Invoice[] $invoices
  */
 abstract class Fruit extends \yii\db\ActiveRecord
 {
@@ -28,9 +29,9 @@ abstract class Fruit extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getInvoice()
+    // inverse relation
+    public function getInvoices()
     {
-        return $this->hasOne(\app\models\Invoice::class, ['fruit_id' => 'id']);
+        return $this->hasMany(\app\models\Invoice::class, ['fruit_id' => 'id']);
     }
 }

@@ -12,6 +12,7 @@ namespace app\models\base;
  * @property int $id
  * @property string $name account name
  *
+ * @property array|\app\models\Domain[] $domains
  */
 abstract class Account extends \yii\db\ActiveRecord
 {
@@ -29,9 +30,9 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getDomain()
+    // inverse relation
+    public function getDomains()
     {
-        return $this->hasOne(\app\models\Domain::class, ['account_id' => 'id']);
+        return $this->hasMany(\app\models\Domain::class, ['account_id' => 'id']);
     }
 }

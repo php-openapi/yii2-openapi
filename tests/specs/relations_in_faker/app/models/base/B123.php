@@ -14,6 +14,8 @@ namespace app\models\base;
  * @property int $c123_id desc
  *
  * @property \app\models\C123 $c123
+ * @property array|\app\models\A123[] $a123s
+ * @property array|\app\models\E123[] $e123s
  */
 abstract class B123 extends \yii\db\ActiveRecord
 {
@@ -37,15 +39,15 @@ abstract class B123 extends \yii\db\ActiveRecord
         return $this->hasOne(\app\models\C123::class, ['id' => 'c123_id']);
     }
 
-    # belongs to relation
-    public function getA123()
+    // inverse relation
+    public function getA123s()
     {
-        return $this->hasOne(\app\models\A123::class, ['b123_id' => 'id']);
+        return $this->hasMany(\app\models\A123::class, ['b123_id' => 'id']);
     }
 
-    # belongs to relation
-    public function getE123()
+    // inverse relation
+    public function getE123s()
     {
-        return $this->hasOne(\app\models\E123::class, ['b123_id' => 'id']);
+        return $this->hasMany(\app\models\E123::class, ['b123_id' => 'id']);
     }
 }

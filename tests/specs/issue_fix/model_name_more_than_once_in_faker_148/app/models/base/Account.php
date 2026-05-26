@@ -12,6 +12,9 @@ namespace app\models\base;
  * @property int $id
  * @property string $name account name
  *
+ * @property array|\app\models\E123[] $e123s
+ * @property array|\app\models\E123[] $account2E123s
+ * @property array|\app\models\E123[] $account3E123s
  */
 abstract class Account extends \yii\db\ActiveRecord
 {
@@ -29,21 +32,21 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
-    # belongs to relation
-    public function getE123()
+    // inverse relation
+    public function getE123s()
     {
-        return $this->hasOne(\app\models\E123::class, ['account_id' => 'id']);
+        return $this->hasMany(\app\models\E123::class, ['account_id' => 'id']);
     }
 
-    # belongs to relation
-    public function getE1232()
+    // inverse relation
+    public function getAccount2E123s()
     {
-        return $this->hasOne(\app\models\E123::class, ['account_2_id' => 'id']);
+        return $this->hasMany(\app\models\E123::class, ['account_2_id' => 'id']);
     }
 
-    # belongs to relation
-    public function getE1233()
+    // inverse relation
+    public function getAccount3E123s()
     {
-        return $this->hasOne(\app\models\E123::class, ['account_3_id' => 'id']);
+        return $this->hasMany(\app\models\E123::class, ['account_3_id' => 'id']);
     }
 }

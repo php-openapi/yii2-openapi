@@ -9,11 +9,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
 RUN apt-get update && \
-    apt-get -y install \
-        gnupg2 && \
-    apt-key update && \
-    apt-get update && \
     apt-get install -y --no-install-recommends \
+            gnupg2 \
             imagemagick \
             libmagickwand-dev libmagickcore-dev \
             libfreetype6-dev \
@@ -35,7 +32,7 @@ RUN apt-get update && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
         # https://xdebug.org/docs/compat \
-        && if [ "$BUILD_PHP_VERSION" = "8.2" ] || [ "$BUILD_PHP_VERSION" = "8.3" ] ; then pecl install xdebug ; else pecl install xdebug-3.1.5 ; fi \
+        && if [ "$BUILD_PHP_VERSION" = "8.2" ] || [ "$BUILD_PHP_VERSION" = "8.3" ] ; then pecl install xdebug-3.3.2 ; else pecl install xdebug-3.1.5 ; fi \
         && docker-php-ext-enable xdebug \
         && docker-php-ext-install \
                 zip \
