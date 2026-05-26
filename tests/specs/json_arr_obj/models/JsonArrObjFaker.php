@@ -31,7 +31,7 @@ class JsonArrObjFaker extends BaseModelFaker
         $model = new JsonArrObj();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->arr_no_items = [];
-        $model->obj_no_props = [];
+        $model->obj_no_props = (object) [];
         $model->arr_obj_no_props = [];
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

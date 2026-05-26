@@ -32,19 +32,19 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getE123s()
     {
         return $this->hasMany(\app\models\E123::class, ['account_id' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getAccount2E123s()
     {
         return $this->hasMany(\app\models\E123::class, ['account_2_id' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getAccount3E123s()
     {
         return $this->hasMany(\app\models\E123::class, ['account_3_id' => 'id']);

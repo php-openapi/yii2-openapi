@@ -30,13 +30,13 @@ abstract class Delivery extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getRedeliveryOfWebhooks()
     {
         return $this->hasMany(\app\models\Webhook::class, ['redelivery_of' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getRdAbc2Webhooks()
     {
         return $this->hasMany(\app\models\Webhook::class, ['rd_abc_2' => 'id']);

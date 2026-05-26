@@ -29,7 +29,7 @@ abstract class D123 extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getRoutings()
     {
         return $this->hasMany(\app\models\Routing::class, ['d123_id' => 'id']);

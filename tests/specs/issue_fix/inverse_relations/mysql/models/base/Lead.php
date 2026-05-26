@@ -40,19 +40,19 @@ abstract class Lead extends \yii\db\ActiveRecord
         return $this->hasOne(\app\models\Company::class, ['id' => 'company_id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getOrders()
     {
         return $this->hasMany(\app\models\Order::class, ['lead_id' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getCustomerOrders()
     {
         return $this->hasMany(\app\models\Order::class, ['customer_lead_id' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getBillingOrders()
     {
         return $this->hasMany(\app\models\Order::class, ['billing_lead_id' => 'id']);

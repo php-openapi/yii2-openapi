@@ -29,7 +29,7 @@ abstract class Address extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getHumans()
     {
         return $this->hasMany(\app\models\Human::class, ['address_id' => 'id']);

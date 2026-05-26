@@ -29,7 +29,7 @@ abstract class C123 extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getB123s()
     {
         return $this->hasMany(\app\models\B123::class, ['c123_id' => 'id']);

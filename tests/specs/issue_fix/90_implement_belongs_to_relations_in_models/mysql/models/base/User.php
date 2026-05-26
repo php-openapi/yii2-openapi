@@ -25,7 +25,7 @@ abstract class User extends \yii\db\ActiveRecord
         return [];
     }
 
-    # inverse relation
+    // inverse relation
     public function getAddresses()
     {
         return $this->hasMany(\app\models\Address::class, ['user_id' => 'id']);

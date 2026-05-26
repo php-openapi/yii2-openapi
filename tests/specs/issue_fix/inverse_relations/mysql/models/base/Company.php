@@ -29,7 +29,7 @@ abstract class Company extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getLeads()
     {
         return $this->hasMany(\app\models\Lead::class, ['company_id' => 'id']);

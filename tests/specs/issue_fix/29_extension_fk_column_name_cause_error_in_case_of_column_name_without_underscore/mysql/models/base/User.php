@@ -29,7 +29,7 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getPosts()
     {
         return $this->hasMany(\app\models\Post::class, ['user' => 'id']);

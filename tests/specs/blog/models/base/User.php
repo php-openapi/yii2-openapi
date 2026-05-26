@@ -47,13 +47,13 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getCreatedByPosts()
     {
         return $this->hasMany(\app\models\Post::class, ['created_by_id' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getAuthorComments()
     {
         return $this->hasMany(\app\models\Comment::class, ['author_id' => 'id']);

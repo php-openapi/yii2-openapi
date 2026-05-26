@@ -29,7 +29,7 @@ abstract class Fruit extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getInvoices()
     {
         return $this->hasMany(\app\models\Invoice::class, ['fruit_id' => 'id']);

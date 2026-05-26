@@ -29,7 +29,7 @@ abstract class Animal extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getInvoices()
     {
         return $this->hasMany(\app\models\Invoice::class, ['animal_id' => 'id']);

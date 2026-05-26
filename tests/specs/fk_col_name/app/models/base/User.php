@@ -30,7 +30,7 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getWebhooks()
     {
         return $this->hasMany(\app\models\Webhook::class, ['user_id' => 'id']);

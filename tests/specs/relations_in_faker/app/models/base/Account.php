@@ -30,7 +30,7 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getDomains()
     {
         return $this->hasMany(\app\models\Domain::class, ['account_id' => 'id']);

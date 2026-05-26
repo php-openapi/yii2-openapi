@@ -32,7 +32,7 @@ abstract class Account extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getContacts()
     {
         return $this->hasMany(\app\models\Contact::class, ['account_id' => 'id']);

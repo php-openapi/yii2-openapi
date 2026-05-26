@@ -30,13 +30,13 @@ abstract class User extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getInvoices()
     {
         return $this->hasMany(\app\models\Invoice::class, ['user_id' => 'id']);
     }
 
-    # inverse relation
+    // inverse relation
     public function getUser2Invoices()
     {
         return $this->hasMany(\app\models\Invoice::class, ['user_2_id' => 'id']);

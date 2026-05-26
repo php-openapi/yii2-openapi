@@ -30,7 +30,7 @@ abstract class Store extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getPets()
     {
         return $this->hasMany(\app\models\Pet::class, ['store_id' => 'id']);

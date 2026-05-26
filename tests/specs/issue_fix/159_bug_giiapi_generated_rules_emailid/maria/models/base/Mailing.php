@@ -32,7 +32,7 @@ abstract class Mailing extends \yii\db\ActiveRecord
         ];
     }
 
-    # inverse relation
+    // inverse relation
     public function getContacts()
     {
         return $this->hasMany(\app\models\Contact::class, ['mailing_id' => 'id']);

@@ -104,7 +104,13 @@ class FakerStubResolver
             $result = $this->fakeForFloat($limits['min'], $limits['max']);
         } elseif ($this->attribute->phpType === 'array' ||
             substr($this->attribute->phpType, -2) === '[]') {
-            $result = $this->fakeForArray($this->property->getProperty());
+            $property = $this->property->getProperty();
+            if ($property->type === 'object') {
+                // A JSONB/JSON column declared as type:object in the spec has phpType=array but must
+                // be faked as an object, not as an array.
+                return $this->fakeForObject($property);
+            }
+            $result = $this->fakeForArray($property);
             if ($result !== '$faker->words()') { # example for array will only work with a list/`$faker->words()`
                 return $result;
             }
@@ -308,7 +314,7 @@ class FakerStubResolver
 
         if ($type === 'object') {
             $result = $this->fakeForObject($items);
-            if ($result === '[]') {
+            if ($result === '(object) []') {
                 return '[]';
             }
             return $this->wrapInArray($result, $uniqueItems, $count);
@@ -336,7 +342,7 @@ class FakerStubResolver
     public function fakeForObject(SpecObjectInterface $items, int $depth = 1): string
     {
         if (!$items->properties) {
-            return '[]';
+            return '(object) []';
         }
 
         $indent = str_repeat('    ', $depth + 3);
@@ -346,7 +352,7 @@ class FakerStubResolver
         foreach ($items->properties as $name => $prop) {
             /** @var SpecObjectInterface $prop */
 
-            if (!empty($prop->properties)) { // nested object
+            if (!$prop instanceof Reference && ($prop->type === 'object' || !empty($prop->properties))) {
                 $result = $this->fakeForObject($prop, $depth + 1);
             } else {
                 $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);

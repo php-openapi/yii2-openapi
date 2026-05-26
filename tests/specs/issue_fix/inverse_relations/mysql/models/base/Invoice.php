@@ -25,7 +25,7 @@ abstract class Invoice extends \yii\db\ActiveRecord
         return [];
     }
 
-    # inverse relation
+    // inverse relation
     public function getOrders()
     {
         return $this->hasMany(\app\models\Order::class, ['invoice_id' => 'id']);
