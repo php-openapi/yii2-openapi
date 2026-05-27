@@ -130,26 +130,20 @@ class PropertySchema
             }
         }
 
-        if (
-            ($onUpdate !== null || $onDelete !== null) &&
-            ($reference instanceof Reference)
-        ) {
-            $this->onUpdateFkConstraint = $onUpdate;
-            $this->onDeleteFkConstraint = $onDelete;
-            $this->property = $reference;
-            $property = $this->property;
-        } elseif (
-            ($fkColName !== null) &&
-            ($reference instanceof Reference)
-        ) {
-            $this->fkColName = $fkColName;
-            $this->property = $reference;
-            $property = $this->property;
-        } elseif ($xFaker !== null && $reference instanceof Reference) {
-            $this->xFaker = $xFaker;
-            $this->property = $reference;
-            $property = $this->property;
-        } elseif ($xDbTypeFalse && $reference instanceof Reference) {
+        if ($reference instanceof Reference) {
+            if ($onUpdate !== null) {
+                $this->onUpdateFkConstraint = $onUpdate;
+            }
+            if ($onDelete !== null) {
+                $this->onDeleteFkConstraint = $onDelete;
+            }
+            if ($fkColName !== null) {
+                $this->fkColName = $fkColName;
+            }
+            if ($xFaker !== null) {
+                $this->xFaker = $xFaker;
+            }
+            // covers: fk constraints, fkColName, xFaker, xDbTypeFalse, and plain allOf[$ref]
             $this->property = $reference;
             $property = $this->property;
         }
