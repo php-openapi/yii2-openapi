@@ -80,8 +80,8 @@ class FakerStubResolver
             return null;
         }
 
-        // column name ends with `_id`/FK
-        if (substr($this->attribute->columnName, -3) === '_id' || !empty($this->attribute->fkColName)) {
+        // FK: determined by a $ref / allOf[$ref] — not by column name convention
+        if (!empty($this->attribute->reference)) {
             $config = $this->config;
             if (!$config) {
                 $config = new Config;
@@ -313,7 +313,7 @@ class FakerStubResolver
         }
 
         if ($type === 'object') {
-            $result = $this->fakeForObject($items);
+            $result = $this->fakeForObject($items, 1);
             if ($result === '(object) []') {
                 return '[]';
             }
@@ -339,7 +339,7 @@ class FakerStubResolver
      * defined properties this is acceptable, as no schema is enforced.
      * @internal
      */
-    public function fakeForObject(SpecObjectInterface $items, int $depth = 1): string
+    public function fakeForObject(SpecObjectInterface $items, int $depth = 0): string
     {
         if (!$items->properties) {
             return '(object) []';
@@ -353,14 +353,15 @@ class FakerStubResolver
             /** @var SpecObjectInterface $prop */
 
             if (!$prop instanceof Reference && ($prop->type === 'object' || !empty($prop->properties))) {
+                $key = $name;
                 $result = $this->fakeForObject($prop, $depth + 1);
             } else {
-                $result = $this->aElementFaker(['items' => $prop->getSerializableData()], $name);
+                ['columnName' => $key, 'fakerStub' => $result] = $this->resolveElement(['items' => $prop->getSerializableData()], $name);
                 if (str_starts_with($result, 'array_map')) {
                     $result = $this->reindentArrayMapForObject($result, $depth);
                 }
             }
-            $parts[] = $indent . '\'' . $name . '\' => ' . $result . ',';
+            $parts[] = $indent . '\'' . $key . '\' => ' . $result . ',';
         }
 
         $props = '[' . PHP_EOL . implode(PHP_EOL, $parts) . PHP_EOL . $closingIndent . ']';
@@ -371,8 +372,11 @@ class FakerStubResolver
     /**
      * Re-indents a compact wrapInArray() output string to match the correct depth inside fakeForObject().
      * wrapInArray() always uses hardcoded 12/8-space indentation; when its result is embedded as a
-     * property value inside a fakeForObject() output at depth >= 1, the indentation must be adjusted.
-     * For a nested array_map body the inner call is expanded to multi-line style via expandCompactArrayMap().
+     * property value inside a fakeForObject() output, the indentation must be adjusted.
+     *
+     * For a simple body (single return statement): shift = bodyIndent - 12, placing the return at bodyIndent.
+     * For a nested body (return array_map(...)): shift = bodyIndent - 8, so the inner return lands at
+     * bodyIndent+4 and the inner closing brace lands at bodyIndent — matching wrapInArray's 12/8 ratio.
      */
     private function reindentArrayMapForObject(string $code, int $depth): string
     {
@@ -385,41 +389,17 @@ class FakerStubResolver
         }
         [$body, $count] = [$m[1], $m[2]];
 
-        if (str_starts_with($body, 'return array_map(')) {
-            $inner    = substr($body, 7, -1); // strip "return " prefix and trailing ";"
-            $expanded = $this->expandCompactArrayMap($inner, $bodyIndent);
-            return "array_map(function () use (\$faker, \$uniqueFaker) {\n"
-                . $bodyIndent  . "return {$expanded};\n"
-                . $closeIndent . "},\n"
-                . $closeIndent . "range(1, {$count}))";
+        // For nested array_map: wrapInArray places the inner return at 12 spaces and the inner closing
+        // brace at 8 spaces. We want the inner return at bodyIndent+4 and the inner brace at bodyIndent,
+        // so the shift is bodyIndent - 8. For simple (non-nested) bodies the shift is bodyIndent - 12.
+        $shift = strlen($bodyIndent) - (str_starts_with($body, 'return array_map(') ? 8 : 12);
+        if ($shift > 0) {
+            $body = preg_replace('/\n/', "\n" . str_repeat(' ', $shift), $body);
         }
 
         return "array_map(function () use (\$faker, \$uniqueFaker) {\n"
             . $bodyIndent  . $body . "\n"
-            . $closeIndent . "},\n"
-            . $closeIndent . "range(1, {$count}))";
-    }
-
-    /**
-     * Expands a compact wrapInArray() string (single-line function + range) into multi-line style,
-     * using $baseIndent as the reference indentation level for the opening "array_map(" line.
-     */
-    private function expandCompactArrayMap(string $code, string $baseIndent): string
-    {
-        $pat = '/^array_map\(function \(\) use \(\$faker, \$uniqueFaker\) \{\n            (.*)\n        \}, range\(1, (\d+)\)\)$/s';
-        if (!preg_match($pat, $code, $m)) {
-            return $code;
-        }
-        [$body, $count] = [$m[1], $m[2]];
-        $funcIndent  = $baseIndent . '    ';
-        $innerIndent = $baseIndent . '        ';
-
-        return "array_map(\n"
-            . $funcIndent  . "function () use (\$faker, \$uniqueFaker) {\n"
-            . $innerIndent . $body . "\n"
-            . $funcIndent  . "},\n"
-            . $funcIndent  . "range(1, {$count})\n"
-            . $baseIndent  . ")";
+            . $closeIndent . "}, range(1, {$count}))";
     }
 
     /**
@@ -444,13 +424,10 @@ class FakerStubResolver
 
             $inp = $aDataType instanceof Reference ? $aDataType : ['items' => $aDataType->getSerializableData()];
             $aFaker = $this->aElementFaker($inp, $this->attribute->columnName);
-            /**
-             * Each $dataTypeN gets its own line (12-space indent = wrapInArray body level).
-             * wrapInArray output (array_map) gets +4 spaces on continuation lines (12→16, 8→12).
-             * fakeForObject output (starts with "[") is left as-is — depth=1 already gives 16/12.
-             * return goes on its own line.
-             */
-            if (str_contains($aFaker, PHP_EOL) && !str_starts_with($aFaker, '[')) {
+            // Shift all continuation lines by 4 spaces so that multi-line values
+            // (array_map or object literals from fakeForObject) are indented one level
+            // deeper than the $dataTypeN assignment (12 → 16 for body, 8 → 12 for closing).
+            if (str_contains($aFaker, PHP_EOL)) {
                 $aFaker = str_replace(PHP_EOL, PHP_EOL . '    ', $aFaker);
             }
             if ($result !== '') {
@@ -493,10 +470,21 @@ class FakerStubResolver
      */
     public function aElementFaker($data, ?string $columnName = null): ?string
     {
+        return $this->resolveElement($data, $columnName)['fakerStub'];
+    }
+
+    /**
+     * Resolves the faker stub and the effective column key for a single element.
+     * For FK properties (direct $ref or allOf[$ref]), the key uses the same '_id' suffix
+     * logic as Attribute::asReference() — both for real DB columns and JSONB sub-properties.
+     * @return array
+     * @example ['columnName' => 'payment_method_id', 'fakerStub' => '$faker->randomElement(...)']
+     */
+    private function resolveElement($data, ?string $columnName = null): array
+    {
         if ($data instanceof Reference) {
-            $class = str_replace('#/components/schemas/', '', $data->getReference());
-            $class .= 'Faker';
-            return '(new ' . $class . ')->generateModel()->attributes';
+            $class = str_replace('#/components/schemas/', '', $data->getReference()) . 'Faker';
+            return ['columnName' => $columnName ?? 'unknownColumn', 'fakerStub' => '(new ' . $class . ')->generateModel()->attributes'];
         }
 
         $inp = $data instanceof SpecObjectInterface ? $data->getSerializableData() : $data;
@@ -523,7 +511,11 @@ class FakerStubResolver
             $schema->setReferenceContext($rc);
         }
         $dbModels = (new AttributeResolver($compo, $cs, new JunctionSchemas([]), $this->config))->resolve();
+        $attr = $dbModels->attributes[$columnName];
 
-        return (new static($dbModels->attributes[$columnName], $cs->getProperty($columnName), $this->config))->resolve();
+        return [
+            'columnName' => $attr->columnName,
+            'fakerStub' => (new static($attr, $cs->getProperty($columnName), $this->config))->resolve(),
+        ];
     }
 }
