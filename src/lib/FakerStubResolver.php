@@ -120,7 +120,10 @@ class FakerStubResolver
             return null;
         }
 
-        if (!$this->property->hasAttr('example') ||
+        // No optional wrapping for required/non-nullable fields without an example (always generate a real value),
+        // or for unique-items fields (optional fallback would break uniqueness).
+        if (
+            (($this->attribute->isRequired() || $this->attribute->nullable === false) && !$this->property->hasAttr('example')) ||
             $this->property->getAttr('uniqueItems')
         ) {
             return $result;
@@ -129,7 +132,14 @@ class FakerStubResolver
         $example = $this->property->getAttr('example');
         $example = VarExporter::export($example);
         $example = preg_replace('/\n/', "\n        ", $example);
-        return str_replace('$faker->', '$faker->optional(0.92, ' . $example . ')->', $result);
+
+        /**
+         * $example must be the exact value that goes into the DB column, e.g. '2020-03-14 21:42:17'
+         * for a datetime column — not a DateTime object or ISO string with timezone offset.
+         * optional() without a default returns null on miss; all -> are made nullsafe so the whole
+         * chain collapses to null, then ?? $example inserts the ready-to-store fallback value.
+         */
+        return str_replace('$faker?->', '$faker->optional(0.92)->', str_replace('->', '?->', $result)) . ' ?? ' . $example;
     }
 
     private function fakeForString(): ?string
