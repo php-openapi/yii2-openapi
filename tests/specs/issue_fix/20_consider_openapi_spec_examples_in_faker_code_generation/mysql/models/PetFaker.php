@@ -78,24 +78,18 @@ class PetFaker extends BaseModelFaker
                 'id' => $uniqueFaker->numberBetween(0, 1000000),
                 'name' => $faker->sentence,
                 'age' => $faker->numberBetween(0, 200),
-                'user' => $faker->randomElement(\app\models\User::find()->select("id")->column()),
+                'user_id' => $faker->randomElement(\app\models\User::find()->select("id")->column()),
                 'user_2' => array_map(function () use ($faker, $uniqueFaker) {
                     return (new UserFaker)->generateModel()->attributes;
-                },
-                range(1, 4)),
+                }, range(1, 4)),
                 'tags' => array_map(function () use ($faker, $uniqueFaker) {
                     return $uniqueFaker->sentence;
-                },
-                range(1, 4)),
+                }, range(1, 4)),
                 'arr_arr_int_2' => array_map(function () use ($faker, $uniqueFaker) {
-                    return array_map(
-                        function () use ($faker, $uniqueFaker) {
-                            return $faker->numberBetween(0, 1000000);
-                        },
-                        range(1, 11)
-                    );
-                },
-                range(1, 4)),
+                    return array_map(function () use ($faker, $uniqueFaker) {
+                        return $faker->numberBetween(0, 1000000);
+                    }, range(1, 11));
+                }, range(1, 4)),
                 'appearance' => [
                     'height' => $faker->numberBetween(0, 20),
                     'weight' => $faker->numberBetween(0, 1000000),

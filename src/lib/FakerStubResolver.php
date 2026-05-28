@@ -373,7 +373,10 @@ class FakerStubResolver
      * Re-indents a compact wrapInArray() output string to match the correct depth inside fakeForObject().
      * wrapInArray() always uses hardcoded 12/8-space indentation; when its result is embedded as a
      * property value inside a fakeForObject() output, the indentation must be adjusted.
-     * For a nested array_map body the inner call is expanded to multi-line style via expandCompactArrayMap().
+     *
+     * For a simple body (single return statement): shift = bodyIndent - 12, placing the return at bodyIndent.
+     * For a nested body (return array_map(...)): shift = bodyIndent - 8, so the inner return lands at
+     * bodyIndent+4 and the inner closing brace lands at bodyIndent — matching wrapInArray's 12/8 ratio.
      */
     private function reindentArrayMapForObject(string $code, int $depth): string
     {
@@ -386,45 +389,17 @@ class FakerStubResolver
         }
         [$body, $count] = [$m[1], $m[2]];
 
-        // Shift all continuation lines by the delta between the target indent and wrapInArray's hardcoded 12 spaces.
-        $shift = strlen($bodyIndent) - 12;
+        // For nested array_map: wrapInArray places the inner return at 12 spaces and the inner closing
+        // brace at 8 spaces. We want the inner return at bodyIndent+4 and the inner brace at bodyIndent,
+        // so the shift is bodyIndent - 8. For simple (non-nested) bodies the shift is bodyIndent - 12.
+        $shift = strlen($bodyIndent) - (str_starts_with($body, 'return array_map(') ? 8 : 12);
         if ($shift > 0) {
             $body = preg_replace('/\n/', "\n" . str_repeat(' ', $shift), $body);
-        }
-
-        if (str_starts_with($body, 'return array_map(')) {
-            $inner    = substr($body, 7, -1); // strip "return " prefix and trailing ";"
-            $expanded = $this->expandCompactArrayMap($inner, $bodyIndent);
-            return "array_map(function () use (\$faker, \$uniqueFaker) {\n"
-                . $bodyIndent  . "return {$expanded};\n"
-                . $closeIndent . "}, range(1, {$count}))";
         }
 
         return "array_map(function () use (\$faker, \$uniqueFaker) {\n"
             . $bodyIndent  . $body . "\n"
             . $closeIndent . "}, range(1, {$count}))";
-    }
-
-    /**
-     * Expands a compact wrapInArray() string (single-line function + range) into multi-line style,
-     * using $baseIndent as the reference indentation level for the opening "array_map(" line.
-     */
-    private function expandCompactArrayMap(string $code, string $baseIndent): string
-    {
-        $pat = '/^array_map\(function \(\) use \(\$faker, \$uniqueFaker\) \{\n            (.*)\n        \}, range\(1, (\d+)\)\)$/s';
-        if (!preg_match($pat, $code, $m)) {
-            return $code;
-        }
-        [$body, $count] = [$m[1], $m[2]];
-        $funcIndent  = $baseIndent . '    ';
-        $innerIndent = $baseIndent . '        ';
-
-        return "array_map(\n"
-            . $funcIndent  . "function () use (\$faker, \$uniqueFaker) {\n"
-            . $innerIndent . $body . "\n"
-            . $funcIndent  . "},\n"
-            . $funcIndent  . "range(1, {$count})\n"
-            . $baseIndent  . ")";
     }
 
     /**
@@ -449,13 +424,10 @@ class FakerStubResolver
 
             $inp = $aDataType instanceof Reference ? $aDataType : ['items' => $aDataType->getSerializableData()];
             $aFaker = $this->aElementFaker($inp, $this->attribute->columnName);
-            /**
-             * Each $dataTypeN gets its own line (12-space indent = wrapInArray body level).
-             * wrapInArray output (array_map) gets +4 spaces on continuation lines (12→16, 8→12).
-             * fakeForObject output (starts with "[") is left as-is — depth=1 already gives 16/12.
-             * return goes on its own line.
-             */
-            if (str_contains($aFaker, PHP_EOL) && !str_starts_with($aFaker, '[')) {
+            // Shift all continuation lines by 4 spaces so that multi-line values
+            // (array_map or object literals from fakeForObject) are indented one level
+            // deeper than the $dataTypeN assignment (12 → 16 for body, 8 → 12 for closing).
+            if (str_contains($aFaker, PHP_EOL)) {
                 $aFaker = str_replace(PHP_EOL, PHP_EOL . '    ', $aFaker);
             }
             if ($result !== '') {
