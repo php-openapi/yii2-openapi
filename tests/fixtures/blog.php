@@ -24,9 +24,9 @@ return [
                 ->setDefault('reader')
                 ->setFakerStub('$faker->randomElement([\'admin\', \'editor\', \'reader\'])'),
             'flags' => (new Attribute('flags', ['phpType'=>'int', 'dbType'=>'integer']))->setDefault(0)->setFakerStub
-            ('$faker->numberBetween(0, 1000000)'),
+            ('$faker->optional(0.92)->numberBetween(0, 1000000) ?? null'),
             'created_at' => (new Attribute('created_at', ['phpType' => 'string', 'dbType' => 'datetime']))
-                ->setDefault(new \yii\db\Expression('(CURRENT_TIMESTAMP)'))->setFakerStub('$faker->dateTimeThisYear(\'now\', \'UTC\')->format(\'Y-m-d H:i:s\')'),
+                ->setDefault(new \yii\db\Expression('(CURRENT_TIMESTAMP)'))->setFakerStub('$faker->optional(0.92)->dateTimeThisYear(\'now\', \'UTC\')?->format(\'Y-m-d H:i:s\') ?? null'),
         ],
         'relations' => [],
         'indexes' => [
@@ -66,7 +66,7 @@ return [
             'title' => (new Attribute('title', ['phpType' => 'string', 'dbType' => 'string']))
                 ->setRequired()->setSize(255)->setFakerStub('substr($faker->sentence, 0, 255)'),
             'slug' => (new Attribute('slug', ['phpType' => 'string', 'dbType' => 'string']))
-                ->setSize(200)->setLimits(null, null, 1)->setFakerStub('substr($uniqueFaker->slug, 0, 200)'),
+                ->setSize(200)->setLimits(null, null, 1)->setFakerStub('is_string($s = $uniqueFaker?->slug) ? substr($s, 0, 200) : null'),
             'active' => (new Attribute('active', ['phpType' => 'bool', 'dbType' => 'boolean']))
                 ->setRequired()->setDefault(false)->setFakerStub('$faker->boolean'),
             'category' => (new Attribute('category', ['phpType' => 'int', 'dbType' => 'integer']))
@@ -75,7 +75,7 @@ return [
                 ->setDescription('Category of posts')
                 ->setFakerStub('$faker->randomElement(\app\models\Category::find()->select("id")->column())'),
             'created_at' => (new Attribute('created_at', ['phpType' => 'string', 'dbType' => 'date']))
-               ->setFakerStub('$faker->dateTimeThisCentury->format(\'Y-m-d\')'),
+               ->setFakerStub('$faker->optional(0.92)->dateTimeThisCentury?->format(\'Y-m-d\') ?? null'),
             'created_by' => (new Attribute('created_by', ['phpType' => 'int', 'dbType' => 'integer']))
                 ->asReference('User')
                 ->setDescription('The User')

@@ -29,13 +29,13 @@ class AnimalFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Animal();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->numberBetween(0, 1000000);
-        $model->g = $faker->sentence;
-        $model->g2 = $faker->sentence;
-        $model->g3 = $faker->sentence;
-        $model->g4 = $faker->numberBetween(0, 1000000);
-        $model->new_col = $faker->sentence;
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->name = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+        $model->g = $faker->optional(0.92)->sentence ?? null;
+        $model->g2 = $faker->optional(0.92)->sentence ?? null;
+        $model->g3 = $faker->optional(0.92)->sentence ?? null;
+        $model->g4 = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+        $model->new_col = $faker->optional(0.92)->sentence ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

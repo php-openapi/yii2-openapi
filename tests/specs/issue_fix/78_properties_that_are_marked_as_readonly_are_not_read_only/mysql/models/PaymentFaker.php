@@ -29,9 +29,9 @@ class PaymentFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Payment();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->amount = $faker->numberBetween(0, 1000000);
-        $model->currency = $faker->currencyCode;
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->amount = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+        $model->currency = $faker->optional(0.92)->currencyCode ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

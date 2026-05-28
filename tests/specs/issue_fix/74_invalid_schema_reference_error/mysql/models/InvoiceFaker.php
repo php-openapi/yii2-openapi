@@ -29,7 +29,7 @@ class InvoiceFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Invoice();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
         $model->vat_rate = $faker->randomElement(['standard','none']);
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

@@ -29,7 +29,7 @@ class PostsAttachesFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new PostsAttaches();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
         $model->attach_id = $faker->randomElement(\app\models\Photo::find()->select("id")->column());
         $model->target_id = $faker->randomElement(\app\models\Post::find()->select("id")->column());
         if (!is_callable($attributes)) {

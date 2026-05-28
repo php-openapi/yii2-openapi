@@ -21,7 +21,9 @@ class m200000_000003_create_table_fakerable extends \yii\db\Migration
             'str_text' => $this->text()->null(),
             'str_varchar' => $this->string(100)->null()->defaultValue(null),
             'str_date' => $this->date()->null()->defaultValue(null),
+            'str_date_ex' => $this->date()->null()->defaultValue(null),
             'str_datetime' => $this->timestamp()->null()->defaultValue(null),
+            'str_datetime_ex' => $this->timestamp()->null()->defaultValue(null),
             'str_country' => $this->text()->null(),
         ]);
     }

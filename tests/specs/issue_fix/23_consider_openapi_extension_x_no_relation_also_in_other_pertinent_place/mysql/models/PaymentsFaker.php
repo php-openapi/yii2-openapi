@@ -29,8 +29,8 @@ class PaymentsFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Payments();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->currency = $faker->currencyCode;
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->currency = $faker->optional(0.92)->currencyCode ?? null;
         $model->samples = array_map(function () use ($faker, $uniqueFaker) {
             return (new SampleFaker)->generateModel()->attributes;
         }, range(1, 4));

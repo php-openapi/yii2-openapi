@@ -32,16 +32,16 @@ class PristineFaker extends BaseModelFaker
         $model = new \app\models\pgsqlmodel\Pristine();
         $model->custom_id_col = $faker->numberBetween(0, 1000000);
         $model->name = $faker->sentence;
-        $model->tag = $faker->sentence;
-        $model->new_col = $faker->sentence;
-        $model->col_5 = $faker->randomFloat();
-        $model->col_6 = $faker->randomFloat();
-        $model->col_7 = $faker->randomFloat();
+        $model->tag = $faker->optional(0.92)->sentence ?? null;
+        $model->new_col = $faker->optional(0.92)->sentence ?? null;
+        $model->col_5 = $faker->optional(0.92)->randomFloat() ?? null;
+        $model->col_6 = $faker->optional(0.92)->randomFloat() ?? null;
+        $model->col_7 = $faker->optional(0.92)->randomFloat() ?? null;
         $model->col_8 = [];
-        $model->col_9 = $faker->sentence;
-        $model->col_10 = $faker->sentence;
-        $model->col_11 = $faker->sentence;
-        $model->price = $faker->randomFloat();
+        $model->col_9 = $faker->optional(0.92)->sentence ?? null;
+        $model->col_10 = $faker->optional(0.92)->sentence ?? null;
+        $model->col_11 = $faker->optional(0.92)->sentence ?? null;
+        $model->price = $faker->optional(0.92)->randomFloat() ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

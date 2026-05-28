@@ -33,10 +33,10 @@ class RoutingFaker extends BaseModelFaker
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->domain_id = $faker->randomElement(\app\models\Domain::find()->select("id")->column());
         $model->path = $faker->randomElement(["/", "/", "/", "/", "/api", "/tools", "/assets/web"]);
-        $model->ssl = $faker->boolean;
-        $model->redirect_to_ssl = $faker->boolean;
+        $model->ssl = $faker->optional(0.92)->boolean ?? null;
+        $model->redirect_to_ssl = $faker->optional(0.92)->boolean ?? null;
         $model->service = "http://tador.cebe.net/" . $faker->domainName;
-        $model->created_at = $faker->dateTimeThisYear('now', 'UTC')->format('Y-m-d H:i:s');
+        $model->created_at = $faker->optional(0.92)->dateTimeThisYear('now', 'UTC')?->format('Y-m-d H:i:s') ?? null;
         $model->d123_id = $faker->randomElement(\app\models\D123::find()->select("id")->column());
         $model->a123_id = $faker->randomElement(\app\models\A123::find()->select("id")->column());
         if (!is_callable($attributes)) {

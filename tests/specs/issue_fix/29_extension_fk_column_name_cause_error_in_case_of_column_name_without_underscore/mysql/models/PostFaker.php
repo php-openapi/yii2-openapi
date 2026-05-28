@@ -29,8 +29,8 @@ class PostFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Post();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->content = $faker->paragraphs(6, true);
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->content = $faker->optional(0.92)->paragraphs(6, true) ?? null;
         $model->user = $faker->randomElement(\app\models\User::find()->select("id")->column());
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

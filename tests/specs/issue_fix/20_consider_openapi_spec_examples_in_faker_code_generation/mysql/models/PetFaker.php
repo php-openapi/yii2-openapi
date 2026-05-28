@@ -30,73 +30,73 @@ class PetFaker extends BaseModelFaker
         $uniqueFaker = $this->uniqueFaker;
         $model = new Pet();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->optional(0.92, 'cat')->sentence;
-        $model->age = $faker->optional(0.92, 2)->numberBetween(0, 1000000);
+        $model->name = $faker->optional(0.92)->sentence ?? 'cat';
+        $model->age = $faker->optional(0.92)->numberBetween(0, 1000000) ?? 2;
         $model->tags = array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->sentence;
+            return $faker->optional(0.92)->sentence ?? null;
         }, range(1, 4));
-        $model->tags_arbit = $faker->optional(0.92, [
+        $model->tags_arbit = $faker->optional(0.92)->words() ?? [
             'long-tail',
             'short-tail',
             'black',
             'white',
-        ])->words();
+        ];
         $model->number_arr = array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->randomFloat();
+            return $faker->optional(0.92)->randomFloat() ?? null;
         }, range(1, 4));
         $model->number_arr_min_uniq = array_map(function () use ($faker, $uniqueFaker) {
-            return $uniqueFaker->randomFloat();
+            return $uniqueFaker->optional(0.92)->randomFloat() ?? null;
         }, range(1, 6));
         $model->int_arr = array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->numberBetween(0, 1000000);
+            return $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
         }, range(1, 4));
         $model->int_arr_min_uniq = array_map(function () use ($faker, $uniqueFaker) {
-            return $uniqueFaker->numberBetween(0, 1000000);
+            return $uniqueFaker->optional(0.92)->numberBetween(0, 1000000) ?? null;
         }, range(1, 7));
         $model->bool_arr = array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->boolean;
+            return $faker->optional(0.92)->boolean ?? null;
         }, range(1, 4));
         $model->arr_arr_int = array_map(function () use ($faker, $uniqueFaker) {
             return array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->numberBetween(0, 1000000);
-        }, range(1, 4));
+                return $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+            }, range(1, 4));
         }, range(1, 4));
         $model->arr_arr_str = array_map(function () use ($faker, $uniqueFaker) {
             return array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->sentence;
-        }, range(1, 4));
+                return $faker->optional(0.92)->sentence ?? null;
+            }, range(1, 4));
         }, range(1, 4));
         $model->arr_arr_arr_str = array_map(function () use ($faker, $uniqueFaker) {
             return array_map(function () use ($faker, $uniqueFaker) {
-            return array_map(function () use ($faker, $uniqueFaker) {
-            return $faker->sentence;
-        }, range(1, 5));
-        }, range(1, 4));
+                return array_map(function () use ($faker, $uniqueFaker) {
+                    return $faker->optional(0.92)->sentence ?? null;
+                }, range(1, 5));
+            }, range(1, 4));
         }, range(1, 3));
         $model->arr_of_obj = array_map(function () use ($faker, $uniqueFaker) {
             return [
-                'id' => $uniqueFaker->numberBetween(0, 1000000),
-                'name' => $faker->sentence,
-                'age' => $faker->numberBetween(0, 200),
+                'id' => $uniqueFaker?->numberBetween(0, 1000000) ?? null,
+                'name' => $faker->optional(0.92)->sentence ?? null,
+                'age' => $faker->optional(0.92)->numberBetween(0, 200) ?? null,
                 'user_id' => $faker->randomElement(\app\models\User::find()->select("id")->column()),
                 'user_2' => array_map(function () use ($faker, $uniqueFaker) {
                     return (new UserFaker)->generateModel()->attributes;
                 }, range(1, 4)),
                 'tags' => array_map(function () use ($faker, $uniqueFaker) {
-                    return $uniqueFaker->sentence;
+                    return $uniqueFaker->optional(0.92)->sentence ?? null;
                 }, range(1, 4)),
                 'arr_arr_int_2' => array_map(function () use ($faker, $uniqueFaker) {
                     return array_map(function () use ($faker, $uniqueFaker) {
-                        return $faker->numberBetween(0, 1000000);
+                        return $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
                     }, range(1, 11));
                 }, range(1, 4)),
                 'appearance' => [
-                    'height' => $faker->numberBetween(0, 20),
-                    'weight' => $faker->numberBetween(0, 1000000),
-                    'email' => $faker->safeEmail,
+                    'height' => $faker->optional(0.92)->numberBetween(0, 20) ?? null,
+                    'weight' => $faker->optional(0.92)->numberBetween(0, 1000000) ?? null,
+                    'email' => $faker->optional(0.92)->safeEmail ?? null,
                     'nested_obj' => [
-                        'id' => $uniqueFaker->numberBetween(0, 1000000),
-                        'title' => $faker->title,
+                        'id' => $uniqueFaker?->numberBetween(0, 1000000) ?? null,
+                        'title' => is_string($s = $faker->optional(0.92)->title) ? substr($s, 0, 4) : null,
                     ],
                 ],
             ];
@@ -105,22 +105,22 @@ class PetFaker extends BaseModelFaker
             return (new UserFaker)->generateModel()->attributes;
         }, range(1, 3));
         $model->one_of_arr = array_map(function () use ($faker, $uniqueFaker) {
-            $dataType0 = $faker->numberBetween(0, 1000000);
-            $dataType1 = $faker->sentence;
-            $dataType2 = $faker->boolean;
+            $dataType0 = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+            $dataType1 = $faker->optional(0.92)->sentence ?? null;
+            $dataType2 = $faker->optional(0.92)->boolean ?? null;
             return ${"dataType".rand(0, 2)};
         }, range(1, 4));
         $model->one_of_arr_complex = array_map(function () use ($faker, $uniqueFaker) {
-            $dataType0 = $faker->numberBetween(0, 1000000);
-            $dataType1 = $faker->sentence;
-            $dataType2 = $faker->boolean;
+            $dataType0 = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+            $dataType1 = $faker->optional(0.92)->sentence ?? null;
+            $dataType2 = $faker->optional(0.92)->boolean ?? null;
             $dataType3 = [];
             $dataType4 = array_map(function () use ($faker, $uniqueFaker) {
-                return $faker->sentence;
+                return $faker->optional(0.92)->sentence ?? null;
             }, range(1, 4));
             $dataType5 = [
-                'id' => $uniqueFaker->numberBetween(0, 1000000),
-            ];
+                'id' => $uniqueFaker?->numberBetween(0, 1000000) ?? null,
+            ] ?? null;
             $dataType6 = array_map(function () use ($faker, $uniqueFaker) {
                 return (new UserFaker)->generateModel()->attributes;
             }, range(1, 4));

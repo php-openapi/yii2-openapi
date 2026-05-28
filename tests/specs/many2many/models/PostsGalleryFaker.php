@@ -31,7 +31,7 @@ class PostsGalleryFaker extends BaseModelFaker
         $model = new PostsGallery();
         $model->image_id = $faker->randomElement(\app\models\Photo::find()->select("id")->column());
         $model->article_id = $faker->randomElement(\app\models\Post::find()->select("id")->column());
-        $model->is_cover = $faker->boolean;
+        $model->is_cover = $faker->optional(0.92)->boolean ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {
