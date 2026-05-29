@@ -31,7 +31,7 @@ Currently available features:
 
 ## Requirements
 
-- PHP 7.1 or higher (works fine with PHP 8)
+- PHP 8.0 or higher
 
 
 ## Install
