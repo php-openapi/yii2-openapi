@@ -32,16 +32,16 @@ class PristineFaker extends BaseModelFaker
         $model = new \app\models\mariamodel\Pristine();
         $model->custom_id_col = $faker->numberBetween(0, 1000000);
         $model->name = $faker->sentence;
-        $model->tag = $faker->sentence;
-        $model->new_col = substr($faker->text(17), 0, 17);
-        $model->col_5 = $faker->randomFloat();
-        $model->col_6 = $faker->randomFloat();
-        $model->col_7 = $faker->randomFloat();
+        $model->tag = $faker->optional(0.92)->sentence ?? null;
+        $model->new_col = is_string($s = $faker->optional(0.92)->text(17)) ? substr($s, 0, 17) : null;
+        $model->col_5 = $faker->optional(0.92)->randomFloat() ?? null;
+        $model->col_6 = $faker->optional(0.92)->randomFloat() ?? null;
+        $model->col_7 = $faker->optional(0.92)->randomFloat() ?? null;
         $model->col_8 = [];
-        $model->col_9 = substr($faker->text(9), 0, 9);
-        $model->col_10 = substr($faker->text(10), 0, 10);
-        $model->col_11 = $faker->sentence;
-        $model->price = $faker->randomFloat();
+        $model->col_9 = is_string($s = $faker->optional(0.92)->text(9)) ? substr($s, 0, 9) : null;
+        $model->col_10 = is_string($s = $faker->optional(0.92)->text(10)) ? substr($s, 0, 10) : null;
+        $model->col_11 = $faker->optional(0.92)->sentence ?? null;
+        $model->price = $faker->optional(0.92)->randomFloat() ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

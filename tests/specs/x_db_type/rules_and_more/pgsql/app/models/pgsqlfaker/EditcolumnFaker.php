@@ -32,10 +32,10 @@ class EditcolumnFaker extends BaseModelFaker
         $model = new \app\models\pgsqlmodel\Editcolumn();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->name = substr($faker->text(254), 0, 254);
-        $model->tag = $faker->sentence;
-        $model->first_name = $faker->sentence;
-        $model->string_col = $faker->sentence;
-        $model->dec_col = $faker->randomFloat();
+        $model->tag = $faker->optional(0.92)->sentence ?? null;
+        $model->first_name = $faker->optional(0.92)->sentence ?? null;
+        $model->string_col = $faker->optional(0.92)->sentence ?? null;
+        $model->dec_col = $faker->optional(0.92)->randomFloat() ?? null;
         $model->str_col_def = $faker->sentence;
         $model->json_col = $faker->sentence;
         $model->json_col_2 = $faker->words();

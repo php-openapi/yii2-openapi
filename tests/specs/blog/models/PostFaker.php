@@ -31,10 +31,10 @@ class PostFaker extends BaseModelFaker
         $model = new Post();
         $model->uid = substr($uniqueFaker->sha256, 0, 128);
         $model->title = substr($faker->sentence, 0, 255);
-        $model->slug = substr($uniqueFaker->slug, 0, 200);
+        $model->slug = is_string($s = $uniqueFaker?->slug) ? substr($s, 0, 200) : null;
         $model->category_id = $faker->randomElement(\app\models\Category::find()->select("id")->column());
         $model->active = $faker->boolean;
-        $model->created_at = $faker->dateTimeThisCentury->format('Y-m-d');
+        $model->created_at = $faker->optional(0.92)->dateTimeThisCentury?->format('Y-m-d') ?? null;
         $model->created_by_id = $faker->randomElement(\app\models\User::find()->select("id")->column());
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

@@ -30,7 +30,7 @@ class FruitFaker extends BaseModelFaker
         $uniqueFaker = $this->uniqueFaker;
         $model = new Fruit();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->colourName = $faker->sentence;
+        $model->colourName = $faker->optional(0.92)->sentence ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

@@ -31,7 +31,7 @@ class AccountFaker extends BaseModelFaker
         $model = new Account();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->name = substr($faker->text(128), 0, 128);
-        $model->paymentMethodName = $faker->sentence;
+        $model->paymentMethodName = $faker->optional(0.92)->sentence ?? null;
         $model->verified = $faker->boolean;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

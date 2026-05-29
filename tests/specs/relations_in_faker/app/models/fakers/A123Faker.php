@@ -31,7 +31,7 @@ class A123Faker extends BaseModelFaker
         $uniqueFaker = $this->uniqueFaker;
         $model = new \app\models\A123();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->sentence;
+        $model->name = $faker->optional(0.92)->sentence ?? null;
         $model->b123_id = $faker->randomElement(\app\models\B123::find()->select("id")->column());
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);

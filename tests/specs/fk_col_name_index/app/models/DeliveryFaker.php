@@ -30,7 +30,7 @@ class DeliveryFaker extends BaseModelFaker
         $uniqueFaker = $this->uniqueFaker;
         $model = new Delivery();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->title = $faker->sentence;
+        $model->title = $faker->optional(0.92)->sentence ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

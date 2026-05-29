@@ -30,7 +30,7 @@ class E123Faker extends BaseModelFaker
         $uniqueFaker = $this->uniqueFaker;
         $model = new E123();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->sentence;
+        $model->name = $faker->optional(0.92)->sentence ?? null;
         $model->account_id = $faker->randomElement(\app\models\Account::find()->select("id")->column());
         $model->account_2_id = $faker->randomElement(\app\models\Account::find()->select("id")->column());
         $model->account_3_id = $faker->randomElement(\app\models\Account::find()->select("id")->column());

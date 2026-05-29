@@ -29,8 +29,8 @@ class PostFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Post();
-        $model->uid = substr($uniqueFaker->sha256, 0, 255);
-        $model->title = $faker->sentence;
+        $model->uid = $uniqueFaker?->sha256 ?? null;
+        $model->title = $faker->optional(0.92)->sentence ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

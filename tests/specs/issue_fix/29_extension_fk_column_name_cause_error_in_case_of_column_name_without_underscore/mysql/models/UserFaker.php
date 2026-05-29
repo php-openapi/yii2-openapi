@@ -29,8 +29,8 @@ class UserFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new User();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->sentence;
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->name = $faker->optional(0.92)->sentence ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

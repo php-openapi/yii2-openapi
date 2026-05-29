@@ -120,16 +120,37 @@ class FakerStubResolver
             return null;
         }
 
-        if (!$this->property->hasAttr('example') ||
+        // No optional wrapping for required/non-nullable fields without an example (always generate a real value),
+        // or for unique-items fields (optional fallback would break uniqueness).
+        if (
+            (($this->attribute->isRequired() || $this->attribute->nullable === false) && !$this->property->hasAttr('example')) ||
             $this->property->getAttr('uniqueItems')
         ) {
+            if ($this->attribute->phpType === 'string' && $this->attribute->size) {
+                return 'substr(' . $result . ', 0, '.$this->attribute->size.')';
+            }
             return $result;
         }
 
         $example = $this->property->getAttr('example');
         $example = VarExporter::export($example);
         $example = preg_replace('/\n/', "\n        ", $example);
-        return str_replace('$faker->', '$faker->optional(0.92, ' . $example . ')->', $result);
+
+        /**
+         * $example must be the exact value that goes into the DB column, e.g. '2020-03-14 21:42:17'
+         * for a datetime column — not a DateTime object or ISO string with timezone offset.
+         * optional() without a default returns null on miss; all -> are made nullsafe so the whole
+         * chain collapses to null, then ?? $example inserts the ready-to-store fallback value.
+         *
+         * Negative lookbehind prevents turning an existing ?-> into ??->
+         */
+        $wrapped = str_replace('$faker?->', '$faker->optional(0.92)->', preg_replace('/(?<!\?)->/', '?->', $result));
+
+        if ($this->attribute->phpType === 'string' && $this->attribute->size) {
+            return 'is_string($s = ' . $wrapped . ') ? substr($s, 0, '.$this->attribute->size.') : ' . $example;
+        }
+
+        return $wrapped  . ' ?? ' . $example;
     }
 
     private function fakeForString(): ?string
@@ -161,8 +182,7 @@ class FakerStubResolver
             return '$faker->title';
         }
         if ($this->attribute->primary || $this->attribute->isReference()) {
-            $size = $this->attribute->size ?? 255;
-            return 'substr($uniqueFaker->sha256, 0, ' . $size . ')';
+            return '$uniqueFaker->sha256';
         }
 
         $patterns = [
@@ -197,22 +217,19 @@ class FakerStubResolver
             '~(url|site|website|href)~i' => '$faker->url',
             '~(username|login)~i' => '$faker->userName',
         ];
-        $size = $this->attribute->size > 0 ? $this->attribute->size : null;
         foreach ($patterns as $pattern => $fake) {
             if (preg_match($pattern, $this->attribute->columnName)) {
-                if ($size) {
-                    return 'substr(' . $fake . ', 0, ' . $size . ')';
-                }
                 return $fake;
             }
         }
 
+        $size = $this->attribute->size > 0 ? $this->attribute->size : null;
         if ($size) {
             $method = 'text';
             if ($size < 5) {
                 $method = 'word';
             }
-            return 'substr($faker->' . $method . '(' . $size . '), 0, ' . $size . ')';
+            return '$faker->' . $method . '(' . $size . ')';
         }
         return '$faker->sentence';
     }
@@ -389,10 +406,8 @@ class FakerStubResolver
         }
         [$body, $count] = [$m[1], $m[2]];
 
-        // For nested array_map: wrapInArray places the inner return at 12 spaces and the inner closing
-        // brace at 8 spaces. We want the inner return at bodyIndent+4 and the inner brace at bodyIndent,
-        // so the shift is bodyIndent - 8. For simple (non-nested) bodies the shift is bodyIndent - 12.
-        $shift = strlen($bodyIndent) - (str_starts_with($body, 'return array_map(') ? 8 : 12);
+        // wrapInArray shifts nested array_map bodies by 4 spaces, so all bodies now start at 12 spaces.
+        $shift = strlen($bodyIndent) - 12;
         if ($shift > 0) {
             $body = preg_replace('/\n/', "\n" . str_repeat(' ', $shift), $body);
         }
@@ -443,8 +458,14 @@ class FakerStubResolver
     public function wrapInArray(string $aFaker, bool $uniqueItems, int $count, bool $oneOf = false): string
     {
         $ret = $oneOf ? '' : 'return ';
+        $inner = $uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aFaker) : $aFaker;
+        // Only shift when the inner value is itself a nested array_map;
+        // handleOneOf and fakeForObject results already carry correct indentation
+        if (str_starts_with($inner, 'array_map(') && str_contains($inner, PHP_EOL)) {
+            $inner = str_replace(PHP_EOL, PHP_EOL . '    ', $inner);
+        }
         return 'array_map(function () use ($faker, $uniqueFaker) {
-            ' . $ret . ($uniqueItems ? str_replace('$faker->', '$uniqueFaker->', $aFaker) : $aFaker) . ';
+            ' . $ret . $inner . ';
         }, range(1, ' . $count . '))';
     }
 

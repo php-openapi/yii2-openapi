@@ -31,8 +31,8 @@ class ContactFaker extends BaseModelFaker
         $model = new Contact();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->account_id = $faker->randomElement(\app\models\Account::find()->select("id")->column());
-        $model->active = $faker->boolean;
-        $model->nickname = $faker->sentence;
+        $model->active = $faker->optional(0.92)->boolean ?? null;
+        $model->nickname = $faker->optional(0.92)->sentence ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

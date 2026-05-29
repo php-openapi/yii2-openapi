@@ -29,8 +29,8 @@ class WebhookFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Webhook();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = substr($faker->text(255), 0, 255);
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->name = is_string($s = $faker->optional(0.92)->text(255)) ? substr($s, 0, 255) : null;
         $model->user_id = $faker->randomElement(\app\models\User::find()->select("id")->column());
         $model->redelivery_of = $faker->randomElement(\app\models\Delivery::find()->select("id")->column());
         $model->rd_abc_2 = $faker->randomElement(\app\models\Delivery::find()->select("id")->column());

@@ -32,12 +32,12 @@ class NewcolumnFaker extends BaseModelFaker
         $model = new \app\models\pgsqlmodel\Newcolumn();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->name = $faker->sentence;
-        $model->first_name = $faker->sentence;
-        $model->last_name = $faker->sentence;
-        $model->dec_col = $faker->randomFloat();
+        $model->first_name = $faker->optional(0.92)->sentence ?? null;
+        $model->last_name = $faker->optional(0.92)->sentence ?? null;
+        $model->dec_col = $faker->optional(0.92)->randomFloat() ?? null;
         $model->json_col = [];
-        $model->varchar_col = $faker->sentence;
-        $model->numeric_col = $faker->randomFloat();
+        $model->varchar_col = $faker->optional(0.92)->sentence ?? null;
+        $model->numeric_col = $faker->optional(0.92)->randomFloat() ?? null;
         $model->json_col_def_n = [];
         $model->json_col_def_n_2 = [];
         $model->text_col_array = [];

@@ -31,7 +31,7 @@ class MailingFaker extends BaseModelFaker
         $model = new Mailing();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
         $model->name = substr($faker->text(128), 0, 128);
-        $model->paymentMethodName = $faker->randomElement(['card','cash','ewallet']);
+        $model->paymentMethodName = $faker->optional(0.92)->randomElement(['card','cash','ewallet']) ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

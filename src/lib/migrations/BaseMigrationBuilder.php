@@ -380,6 +380,7 @@ abstract class BaseMigrationBuilder
                 $this->migration->dependencies[] = $refTable;
             }
         }
+        ksort($existedRelations);
         foreach ($existedRelations as $fkName => $relation) {
             ['fkCol' => $fkCol, 'refCol' => $refCol, 'refTable' => $refTable] = $relation;
             $this->migration
@@ -414,6 +415,7 @@ abstract class BaseMigrationBuilder
                 $this->migration->dependencies[] = $refTable;
             }
         }
+        ksort($existedRelations);
         foreach ($existedRelations as $fkName => $rel) {
             ['fkCol' => $fkCol, 'refCol' => $refCol, 'refTable' => $refTable] = $rel;
             $this->migration

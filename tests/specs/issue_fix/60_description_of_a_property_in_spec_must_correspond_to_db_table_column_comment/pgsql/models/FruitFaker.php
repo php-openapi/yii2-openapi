@@ -29,9 +29,9 @@ class FruitFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Fruit();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->name = $faker->sentence;
-        $model->description = $faker->randomFloat();
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->name = $faker->optional(0.92)->sentence ?? null;
+        $model->description = $faker->optional(0.92)->randomFloat() ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

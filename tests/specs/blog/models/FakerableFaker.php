@@ -29,21 +29,23 @@ class FakerableFaker extends BaseModelFaker
         $faker = $this->faker;
         $uniqueFaker = $this->uniqueFaker;
         $model = new Fakerable();
-        //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->active = $faker->boolean;
-        $model->floatval = $faker->randomFloat();
-        $model->floatval_lim = $faker->randomFloat(null, 0, 1);
-        $model->doubleval = $faker->randomFloat();
-        $model->int_min = $faker->numberBetween(5, 1000000);
-        $model->int_max = $faker->numberBetween(0, 5);
-        $model->int_minmax = $faker->numberBetween(5, 25);
-        $model->int_created_at = $faker->unixTime;
-        $model->int_simple = $faker->numberBetween(0, 1000000);
-        $model->str_text = $faker->sentence;
-        $model->str_varchar = substr($faker->text(100), 0, 100);
-        $model->str_date = $faker->dateTimeThisCentury->format('Y-m-d');
-        $model->str_datetime = $faker->dateTimeThisYear('now', 'UTC')->format('Y-m-d H:i:s');
-        $model->str_country = $faker->countryCode;
+        //$model->id = $uniqueFaker?->numberBetween(0, 1000000) ?? null;
+        $model->active = $faker->optional(0.92)->boolean ?? null;
+        $model->floatval = $faker->optional(0.92)->randomFloat() ?? null;
+        $model->floatval_lim = $faker->optional(0.92)->randomFloat(null, 0, 1) ?? null;
+        $model->doubleval = $faker->optional(0.92)->randomFloat() ?? null;
+        $model->int_min = $faker->optional(0.92)->numberBetween(5, 1000000) ?? null;
+        $model->int_max = $faker->optional(0.92)->numberBetween(0, 5) ?? null;
+        $model->int_minmax = $faker->optional(0.92)->numberBetween(5, 25) ?? null;
+        $model->int_created_at = $faker->optional(0.92)->unixTime ?? null;
+        $model->int_simple = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
+        $model->str_text = $faker->optional(0.92)->sentence ?? null;
+        $model->str_varchar = is_string($s = $faker->optional(0.92)->text(100)) ? substr($s, 0, 100) : null;
+        $model->str_date = $faker->optional(0.92)->dateTimeThisCentury?->format('Y-m-d') ?? null;
+        $model->str_date_ex = $faker->optional(0.92)->dateTimeThisCentury?->format('Y-m-d') ?? '2020-03-14';
+        $model->str_datetime = $faker->optional(0.92)->dateTimeThisYear('now', 'UTC')?->format('Y-m-d H:i:s') ?? null;
+        $model->str_datetime_ex = $faker->optional(0.92)->dateTimeThisYear('now', 'UTC')?->format('Y-m-d H:i:s') ?? '2020-03-14 21:42:17';
+        $model->str_country = $faker->optional(0.92)->countryCode ?? null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {

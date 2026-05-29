@@ -22,7 +22,9 @@ namespace app\models\base;
  * @property string $str_text
  * @property string $str_varchar
  * @property string $str_date
+ * @property string $str_date_ex
  * @property string $str_datetime
+ * @property string $str_datetime_ex
  * @property string $str_country
  *
  */
@@ -36,7 +38,7 @@ abstract class Fakerable extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            'trim' => [['str_text', 'str_varchar', 'str_date', 'str_datetime', 'str_country'], 'trim'],
+            'trim' => [['str_text', 'str_varchar', 'str_date', 'str_date_ex', 'str_datetime', 'str_datetime_ex', 'str_country'], 'trim'],
             'int_min_default' => [['int_min'], 'default', 'value' => 3],
             'active_boolean' => [['active'], 'boolean'],
             'floatval_double' => [['floatval'], 'double'],
@@ -50,7 +52,9 @@ abstract class Fakerable extends \yii\db\ActiveRecord
             'str_text_string' => [['str_text'], 'string'],
             'str_varchar_string' => [['str_varchar'], 'string', 'max' => 100],
             'str_date_date' => [['str_date'], 'date', 'format' => 'php:Y-m-d'],
+            'str_date_ex_date' => [['str_date_ex'], 'date', 'format' => 'php:Y-m-d'],
             'str_datetime_datetime' => [['str_datetime'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
+            'str_datetime_ex_datetime' => [['str_datetime_ex'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
             'str_country_string' => [['str_country'], 'string'],
         ];
     }

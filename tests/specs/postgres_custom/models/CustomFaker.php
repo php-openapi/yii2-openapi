@@ -30,13 +30,13 @@ class CustomFaker extends BaseModelFaker
         $uniqueFaker = $this->uniqueFaker;
         $model = new Custom();
         //$model->id = $uniqueFaker->numberBetween(0, 1000000);
-        $model->num = $faker->numberBetween(0, 1000000);
+        $model->num = $faker->optional(0.92)->numberBetween(0, 1000000) ?? null;
         $model->json1 = [];
         $model->json2 = [];
         $model->json3 = [];
         $model->json4 = [];
-        $model->status = $faker->randomElement(['active','draft']);
-        $model->status_x = $faker->randomElement(['active','draft']);
+        $model->status = $faker->optional(0.92)->randomElement(['active','draft']) ?? null;
+        $model->status_x = is_string($s = $faker->optional(0.92)->randomElement(['active','draft'])) ? substr($s, 0, 10) : null;
         if (!is_callable($attributes)) {
             $model->setAttributes($attributes, false);
         } else {
