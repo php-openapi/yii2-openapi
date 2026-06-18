@@ -46,8 +46,8 @@ class ModelsGenerator
         if (!$this->config->generateModels) {
             return $this->files;
         }
-        $modelPath = $this->config->getPathFromNamespace($this->config->modelNamespace);
-        $fakerPath = $this->config->getPathFromNamespace($this->config->fakerNamespace);
+        $modelPath = Config::getPathFromNamespace($this->config->modelNamespace);
+        $fakerPath = Config::getPathFromNamespace($this->config->fakerNamespace);
         if ($this->config->generateModelFaker) {
             $this->files->add(new CodeFile(
                 Yii::getAlias("$fakerPath/BaseModelFaker.php"),

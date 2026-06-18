@@ -5,6 +5,12 @@ namespace app\modules\forum\controllers;
 class Pet2DetailController extends \app\modules\forum\controllers\base\Pet2DetailController
 {
 
+    public function actions()
+    {
+        $actions = parent::actions();
+        return $actions;
+    }
+
     public function checkAccess($action, $model = null, $params = [])
     {
         //TODO implement checkAccess

@@ -74,12 +74,19 @@ class JsonActionGenerator extends RestActionGenerator
             }
         }
 
+        $actionId = $routeData->isNonCrudAction() ? trim("{$actionType}-{$routeData->action}", '-')
+            : "$actionType{$routeData->action}";
+        if (!empty($customRoute)) {
+            $parts = explode('/', $customRoute);
+            $controllerId = $parts[count($parts) - 2];
+            $actionId = $parts[count($parts) - 1];
+        }
+
         return Yii::createObject(FractalAction::class, [
             [
                 'singularResourceKey' => $this->config->singularResourceKeys,
                 'type' => $routeData->type,
-                'id' => $routeData->isNonCrudAction() ? trim("{$actionType}-{$routeData->action}", '-')
-                    : "$actionType{$routeData->action}",
+                'id' => $actionId,
                 'controllerId' => $controllerId,
                 'urlPath' => $routeData->path,
                 'requestMethod' => strtoupper($method),
@@ -96,6 +103,8 @@ class JsonActionGenerator extends RestActionGenerator
                 'expectedRelations' => $expectedRelations,
                 'prefix' => $routeData->getPrefix(),
                 'prefixSettings' => $routeData->getPrefixSettings(),
+                'xRoute' => $customRoute,
+                'modulesList' => $routeData->listModules()
             ],
         ]);
     }
