@@ -32,7 +32,7 @@ use function strpos;
  */
 final class FractalAction extends BaseObject
 {
-    use OptionsRoutesTrait;
+    use ActionHelperTrait;
 
     /**@var string* */
     public $id;
@@ -93,15 +93,6 @@ final class FractalAction extends BaseObject
             $this->templateFactory = Yii::createObject(FractalActionTemplates::class, [$this]);
         }
         return $this->templateFactory;
-    }
-
-    public function getRoute():string
-    {
-        if ($this->prefix && !empty($this->prefixSettings)) {
-            $prefix = $this->prefixSettings['module'] ?? $this->prefix;
-            return trim($prefix, '/').'/'.$this->controllerId.'/'.$this->id;
-        }
-        return $this->controllerId.'/'.$this->id;
     }
 
     public function getBaseModelName():string
