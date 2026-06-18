@@ -3,7 +3,7 @@
 /**
  * Table for Fruit
  */
-class m200000_000001_create_table_fruits extends \yii\db\Migration
+class m200000_000000_create_table_fruits extends \yii\db\Migration
 {
     public function safeUp()
     {

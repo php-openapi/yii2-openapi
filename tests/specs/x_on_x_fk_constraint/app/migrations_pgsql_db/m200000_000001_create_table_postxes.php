@@ -19,10 +19,6 @@ class m200000_000001_create_table_postxes extends \yii\db\Migration
         $this->addForeignKey('fk_postxes_user_2_id_userxes_id', '{{%postxes}}', 'user_2_id', '{{%userxes}}', 'id', 'SET NULL', 'CASCADE');
         $this->addForeignKey('fk_postxes_user_3_id_userxes_id', '{{%postxes}}', 'user_3_id', '{{%userxes}}', 'id', 'SET NULL');
         $this->addForeignKey('fk_postxes_user_4_id_userxes_id', '{{%postxes}}', 'user_4_id', '{{%userxes}}', 'id');
-        $this->addCommentOnColumn('{{%postxes}}', 'user_id', 'x on-x (update|delete) foreign key constraint');
-        $this->addCommentOnColumn('{{%postxes}}', 'user_2_id', 'x on-x (update|delete) foreign key constraint');
-        $this->addCommentOnColumn('{{%postxes}}', 'user_3_id', 'x on-x (update|delete) foreign key constraint');
-        $this->addCommentOnColumn('{{%postxes}}', 'user_4_id', 'x on-x (update|delete) foreign key constraint');
     }
 
     public function safeDown()
